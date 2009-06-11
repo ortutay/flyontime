@@ -18,7 +18,7 @@
 				<td align="left">
 					<div style="background-image: url('/img/top-std.png'); width: 720px; height: 78px;">
 						
-						<div style="position: relative; left: 365px; top: 40px">
+						<div style="position: relative; left: 365px; top: 40px; width: 450px;">
 							<a href="/about" style="font-size: 16pt;">About</a>
 							&nbsp;&nbsp;&nbsp;&nbsp;
 							<a href="/statistics" style="font-size: 16pt;">Statistics</a>

@@ -61,6 +61,20 @@
 <div class="header">
 	Most On-Time Flights
 </div>
+<div style="color: #777777;">
+	Data from 
+	<?php
+	$i = 0;
+	$num = count($Months);
+	foreach($Months as $month => $foo)
+	{
+		echo $month;
+		
+		if($i < ($num - 1))
+			echo ', ';
+	}
+	?>
+</div>
 <br />
 
 <table border=0 cellpadding=0 cellspacing=0 width="100%">

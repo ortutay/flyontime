@@ -3,7 +3,20 @@
 <div class="header">
 	Statistics - <?php echo $Name; ?>
 </div>
-
+<div style="color: #777777;">
+	Data from 
+	<?php
+	$i = 0;
+	$num = count($Months);
+	foreach($Months as $month => $foo)
+	{
+		echo $month;
+		
+		if($i < ($num - 1))
+			echo ', ';
+	}
+	?>
+</div>
 <br />
 
 <script src='http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAhD9h1r6o4CX5R6aR5Sm7chSk0bEoTe4xv8Xwjuk4IV3JR0xuqxSCWSPF07wu9P2WbpcpovPoKtafwQ' type='text/javascript'></script>

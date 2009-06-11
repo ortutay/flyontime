@@ -88,9 +88,14 @@ class FlightsController extends AppController {
 			
 			$flights_by_airports = array();
 			$flight_stats = array();
+			$months = array();
 			
 			foreach($flights as $flight)
 			{
+				$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
+				$date_str = date('F, Y', strtotime($date));
+				$months[$date_str] = '';
+				
 				$airports = $flight['Log']['Origin'].'-'.$flight['Log']['Dest'];
 				
 				if(!isset($flights_by_airports[$airports]))
@@ -135,9 +140,13 @@ class FlightsController extends AppController {
 			//set data for view
 			$this->set('Airline', $airline);
 			$this->set('FlightNum', $flight_num);
+			$this->set('Day', $day);
+			$this->set('From', $from);
+			$this->set('To', $to);
 			$this->set('AirlineInfo', $airline_enum);
 			$this->set('AirportPairFlights', $flights_by_airports);
 			$this->set('AirportPairStats', $flight_stats);
+			$this->set('Months', $months);
 		}
 		elseif($airline != '')
 		{

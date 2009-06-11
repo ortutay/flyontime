@@ -11,6 +11,7 @@ class DisambiguateController extends AppController {
 	function airports()
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
+		$this->Log =& ClassRegistry::init('Log');
 
 		//get params
 		$from = "";
@@ -28,9 +29,16 @@ class DisambiguateController extends AppController {
 		//get data
 		if($from != '' && $to != '')
 		{
-			$airports_from = $this->GetAirports($from);
+			$airports_used = null;
 			
-			$airports_to = $this->GetAirports($to);
+			if(strlen($from) != 3 || strlen($to) != 3)
+			{
+				$airports_used = $this->GetAirportsUsed();
+			}
+			
+			$airports_from = $this->GetAirports($from, $airports_used);
+			
+			$airports_to = $this->GetAirports($to, $airports_used);
 			
 			if(count($airports_from) == 1 && count($airports_to) == 1)
 			{
@@ -66,16 +74,32 @@ class DisambiguateController extends AppController {
 		$day = "";
 		if(isset($this->params['url']['day']))
 			$day = $this->params['url']['day'];
+		
+		$from = "";
+		if(isset($this->params['url']['from']))
+			$from = $this->params['url']['from'];
+		
+		$to = "";
+		if(isset($this->params['url']['to']))
+			$to = $this->params['url']['to'];
 			
 		//get data
 		if($airline != '' && $flight_num != '')
 		{
+			$conditions = array(
+				'Log.UniqueCarrier' => $airline,
+				'Log.FlightNum' => $flight_num
+			);
+			
+			if($from != '' && $to != '')
+			{
+				$conditions['Log.Origin'] = $from;
+				$conditions['Log.Dest'] = $to;
+			}
+			
 			$flights = $this->Log->find('all',
 				array(
-					'conditions' => array(
-						'Log.UniqueCarrier' => $airline,
-						'Log.FlightNum' => $flight_num
-					),
+					'conditions' => $conditions,
 					'group' => array(
 						'Log.Origin',
 						'Log.Dest'
@@ -85,7 +109,7 @@ class DisambiguateController extends AppController {
 			
 			if(count($flights) == 1)
 			{
-				$url = '/flights?airline='.$airline.'&flight_num='.$flight_num.'&day='.$day;
+				$url = '/flights?airline='.$airline.'&flight_num='.$flight_num.'&day='.$day.'&from='.$from.'&to='.$to;
 				
 				$this->redirect($url);
 			}
@@ -95,6 +119,8 @@ class DisambiguateController extends AppController {
 				$this->set('Airline', $airline);
 				$this->set('FlightNum', $flight_num);
 				$this->set('Day', $day);
+				$this->set('From', $from);
+				$this->set('To', $to);
 			}
 		}
 		elseif($airline != '')
@@ -107,7 +133,7 @@ class DisambiguateController extends AppController {
 		}
 	}
 	
-	private function GetAirports($name)
+	private function GetAirports($name, $airports_used = null)
 	{
 		$airports = array();
 		
@@ -133,12 +159,19 @@ class DisambiguateController extends AppController {
 			}
 			$like .= '%';
 			
+			$conditions = array(
+				'Enum.category' => 'AIRPORTS',
+				'Enum.description LIKE' => $like
+			);
+			
+			if($airports_used != null)
+			{
+				$conditions['Enum.code'] = $airports_used;
+			}
+			
 			$airports = $this->Enum->find('all',
 				array(
-					'conditions' => array(
-						'Enum.category' => 'AIRPORTS',
-						'Enum.description LIKE' => $like
-					)
+					'conditions' => $conditions
 				)
 			);
 		}
@@ -161,6 +194,29 @@ class DisambiguateController extends AppController {
 		}
 		
 		return $keywords;
+	}
+	
+	private function GetAirportsUsed()
+	{
+		$airports_used = $this->Log->find('all',
+			array(
+				'fields' => array(
+					'Log.Origin'
+				),
+				'group' => array(
+					'Log.Origin'
+				)
+			)
+		);
+		
+		$airports_used_arr = array();
+		
+		foreach($airports_used as $airport)
+		{
+			$airports_used_arr[] = $airport['Log']['Origin'];
+		}
+		
+		return $airports_used_arr;
 	}
 	
 }
