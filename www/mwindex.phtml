@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><?
+
+    if($_SERVER["HTTP_HOST"] == "temp.modwest.com" ||
+       $_SERVER["HTTP_HOST"] == "secure.modwest.com") {
+         $e = explode("/", $_SERVER["REQUEST_URI"]);  
+         echo strtolower($e[1]);
+         }
+
+    else echo strtolower($_SERVER["HTTP_HOST"]);
+?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type=text/css>
+
+H1 {
+color: #000000;
+margin: 0px;
+}
+
+#sidebar a:link {color: #ffffff;}
+#sidebar a:visited{color: #ffffff;}
+#sidebar a:hover {color: #ffffff;}
+#sidebar a:active {color: #ffffff;}
+
+a:link {color: #770000;}
+a:visited{color: #770000;}
+a:hover {color: #770000;}
+a:active {color: #770000;}
+
+body {
+background-color: #880000;
+background-image: url("http<?= ($_SERVER["SERVER_PORT"] == 443 ? "s" : ""); ?>://www.modwest.com/images/placeholder_bg.gif");
+font-family: arial, verdana, sans-serif;
+background-repeat: repeat-y;
+}
+
+#maincontent {
+font-size: 11px;
+color: #888888;
+position: absolute;
+left: 55px;
+text-align: center;
+width: 365px;
+top: 58px;
+}
+
+#sidebar {
+color: #ffffff;
+font-size: 11px;
+position: absolute;
+left: 525px;
+top: 100px;
+text-align: left;
+width: 250px
+
+}
+</style>
+
+</head>
+
+<body>
+<div id="maincontent">
+Welcome to the future home of
+<h1>
+<?
+
+    if($_SERVER["HTTP_HOST"] == "temp.modwest.com" ||
+       $_SERVER["HTTP_HOST"] == "secure.modwest.com") {
+         $e = explode("/", $_SERVER["REQUEST_URI"]);  
+         echo strtolower($e[1]);
+         }
+
+    else echo strtolower($_SERVER["HTTP_HOST"]);
+?>
+</h1>
+<br />
+Hosting by:
+<br />
+<a href="http://www.modwest.com"><img src="http<?= ($_SERVER["SERVER_PORT"] == 443 ? "s" : ""); ?>://www.modwest.com/images/placeholder_mwlogo.gif" width="151" height="143" vspace="10" border="0" /></a><br />
+Modwest Hosting:<br />
+Award-winning <a href="http://www.modwest.com">PHP Web Hosting</a><br />
+Spam and Virus Protection<br />
+Modwest&#153; OnSite Control Panel<br />
+99.9% Uptime<br />
+Unlimited e-mail addresses &amp; subdomains<br />
+Instant Setup<br />
+<br />
+
+<img src="http<?= ($_SERVER["SERVER_PORT"] == 443 ? "s" : ""); ?>://www.modwest.com/images/placeholder_features.gif" width="358" height="57" /><br />
+<br />
+</div>
+
+<div id="sidebar"><h3>Site Owner:</h3>
+  Your domain has been set up correctly! You can now set up your e-mail and upload
+    your website. <br />
+    <br />
+    <h3>Need more help? </h3>Check out the <a href="http://www.modwest.com/help/">Modwest
+    FAQ &amp; Knowledge Base</a> for tips on
+  Getting Started.<br />
+  <h3>Ready to upload your website? </h3>
+  Just set up your FTP client (WS-FTP, Dreamweaver, etc...) with these settings:<br />
+  <br />
+  <strong>User name:</strong> [your Modwest user name]<br />
+  <strong>Password:</strong> [your Modwest password]<br />
+  <strong>Server name:</strong> ftp.modwest.com<br />
+  <strong>Upload web files to directory:</strong> /htdocs/www/</div>
+
+</body>
+</html>

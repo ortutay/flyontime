@@ -1,0 +1,65 @@
+body
+{
+	margin: 0px;
+	background-color: #CCCCCC;
+}
+
+a:link
+{
+	color: blue;
+	text-decoration: underline;
+}
+
+a:visited
+{
+	color: blue;
+}
+
+a:hover
+{
+	color: blue;
+	text-decoration: none;
+}
+
+a
+{
+	font-size: 12pt;
+	font-family: 'lucida grande',verdana,helvetica,arial,sans-serif;
+	color: blue;
+}
+
+
+div
+{
+	font-size: 12pt;
+	font-family: 'lucida grande',verdana,helvetica,arial,sans-serif;
+	color: black;
+}
+
+.header
+{
+	font-size: 24px;
+	color: #3333CC;
+	font-weight: bold;
+}
+
+.subheader
+{
+	font-size: 14px;
+	font-weight: bold;
+	font-style: italic;
+}
+
+input.big
+{
+	background-color: #FFDDAA;
+	border: solid black;
+	font-size: 20px;
+}
+
+select.big
+{
+	background-color: #FFDDAA;
+	border: solid black;
+	font-size: 20px;
+}
