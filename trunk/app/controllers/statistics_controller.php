@@ -21,6 +21,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'SUM(Log.DepDelayMinutes) as TotalMinutesDelayed'
 						),
@@ -50,6 +52,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'COUNT(Log.Cancelled) as NumCancelledFlights'
 						),
@@ -77,6 +81,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'SUM(Log.CarrierDelay) as TotalCarrierDelay'
 						),
@@ -106,6 +112,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'SUM(Log.WeatherDelay) as TotalWeatherDelay'
 						),
@@ -133,6 +141,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'SUM(Log.NASDelay) as TotalNASDelay'
 						),
@@ -162,6 +172,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'SUM(Log.SecurityDelay) as TotalSecurityDelay'
 						),
@@ -191,6 +203,8 @@ class StatisticsController extends AppController {
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.Origin',
 							'SUM(Log.LateAircraftDelay) as TotalLateAircraftDelay'
 						),
@@ -220,7 +234,10 @@ class StatisticsController extends AppController {
 				$this->redirect('/statistics');
 		}
 		
+		$months = $this->GetMonths($airports);
+		
 		$this->set('Airports', $airports);
+		$this->set('Months', $months);
 	}
 	
 	
@@ -239,6 +256,8 @@ class StatisticsController extends AppController {
 				$airlines = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.UniqueCarrier',
 							'SUM(Log.DepDelay) as TotalMinutesDelayed'
 						),
@@ -255,9 +274,7 @@ class StatisticsController extends AppController {
 						'limit' => 20
 					)
 				);
-				
-				$airline_names = $this->GetAirlineNames($airlines);
-				
+
 				$this->set('Name', 'Airline Departure Delays');
 				$this->set('DataTitle', 'Minutes Delayed');
 				$this->set('DataValue', 'TotalMinutesDelayed');
@@ -269,6 +286,8 @@ class StatisticsController extends AppController {
 				$airlines = $this->Log->find('all',
 					array(
 						'fields' => array(
+							'Log.Month',
+							'Log.Year',
 							'Log.UniqueCarrier',
 							'COUNT(Log.Cancelled) as NumCancelledFlights'
 						),
@@ -284,9 +303,7 @@ class StatisticsController extends AppController {
 						'limit' => 20
 					)
 				);
-				
-				$airline_names = $this->GetAirlineNames($airlines);
-				
+
 				$this->set('Name', 'Airline Cancelled Flights');
 				$this->set('DataTitle', 'Cancelled Flights');
 				$this->set('DataValue', 'NumCancelledFlights');
@@ -298,8 +315,12 @@ class StatisticsController extends AppController {
 				$this->redirect('/statistics');
 		}
 		
+		$airline_names = $this->GetAirlineNames($airlines);
+		$months = $this->GetMonths($airlines);
+		
 		$this->set('Airlines', $airlines);
 		$this->set('AirlineNames', $airline_names);
+		$this->set('Months', $months);
 	}
 	
 	private function GetAirlineNames($airlines)
@@ -328,6 +349,20 @@ class StatisticsController extends AppController {
 		}
 		
 		return $airline_names;
+	}
+	
+	private function GetMonths($flights)
+	{
+		$months = array();
+			
+		foreach($flights as $flight)
+		{
+			$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
+			$date_str = date('F, Y', strtotime($date));
+			$months[$date_str] = '';
+		}
+		
+		return $months;
 	}
 
 }

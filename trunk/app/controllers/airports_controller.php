@@ -32,6 +32,25 @@ class AirportsController extends AppController {
 			$this->set('From', $from);
 			$this->set('To', $to);
 			$this->set('Day', $day);
+			
+			//get months
+			$months = array();
+			
+			foreach($flights_from as $flight)
+			{
+				$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
+				$date_str = date('F, Y', strtotime($date));
+				$months[$date_str] = '';
+			}
+			
+			foreach($flights_to as $flight)
+			{
+				$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
+				$date_str = date('F, Y', strtotime($date));
+				$months[$date_str] = '';
+			}
+			
+			$this->set('Months', $months);
 		}
 		else
 		{
@@ -60,6 +79,8 @@ class AirportsController extends AppController {
 					'Log.UniqueCarrier',
 					'Log.Carrier',
 					'Log.FlightNum',
+					'Log.Month',
+					'Log.Year',
 					'AVG(Log.ArrDelay) as AvgArrDelay'
 				),
 				'conditions' => $conditions,

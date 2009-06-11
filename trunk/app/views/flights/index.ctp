@@ -1,7 +1,122 @@
-<?php $this->pageTitle = 'FlyOnTime.us: Flights'; ?>
+<?php
 
+$this->pageTitle = 'FlyOnTime.us: Flights';
+
+function GetDayName($day)
+{
+	switch($day)
+	{
+		case 1:
+			return 'Monday';
+			break;
+		
+		case 2:
+			return 'Tuesday';
+			break;
+		
+		case 3:
+			return 'Wednesday';
+			break;
+		
+		case 4:
+			return 'Thursday';
+			break;
+		
+		case 5:
+			return 'Friday';
+			break;
+		
+		case 6:
+			return 'Saturday';
+			break;
+		
+		case 7:
+			return 'Sunday';
+			break;
+	}
+	
+	return '';
+}
+
+?>
+
+<div class="subheader">Modify your search:</div>
+<br />
+
+<table border=0 cellpadding=0 cellspacing=0 width="100%">
+<tr>
+	<td align="center">
+
+		<form method="GET" action="/disambiguate/flights">
+			
+			<input type="hidden" name="from" value="<?php echo $From; ?>" />
+			<input type="hidden" name="to" value="<?php echo $To; ?>" />
+			
+			<table border=0 cellpadding=0 cellspacing=0>
+			<tr>
+				<td>
+					<div>Airline:</div>
+				</td>
+				<td width="5px"></td>
+				<td>
+					<input name="airline" type="text" style="width: 125px;" value="<?php echo $Airline; ?>" />
+				</td>
+				<td width="15px"></td>
+				<td>
+					<div>Flight #:</div>
+				</td>
+				<td width="5px"></td>
+				<td>
+					<input name="flight_num" type="text" style="width: 125px;" value="<?php echo $FlightNum; ?>" />
+				</td>
+				<td width="15px"></td>
+				<td>
+					<div>Day:</div>
+				</td>
+				<td width="5px"></td>
+				<td>
+					<select name="day">
+						<option value=""></option>
+						<option value="1" <?php if($Day==1) echo 'selected'; ?>>Monday</option>
+						<option value="2" <?php if($Day==2) echo 'selected'; ?>>Tuesday</option>
+						<option value="3" <?php if($Day==3) echo 'selected'; ?>>Wednesday</option>
+						<option value="4" <?php if($Day==4) echo 'selected'; ?>>Thursday</option>
+						<option value="5" <?php if($Day==5) echo 'selected'; ?>>Friday</option>
+						<option value="6" <?php if($Day==6) echo 'selected'; ?>>Saturday</option>
+						<option value="7" <?php if($Day==7) echo 'selected'; ?>>Sunday</option>
+					</select>
+				</td>
+				<td width="25px"></td>
+				<td>
+					<input type="submit" value="Search >>" />
+				</td>
+				
+			</tr>
+			</table>
+			
+		</form>
+		
+	</td>
+</tr>
+</table>
+
+<br />
 <div class="header">
 	<?php echo $Airline.' '.$FlightNum ?>
+</div>
+<div style="color: #777777;">
+	Data from 
+	<?php
+	$i = 0;
+	$num = count($Months);
+	foreach($Months as $month => $foo)
+	{
+		echo $month;
+		
+		if($i < ($num - 1))
+			echo ', ';
+	}
+	?>
 </div>
 <br />
 
@@ -24,10 +139,14 @@ foreach($AirportPairStats as $airport_pair => $stats)
 		$ArrDelay_str = abs(round($stats['avg_arrival_delay'], 1)).' min. early';
 	elseif($stats['avg_arrival_delay'] > 0)
 		$ArrDelay_str = round($stats['avg_arrival_delay'], 1).' min. late';
+	
+	$day_str = '';
+	if($Day != '')
+		$day_str = ' on <b>'.GetDayName($Day).'</b>';
 ?>
 
 <div>
-	<u>From <b><?php echo $OriginCityName.' ('.$Origin.')'; ?></b> to <b><?php echo $DestCityName.' ('.$Dest.')'; ?></b>:</u>
+	<u>From <b><?php echo $OriginCityName.' ('.$Origin.')'; ?></b> to <b><?php echo $DestCityName.' ('.$Dest.')'; ?></b><?php echo $day_str; ?>:</u>
 	<br /><br />
 	
 	Out of <?php echo $stats['total']; ?> flights scheduled:
