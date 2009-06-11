@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title><?php echo $title_for_layout; ?></title>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" type="text/css" href="/css/flyontime.generic.css" />
+	<?php echo $scripts_for_layout; ?>
+</head>
+
+<body>
+
+	<table border=0 cellpadding=0 cellspacing=0 width="100%">
+	<tr valign="top">
+		<td align="center">
+			<table border=0 cellpadding=0 cellspacing=0>
+			<tr>
+				<td align="left">
+					<div style="background-image: url('/img/top-std.png'); width: 720px; height: 78px;">
+						
+						<div style="position: relative; left: 365px; top: 40px">
+							<a href="/about" style="font-size: 16pt;">About</a>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<a href="/statistics" style="font-size: 16pt;">Statistics</a>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<a href="/developers" style="font-size: 16pt;">Developers</a>
+						</div>
+						
+					</div>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td align="left" style="background-color: white; width: 720px;">
+					<div style="margin: 20px;">
+						
+						<?php echo $content_for_layout; ?>
+						
+					</div>
+				</td>
+			</tr>
+			</table>
+			
+			<a href="/terms" style="font-size: 10pt;">Terms of Use</a>
+			
+		</td>
+	</tr>
+	</table>
+	
+	<br />
+
+</body>
+
+</html>

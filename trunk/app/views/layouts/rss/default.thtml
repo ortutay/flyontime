@@ -1,0 +1,6 @@
+<?php header('Content-type: application/rss+xml'); ?>
+<rss version="2.0">
+	<channel>
+<?php echo $content_for_layout; ?>
+	</channel>
+</rss>
