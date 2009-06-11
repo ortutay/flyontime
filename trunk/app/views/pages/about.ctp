@@ -26,7 +26,7 @@
 			Help the American public understand the data from the BTS by presenting it in interesting and attractive ways.
 		</li>
 		<li>
-			Allow developers to access data from the BTS in a simple, programatic way.  See more at the <a href="/developers">developers</a> page.
+			Allow developers to access data from the BTS in a simple, programmatic way.  See more at the <a href="/developers">developers</a> page.
 		</li>
 	</ol>
 	
