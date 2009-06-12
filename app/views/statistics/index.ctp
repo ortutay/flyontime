@@ -43,10 +43,19 @@
 
 <div>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/departuredelays">Departure Delays</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/percentontime">Percent On-Time</a>
 <br /><br />
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/cancelledflights">Cancelled Flights</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/percentcancelled">Percent Cancelled</a>
+<br /><br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/percentdiverted">Percent Diverted</a>
+<br /><br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/averagearrivaldelay">Average Minutes Arriving Late</a>
+<br /><br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/statistics/airlines/scheduledflights">Number of Scheduled Flights</a>
 <br /><br />
 
 </div>

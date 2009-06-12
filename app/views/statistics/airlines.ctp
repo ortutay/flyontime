@@ -26,7 +26,7 @@
   function drawChart() {
 	var data = new google.visualization.DataTable();
 	data.addColumn('string', 'Airline');
-	data.addColumn('number', 'Minutes Delayed');
+	data.addColumn('number', '<?php echo $DataTitle; ?>');
 	data.addRows(<?php echo count($Airlines); ?>);
 	
 	<?php
