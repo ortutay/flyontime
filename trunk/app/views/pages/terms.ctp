@@ -24,6 +24,8 @@
 					<br />
 					FOTUS reserves the exclusive right to the use of the name "FlyOnTime.us".
 					<br /><br />
+					The airplane silhouette image on the home page is from <a href="http://commons.wikimedia.org/wiki/File:Airplane_silhouette_45degree_angle.svg">Wikimedia Commons</a> and has been released by its author into the public domain.  FOTUS makes no claim of any kind on this image.
+					<br /><br />
 					<b>DISCLAIMERS</b>
 					<br />
 					By using this web site, you agree to indemnify FOTUS, its officers, directors, employees, agents, distributors and affiliates for any and all claims, damages, losses and causes of action arising out of your breach or alleged breach of this agreement.
