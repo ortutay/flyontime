@@ -44,7 +44,7 @@
 	?>
 
 	var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-	chart.draw(data, {width: 650, height: 700, is3D: true, legend: 'bottom'});
+	chart.draw(data, {width: 650, height: 700, is3D: true, legend: 'bottom', axisFontSize: 14});
   }
 </script>
 
