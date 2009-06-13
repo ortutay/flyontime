@@ -16,7 +16,7 @@ class StatisticsController extends AppController {
 		
 		switch($query)
 		{
-			case 'departuredelays':
+			case 'scheduleddepartures':
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -24,30 +24,119 @@ class StatisticsController extends AppController {
 							'Log.Month',
 							'Log.Year',
 							'Log.Origin',
-							'SUM(Log.DepDelayMinutes) as TotalMinutesDelayed'
-						),
-						'conditions' => array(
-							'Log.Cancelled' => 0,
-							'Log.Diverted' => 0,
-							'Log.DepDel15' => 1
+							'COUNT(Log.Origin) as ScheduledDepartures'
 						),
 						'group' => array(
 							'Log.Origin'
 						),
 						'order' => array(
-							'TotalMinutesDelayed DESC'
+							'ScheduledDepartures DESC'
 						),
 						'limit' => 20
 					)
 				);
 				
-				$this->set('Name', 'Airport Departure Delays');
-				$this->set('DataTitle', 'Minutes Delayed');
-				$this->set('DataValue', 'TotalMinutesDelayed');
+				$this->set('Name', 'Airport Scheduled Departures');
+				$this->set('DataTitle', 'Scheduled Departures');
+				$this->set('DataValue', 'ScheduledDepartures');
+				$this->set('AirportValue', 'Origin');
+				
+				break;
+				
+			case 'scheduledarrivals':
+				
+				$airports = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Dest',
+							'COUNT(Log.Dest) as ScheduledArrivals'
+						),
+						'group' => array(
+							'Log.Dest'
+						),
+						'order' => array(
+							'ScheduledArrivals DESC'
+						),
+						'limit' => 20
+					)
+				);
+				
+				$this->set('Name', 'Airport Scheduled Arrivals');
+				$this->set('DataTitle', 'Scheduled Arrivals');
+				$this->set('DataValue', 'ScheduledArrivals');
+				$this->set('AirportValue', 'Dest');
+				
+				break;
+				
+			case 'percentontimedepartures':
+				
+				$major_airports = $this->GetMajorAirports(20);
+				
+				$airports = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'((1-((SUM(Log.DepDel15) + SUM(Log.Cancelled))/COUNT(Log.Origin)))*100) as PercentOnTimeDepartures'
+						),
+						'conditions' => array(
+							'Log.Origin' => $major_airports
+						),
+						'group' => array(
+							'Log.Origin'
+						),
+						'order' => array(
+							'PercentOnTimeDepartures DESC'
+						),
+						'limit' => 20
+					)
+				);
+
+				$this->set('Name', 'Percent of Flights Departing On Time');
+				$this->set('DataTitle', '% On-Time Departures');
+				$this->set('DataValue', 'PercentOnTimeDepartures');
+				$this->set('AirportValue', 'Origin');
+				
+				break;
+				
+			case 'percentontimearrivals':
+				
+				$major_airports = $this->GetMajorAirports(20);
+				
+				$airports = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Dest',
+							'((1-((SUM(Log.ArrDel15) + SUM(Log.Cancelled) + SUM(Log.Diverted))/COUNT(Log.Dest)))*100) as PercentOnTimeArrivals'
+						),
+						'conditions' => array(
+							'Log.Dest' => $major_airports
+						),
+						'group' => array(
+							'Log.Dest'
+						),
+						'order' => array(
+							'PercentOnTimeArrivals DESC'
+						),
+						'limit' => 20
+					)
+				);
+
+				$this->set('Name', 'Percent of Flights Arriving On Time');
+				$this->set('DataTitle', '% On-Time Arrivals');
+				$this->set('DataValue', 'PercentOnTimeArrivals');
+				$this->set('AirportValue', 'Dest');
 				
 				break;
 			
-			case 'cancelledflights':
+			case 'percentcancelleddepartures':
+				
+				$major_airports = $this->GetMajorAirports(20);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -55,59 +144,63 @@ class StatisticsController extends AppController {
 							'Log.Month',
 							'Log.Year',
 							'Log.Origin',
-							'COUNT(Log.Cancelled) as NumCancelledFlights'
+							'((SUM(Log.Cancelled)/COUNT(Log.UniqueCarrier))*100) as PercentCancelledDepartures'
 						),
 						'conditions' => array(
-							'Log.Cancelled' => 1
+							'Log.Origin' => $major_airports
 						),
 						'group' => array(
 							'Log.Origin'
 						),
 						'order' => array(
-							'NumCancelledFlights DESC'
+							'PercentCancelledDepartures DESC'
 						),
 						'limit' => 20
 					)
 				);
-				
-				$this->set('Name', 'Airport Cancelled Flights');
-				$this->set('DataTitle', 'Num Cancelled Flights');
-				$this->set('DataValue', 'NumCancelledFlights');
+
+				$this->set('Name', 'Percent of Departing Flights Cancelled');
+				$this->set('DataTitle', '% Cancelled Departures');
+				$this->set('DataValue', 'PercentCancelledDepartures');
+				$this->set('AirportValue', 'Origin');
 				
 				break;
 			
-			case 'carrierdelays':
+			case 'percentcancelledarrivals':
+				
+				$major_airports = $this->GetMajorAirports(20);
 				
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
 							'Log.Month',
 							'Log.Year',
-							'Log.Origin',
-							'SUM(Log.CarrierDelay) as TotalCarrierDelay'
+							'Log.Dest',
+							'((SUM(Log.Cancelled)/COUNT(Log.UniqueCarrier))*100) as PercentCancelledArrivals'
 						),
 						'conditions' => array(
-							'Log.Cancelled' => 0,
-							'Log.Diverted' => 0,
-							'Log.DepDel15' => 1
+							'Log.Dest' => $major_airports
 						),
 						'group' => array(
-							'Log.Origin'
+							'Log.Dest'
 						),
 						'order' => array(
-							'TotalCarrierDelay DESC'
+							'PercentCancelledArrivals DESC'
 						),
 						'limit' => 20
 					)
 				);
-				
-				$this->set('Name', 'Airport Carrier Delays');
-				$this->set('DataTitle', 'Minutes Delayed');
-				$this->set('DataValue', 'TotalCarrierDelay');
+
+				$this->set('Name', 'Percent of Arriving Flights Cancelled');
+				$this->set('DataTitle', '% Cancelled Arrivals');
+				$this->set('DataValue', 'PercentCancelledArrivals');
+				$this->set('AirportValue', 'Dest');
 				
 				break;
 			
-			case 'weatherdelays':
+			case 'averagedeparturedelay':
+				
+				$major_airports = $this->GetMajorAirports(20);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -115,117 +208,61 @@ class StatisticsController extends AppController {
 							'Log.Month',
 							'Log.Year',
 							'Log.Origin',
-							'SUM(Log.WeatherDelay) as TotalWeatherDelay'
+							'AVG(Log.DepDelay) as AverageMinutesDelayed'
 						),
 						'conditions' => array(
 							'Log.Cancelled' => 0,
 							'Log.Diverted' => 0,
-							'Log.DepDel15' => 1
+							'Log.Origin' => $major_airports
 						),
 						'group' => array(
 							'Log.Origin'
 						),
 						'order' => array(
-							'TotalWeatherDelay DESC'
+							'AverageMinutesDelayed DESC'
 						),
 						'limit' => 20
 					)
 				);
-				
-				$this->set('Name', 'Airport Weather Delays');
-				$this->set('DataTitle', 'Minutes Delayed');
-				$this->set('DataValue', 'TotalWeatherDelay');
-				
-			case 'nasdelays':
-				
-				$airports = $this->Log->find('all',
-					array(
-						'fields' => array(
-							'Log.Month',
-							'Log.Year',
-							'Log.Origin',
-							'SUM(Log.NASDelay) as TotalNASDelay'
-						),
-						'conditions' => array(
-							'Log.Cancelled' => 0,
-							'Log.Diverted' => 0,
-							'Log.DepDel15' => 1
-						),
-						'group' => array(
-							'Log.Origin'
-						),
-						'order' => array(
-							'TotalNASDelay DESC'
-						),
-						'limit' => 20
-					)
-				);
-				
-				$this->set('Name', 'Airport NAS Delays');
-				$this->set('DataTitle', 'Minutes Delayed');
-				$this->set('DataValue', 'TotalNASDelay');
+
+				$this->set('Name', 'Average Minutes Departing Late');
+				$this->set('DataTitle', 'Average Minutes Late');
+				$this->set('DataValue', 'AverageMinutesDelayed');
+				$this->set('AirportValue', 'Origin');
 				
 				break;
 			
-			case 'securitydelays':
+			case 'averagearrivaldelay':
+				
+				$major_airports = $this->GetMajorAirports(20);
 				
 				$airports = $this->Log->find('all',
 					array(
 						'fields' => array(
 							'Log.Month',
 							'Log.Year',
-							'Log.Origin',
-							'SUM(Log.SecurityDelay) as TotalSecurityDelay'
+							'Log.Dest',
+							'AVG(Log.ArrDelay) as AverageMinutesDelayed'
 						),
 						'conditions' => array(
 							'Log.Cancelled' => 0,
 							'Log.Diverted' => 0,
-							'Log.DepDel15' => 1
+							'Log.Dest' => $major_airports
 						),
 						'group' => array(
-							'Log.Origin'
+							'Log.Dest'
 						),
 						'order' => array(
-							'TotalSecurityDelay DESC'
+							'AverageMinutesDelayed DESC'
 						),
 						'limit' => 20
 					)
 				);
-				
-				$this->set('Name', 'Airport Security Delays');
-				$this->set('DataTitle', 'Minutes Delayed');
-				$this->set('DataValue', 'TotalSecurityDelay');
-				
-				break;
-			
-			case 'lateaircraftdelays':
-				
-				$airports = $this->Log->find('all',
-					array(
-						'fields' => array(
-							'Log.Month',
-							'Log.Year',
-							'Log.Origin',
-							'SUM(Log.LateAircraftDelay) as TotalLateAircraftDelay'
-						),
-						'conditions' => array(
-							'Log.Cancelled' => 0,
-							'Log.Diverted' => 0,
-							'Log.DepDel15' => 1
-						),
-						'group' => array(
-							'Log.Origin'
-						),
-						'order' => array(
-							'LateAircraftDelay DESC'
-						),
-						'limit' => 20
-					)
-				);
-				
-				$this->set('Name', 'Airport Late Aircraft Delays');
-				$this->set('DataTitle', 'Minutes Delayed');
-				$this->set('DataValue', 'TotalLateAircraftDelay');
+
+				$this->set('Name', 'Average Minutes Arriving Late');
+				$this->set('DataTitle', 'Average Minutes Late');
+				$this->set('DataValue', 'AverageMinutesDelayed');
+				$this->set('AirportValue', 'Dest');
 				
 				break;
 				
@@ -272,7 +309,7 @@ class StatisticsController extends AppController {
 				);
 
 				$this->set('Name', 'Percent of Flights Arriving On Time');
-				$this->set('DataTitle', 'Percent On-Time');
+				$this->set('DataTitle', '% On-Time');
 				$this->set('DataValue', 'PercentOnTime');
 				
 				break;
@@ -298,7 +335,7 @@ class StatisticsController extends AppController {
 				);
 
 				$this->set('Name', 'Percent of Flights Cancelled');
-				$this->set('DataTitle', 'Percent Cancelled');
+				$this->set('DataTitle', '% Cancelled');
 				$this->set('DataValue', 'PercentCancelled');
 				
 				break;
@@ -324,7 +361,7 @@ class StatisticsController extends AppController {
 				);
 
 				$this->set('Name', 'Percent of Flights Diverted');
-				$this->set('DataTitle', 'Percent Diverted');
+				$this->set('DataTitle', '% Diverted');
 				$this->set('DataValue', 'PercentDiverted');
 				
 				break;
@@ -338,6 +375,10 @@ class StatisticsController extends AppController {
 							'Log.Year',
 							'Log.UniqueCarrier',
 							'AVG(Log.ArrDelay) as AverageMinutesDelayed'
+						),
+						'conditions' => array(
+							'Log.Cancelled' => 0,
+							'Log.Diverted' => 0
 						),
 						'group' => array(
 							'Log.UniqueCarrier'
@@ -434,6 +475,34 @@ class StatisticsController extends AppController {
 		}
 		
 		return $months;
+	}
+	
+	private function GetMajorAirports($top)
+	{
+		$airports = $this->Log->find('all',
+			array(
+				'fields' => array(
+					'Log.Origin',
+					'COUNT(Log.Origin) as ScheduledDepartures'
+				),
+				'group' => array(
+					'Log.Origin'
+				),
+				'order' => array(
+					'ScheduledDepartures DESC'
+				),
+				'limit' => $top
+			)
+		);
+		
+		$airports_arr = array();
+		
+		foreach($airports as $airport)
+		{
+			$airports_arr[] = $airport['Log']['Origin'];
+		}
+		
+		return $airports_arr;
 	}
 
 }

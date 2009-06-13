@@ -37,7 +37,7 @@ function drawMap() {
   {
   ?>
   
-  data.setValue(<?php echo $i; ?>, 0, '<?php echo $airport['Log']['Origin']; ?>');
+  data.setValue(<?php echo $i; ?>, 0, '<?php echo $airport['Log'][$AirportValue]; ?>');
   data.setValue(<?php echo $i; ?>, 1, <?php echo $airport[0][$DataValue]; ?>);
   
   <?php
