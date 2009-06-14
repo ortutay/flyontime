@@ -1,4 +1,102 @@
-<?php $this->pageTitle = 'FlyOnTime.us: Airports'; ?>
+<?php
+
+$this->pageTitle = 'FlyOnTime.us: Airports';
+
+function GetDayName($day)
+{
+	switch($day)
+	{
+		case 1:
+			return 'Monday';
+			break;
+		
+		case 2:
+			return 'Tuesday';
+			break;
+		
+		case 3:
+			return 'Wednesday';
+			break;
+		
+		case 4:
+			return 'Thursday';
+			break;
+		
+		case 5:
+			return 'Friday';
+			break;
+		
+		case 6:
+			return 'Saturday';
+			break;
+		
+		case 7:
+			return 'Sunday';
+			break;
+	}
+	
+	return '';
+}
+
+$day_str = '';
+if($Day != '')
+	$day_str = ' on <b>'.GetDayName($Day).'</b>';
+
+?>
+
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["barchart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+    //FROM
+	var data_from = new google.visualization.DataTable();
+	data_from.addColumn('string', 'Airline');
+	data_from.addColumn('number', 'Percent On-Time Arrival');
+	data_from.addRows(<?php echo count($AirlinesFrom); ?>);
+	
+	<?php
+	$i = 0;
+	foreach($AirlinesFrom as $airline)
+	{
+	?>
+	
+	data_from.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['Carrier']]; ?>');
+	data_from.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['PercentOnTime']; ?>);
+
+	<?php
+	$i++;
+	}
+	?>
+
+	var chart_from = new google.visualization.BarChart(document.getElementById('chart_div_from'));
+	chart_from.draw(data_from, {width: 325, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, min: 0, max: 100});
+	
+	//TO
+	var data_to = new google.visualization.DataTable();
+	data_to.addColumn('string', 'Airline');
+	data_to.addColumn('number', 'Percent On-Time Arrival');
+	data_to.addRows(<?php echo count($AirlinesTo); ?>);
+	
+	<?php
+	$i = 0;
+	foreach($AirlinesTo as $airline)
+	{
+	?>
+	
+	data_to.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['UniqueCarrier']]; ?>');
+	data_to.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['PercentOnTime']; ?>);
+
+	<?php
+	$i++;
+	}
+	?>
+
+	var chart_to = new google.visualization.BarChart(document.getElementById('chart_div_to'));
+	chart_to.draw(data_to, {width: 325, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, min: 0, max: 100});
+  }
+</script>
+
 
 <div class="subheader">Modify your search:</div>
 <br />
@@ -59,7 +157,7 @@
 
 <br />
 <div class="header">
-	Most On-Time Flights
+	Most On-Time Flights and Airlines
 </div>
 <div style="color: #777777;">
 	Data from 
@@ -77,17 +175,17 @@
 </div>
 <br />
 
+<div>
+	<u>From <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b> to <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b><?php echo $day_str; ?>:</u>
+</div>
+
+<br />
+
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr valign="top">
-	<td align="center">
-		
-		<div class="subheader">
-			<u>From <?php echo $From; ?> to <?php echo $To; ?>:</u>
-		</div>
-		
-		<br />
-		
-		<table border=0 cellpadding=5 cellspacing=0>
+	<td align="left">
+	
+		<table border=0 cellpadding=5 cellspacing=1>
 		<tr>
 			<td><div><b>Flight</b></div></td>
 			<td><div><b>Averge Arrival</b></div></td>
@@ -120,11 +218,11 @@
 			}
 			
 			if(($i % 2) == 0)
-				$style = 'background-color: #BBBBBB;';
+				$style = 'background-color: #DDDDDD;';
 		?>
 		
 		<tr style="<?php echo $style; ?>">
-			<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $From; ?>&to=<?php echo $To; ?>&day=<?php echo $Day; ?>"><?php echo $flight['Log']['Carrier'].' '.$flight['Log']['FlightNum']; ?></a></td>
+			<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $From; ?>&to=<?php echo $To; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
 			<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
 		</tr>
 		
@@ -134,18 +232,32 @@
 		?>
 		
 		</table>
-		
+
 	</td>
 	
-	<td align="center">
-		
-		<div class="subheader">
-			<u>From <?php echo $To; ?> to <?php echo $From; ?>:</u>
-		</div>
-		
-		<br />
-		
-		<table border=0 cellpadding=5 cellspacing=0>
+	<td align="right">
+	
+		<div id='chart_div_from'></div>
+
+	</td>
+</tr>
+</table>
+
+
+
+<br /><br />
+
+<div>
+	<u>From <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b> to <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b><?php echo $day_str; ?>:</u>
+</div>
+
+<br />
+
+<table border=0 cellpadding=0 cellspacing=0 width="100%">
+<tr valign="top">
+	<td align="left">
+
+		<table border=0 cellpadding=5 cellspacing=1>
 		<tr>
 			<td><div><b>Flight</b></div></td>
 			<td><div><b>Averge Arrival</b></div></td>
@@ -178,11 +290,11 @@
 			}
 			
 			if(($i % 2) == 0)
-				$style = 'background-color: #BBBBBB;';
+				$style = 'background-color: #DDDDDD;';
 		?>
 		
 		<tr style="<?php echo $style; ?>">
-			<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $To; ?>&to=<?php echo $From; ?>&day=<?php echo $Day; ?>"><?php echo $flight['Log']['Carrier'].' '.$flight['Log']['FlightNum']; ?></a></td>
+			<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $To; ?>&to=<?php echo $From; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
 			<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
 		</tr>
 		
@@ -193,6 +305,12 @@
 		
 		</table>
 		
+	</td>
+	
+	<td align="right">
+	
+		<div id='chart_div_to'></div>
+
 	</td>
 </tr>
 </table>

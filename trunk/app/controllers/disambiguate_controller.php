@@ -43,7 +43,7 @@ class DisambiguateController extends AppController {
 			if(count($airports_from) == 1 && count($airports_to) == 1)
 			{
 				$url = '/airports?from='.$airports_from[0]['Enum']['code'].'&to='.$airports_to[0]['Enum']['code'].'&day='.$day;
-				$this->redirect($url);
+				$this->flash('Loading...', $url, 0);
 			}
 			else
 			{
@@ -111,7 +111,7 @@ class DisambiguateController extends AppController {
 			{
 				$url = '/flights?airline='.$airline.'&flight_num='.$flight_num.'&day='.$day.'&from='.$from.'&to='.$to;
 				
-				$this->redirect($url);
+				$this->flash('Loading...', $url, 0);
 			}
 			else
 			{
@@ -125,7 +125,8 @@ class DisambiguateController extends AppController {
 		}
 		elseif($airline != '')
 		{
-			$this->redirect('/airlines/'.$airline);
+			$url = '/airlines/'.$airline;
+			$this->flash('Loading...', $url, 0);
 		}
 		else
 		{
