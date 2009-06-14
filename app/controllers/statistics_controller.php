@@ -435,6 +435,383 @@ class StatisticsController extends AppController {
 		$this->set('Months', $months);
 	}
 	
+	
+	function routes($query)
+	{
+		$this->Log =& ClassRegistry::init('Log');
+		//$this->Enum =& ClassRegistry::init('Enum');
+		
+		$routes = null;
+		
+		switch($query)
+		{
+			case 'percentontime':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'((1-((SUM(Log.ArrDel15) + SUM(Log.Cancelled) + SUM(Log.Diverted))/COUNT(Log.Origin)))*100) as PercentOnTime',
+							'COUNT(Log.Origin) as ScheduledFlights'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'PercentOnTime DESC',
+							'ScheduledFlights DESC',
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Percent of On-Time Arrivals');
+				$this->set('DataTitle', '% On-Time');
+				$this->set('DataValue', 'PercentOnTime');
+				
+				break;
+			
+			case 'percentnotontime':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'(((SUM(Log.ArrDel15) + SUM(Log.Cancelled) + SUM(Log.Diverted))/COUNT(Log.Origin))*100) as PercentNotOnTime',
+							'COUNT(Log.Origin) as ScheduledFlights'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'PercentNotOnTime DESC',
+							'ScheduledFlights DESC',
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Percent of Not On-Time Arrivals');
+				$this->set('DataTitle', '% Not On-Time');
+				$this->set('DataValue', 'PercentNotOnTime');
+				
+				break;
+			
+			case 'percentcancelled':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'((SUM(Log.Cancelled)/COUNT(Log.Origin))*100) as PercentCancelled',
+							'COUNT(Log.Origin) as ScheduledFlights'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'PercentCancelled DESC',
+							'ScheduledFlights DESC',
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Percent of Cancelled Flights');
+				$this->set('DataTitle', '% Cancelled');
+				$this->set('DataValue', 'PercentCancelled');
+				
+				break;
+			
+			case 'percentdiverted':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'((SUM(Log.Diverted)/COUNT(Log.Origin))*100) as PercentDiverted',
+							'COUNT(Log.Origin) as ScheduledFlights'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'PercentDiverted DESC',
+							'ScheduledFlights DESC',
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Percent of Diverted Flights');
+				$this->set('DataTitle', '% Diverted');
+				$this->set('DataValue', 'PercentDiverted');
+				
+				break;
+				
+			case 'averagearrivaldelay':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'AVG(Log.ArrDelay) as AverageMinutesDelayed'
+						),
+						'conditions' => array(
+							'Log.Cancelled' => 0,
+							'Log.Diverted' => 0
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'AverageMinutesDelayed DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Average Minutes Arriving Late');
+				$this->set('DataTitle', 'Average Minutes Late');
+				$this->set('DataValue', 'AverageMinutesDelayed');
+				
+				break;
+			
+			case 'scheduledflights':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'COUNT(Log.Origin) as ScheduledFlights'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'ScheduledFlights DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Number of Scheduled Flights');
+				$this->set('DataTitle', 'Scheduled Flights');
+				$this->set('DataValue', 'ScheduledFlights');
+				
+				break;
+			
+			case 'totalarrivaldelay':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'SUM(Log.ArrDelay) as TotalMinutesDelayed'
+						),
+						'conditions' => array(
+							'Log.Cancelled' => 0,
+							'Log.Diverted' => 0
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'TotalMinutesDelayed DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Total Minutes Arriving Late');
+				$this->set('DataTitle', 'Total Minutes Late');
+				$this->set('DataValue', 'TotalMinutesDelayed');
+				
+				break;
+			
+			case 'numberontime':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'(COUNT(Log.Origin) - SUM(Log.ArrDel15) - SUM(Log.Cancelled) - SUM(Log.Diverted)) AS NumberOnTime'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'NumberOnTime DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Number of On-Time Arrivals');
+				$this->set('DataTitle', 'Number On-Time');
+				$this->set('DataValue', 'NumberOnTime');
+				
+				break;
+			
+			case 'numbernotontime':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'(SUM(Log.ArrDel15) + SUM(Log.Cancelled) + SUM(Log.Diverted)) AS NumberNotOnTime'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'NumberNotOnTime DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Number of Arrivals Not On-Time');
+				$this->set('DataTitle', 'Number Not On-Time');
+				$this->set('DataValue', 'NumberNotOnTime');
+				
+				break;
+			
+			case 'numbercancelled':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'SUM(Log.Cancelled) AS NumberCancelled'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'NumberCancelled DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Number of Flights Cancelled');
+				$this->set('DataTitle', 'Number Cancelled');
+				$this->set('DataValue', 'NumberCancelled');
+				
+				break;
+				
+			case 'numberdiverted':
+				
+				$routes = $this->Log->find('all',
+					array(
+						'fields' => array(
+							'Log.Month',
+							'Log.Year',
+							'Log.Origin',
+							'Log.OriginCityName',
+							'Log.Dest',
+							'Log.DestCityName',
+							'SUM(Log.Diverted) AS NumberDiverted'
+						),
+						'group' => array(
+							'Log.Origin',
+							'Log.Dest'
+						),
+						'order' => array(
+							'NumberDiverted DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('Name', 'Number of Flights Diverted');
+				$this->set('DataTitle', 'Number Diverted');
+				$this->set('DataValue', 'NumberDiverted');
+				
+				break;
+			
+			default:
+			
+				$this->redirect('/statistics');
+		}
+		
+		$months = $this->GetMonths($routes);
+		
+		$this->set('Routes', $routes);
+		$this->set('Months', $months);
+	}
+	
+	
+	
 	private function GetAirlineNames($airlines)
 	{
 		$unique_carriers = array();
