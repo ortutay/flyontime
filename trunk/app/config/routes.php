@@ -27,74 +27,12 @@
  * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 	
-	/*
-	//LEGISLATION
+	//AIRLINES
 	Router::connect(
-		'/legislation/:CanonicalName',
-		array('controller' => 'legislation', 'action' => 'view'),
-		array('CanonicalName' => '(GA[0-9]+[A-Z]+[0-9]+)')
+		'/airlines/:UniqueCarrier',
+		array('controller' => 'airlines', 'action' => 'view'),
+		array('UniqueCarrier' => '(.*)')
 	);
-	
-	Router::connect(
-		'/legislation/:SearchName',
-		array('controller' => 'legislation', 'action' => 'search'),
-		array('SearchName' => '(.+)')
-	);
-	
-	//MEMBERS	
-	Router::connect(
-		'/members/:SearchName',
-		array('controller' => 'members', 'action' => 'search'),
-		array('SearchName' => '(house|senate|MostProlificRepresentatives|MostProlificSenators|MostSuccessfulRepresentatives|MostSuccessfulSenators|MostEfficientRepresentatives|MostEfficientSenators)')
-	);
-	
-	Router::connect(
-		'/members/:CanonicalName',
-		array('controller' => 'members', 'action' => 'view'),
-		array('CanonicalName' => '(.+)')
-	);
-	
-	//COMMITTEES
-	Router::connect(
-		'/committees/:SearchName',
-		array('controller' => 'committees', 'action' => 'search'),
-		array('SearchName' => '(house|senate|MostAssignedHouse|MostAssignedSenate)')
-	);
-	
-	Router::connect(
-		'/committees/:CanonicalName',
-		array('controller' => 'committees', 'action' => 'view'),
-		array('CanonicalName' => '(.+)')
-	);
-	
-	//RSS - LEGISLATION
-	Router::connect(
-		'/rss/legislation/:CanonicalName',
-		array('controller' => 'legislation', 'action' => 'view_rss'),
-		array('CanonicalName' => '(GA[0-9]+[A-Z]+[0-9]+)')
-	);
-	
-	Router::connect(
-		'/rss/legislation/:SearchName',
-		array('controller' => 'legislation', 'action' => 'search_rss'),
-		array('SearchName' => '(.+)')
-	);
-	
-	//RSS - MEMBERS
-	Router::connect(
-		'/rss/members/:CanonicalName',
-		array('controller' => 'members', 'action' => 'view_rss'),
-		array('CanonicalName' => '(.+)')
-	);
-	
-	//RSS - COMMITTEES
-	Router::connect(
-		'/rss/committees/:CanonicalName',
-		array('controller' => 'committees', 'action' => 'view_rss'),
-		array('CanonicalName' => '(.+)')
-	);
-	
-	*/
 	
 	//PAGES
 	Router::connect('/terms', array('controller' => 'pages', 'action' => 'display', 'terms'));
