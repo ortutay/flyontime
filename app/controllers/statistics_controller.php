@@ -447,7 +447,7 @@ class StatisticsController extends AppController {
 	function routes($query)
 	{
 		$this->Log =& ClassRegistry::init('Log');
-		//$this->Enum =& ClassRegistry::init('Enum');
+		$this->Enum =& ClassRegistry::init('Enum');
 		
 		$routes = null;
 		
@@ -813,9 +813,11 @@ class StatisticsController extends AppController {
 		}
 		
 		$months = $this->GetMonths($routes);
+		$geocodes = $this->GetAirportGeocodes($routes, array('Origin', 'Dest'));
 		
 		$this->set('Routes', $routes);
 		$this->set('Months', $months);
+		$this->set('Geocodes', $geocodes);
 	}
 	
 	
@@ -894,9 +896,22 @@ class StatisticsController extends AppController {
 	{
 		$airport_codes = array();
 		
-		foreach($airports as $airport)
+		if(is_array($AirportValue))
 		{
-			$airport_codes[] = $airport['Log'][$AirportValue];
+			foreach($AirportValue as $av)
+			{
+				foreach($airports as $airport)
+				{
+					$airport_codes[] = $airport['Log'][$av];
+				}
+			}
+		}
+		else
+		{
+			foreach($airports as $airport)
+			{
+				$airport_codes[] = $airport['Log'][$AirportValue];
+			}
 		}
 		
 		$coords = $this->Enum->find('all',
