@@ -11,6 +11,9 @@ class StatisticsController extends AppController {
 	function airports($query)
 	{
 		$this->Log =& ClassRegistry::init('Log');
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$num_airports = 30;
 		
 		$airports = null;
 		
@@ -32,14 +35,14 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'ScheduledDepartures DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 				
 				$this->set('Name', 'Airport Scheduled Departures');
 				$this->set('DataTitle', 'Scheduled Departures');
 				$this->set('DataValue', 'ScheduledDepartures');
-				$this->set('AirportValue', 'Origin');
+				$AirportValue = 'Origin';
 				
 				break;
 				
@@ -59,20 +62,20 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'ScheduledArrivals DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 				
 				$this->set('Name', 'Airport Scheduled Arrivals');
 				$this->set('DataTitle', 'Scheduled Arrivals');
 				$this->set('DataValue', 'ScheduledArrivals');
-				$this->set('AirportValue', 'Dest');
+				$AirportValue = 'Dest';
 				
 				break;
 				
 			case 'percentontimedepartures':
 				
-				$major_airports = $this->GetMajorAirports(20);
+				$major_airports = $this->GetMajorAirports($num_airports);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -91,20 +94,20 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'PercentOnTimeDepartures DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 
 				$this->set('Name', 'Percent of Flights Departing On Time');
 				$this->set('DataTitle', '% On-Time Departures');
 				$this->set('DataValue', 'PercentOnTimeDepartures');
-				$this->set('AirportValue', 'Origin');
+				$AirportValue = 'Origin';
 				
 				break;
 				
 			case 'percentontimearrivals':
 				
-				$major_airports = $this->GetMajorAirports(20);
+				$major_airports = $this->GetMajorAirports($num_airports);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -123,20 +126,20 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'PercentOnTimeArrivals DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 
 				$this->set('Name', 'Percent of Flights Arriving On Time');
 				$this->set('DataTitle', '% On-Time Arrivals');
 				$this->set('DataValue', 'PercentOnTimeArrivals');
-				$this->set('AirportValue', 'Dest');
+				$AirportValue = 'Dest';
 				
 				break;
 			
 			case 'percentcancelleddepartures':
 				
-				$major_airports = $this->GetMajorAirports(20);
+				$major_airports = $this->GetMajorAirports($num_airports);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -155,20 +158,20 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'PercentCancelledDepartures DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 
 				$this->set('Name', 'Percent of Departing Flights Cancelled');
 				$this->set('DataTitle', '% Cancelled Departures');
 				$this->set('DataValue', 'PercentCancelledDepartures');
-				$this->set('AirportValue', 'Origin');
+				$AirportValue = 'Origin';
 				
 				break;
 			
 			case 'percentcancelledarrivals':
 				
-				$major_airports = $this->GetMajorAirports(20);
+				$major_airports = $this->GetMajorAirports($num_airports);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -187,20 +190,20 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'PercentCancelledArrivals DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 
 				$this->set('Name', 'Percent of Arriving Flights Cancelled');
 				$this->set('DataTitle', '% Cancelled Arrivals');
 				$this->set('DataValue', 'PercentCancelledArrivals');
-				$this->set('AirportValue', 'Dest');
+				$AirportValue = 'Dest';
 				
 				break;
 			
 			case 'averagedeparturedelay':
 				
-				$major_airports = $this->GetMajorAirports(20);
+				$major_airports = $this->GetMajorAirports($num_airports);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -221,20 +224,20 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'AverageMinutesDelayed DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 
 				$this->set('Name', 'Average Minutes Departing Late');
 				$this->set('DataTitle', 'Average Minutes Late');
 				$this->set('DataValue', 'AverageMinutesDelayed');
-				$this->set('AirportValue', 'Origin');
+				$AirportValue = 'Origin';
 				
 				break;
 			
 			case 'averagearrivaldelay':
 				
-				$major_airports = $this->GetMajorAirports(20);
+				$major_airports = $this->GetMajorAirports($num_airports);
 				
 				$airports = $this->Log->find('all',
 					array(
@@ -255,14 +258,14 @@ class StatisticsController extends AppController {
 						'order' => array(
 							'AverageMinutesDelayed DESC'
 						),
-						'limit' => 20
+						'limit' => $num_airports
 					)
 				);
 
 				$this->set('Name', 'Average Minutes Arriving Late');
 				$this->set('DataTitle', 'Average Minutes Late');
 				$this->set('DataValue', 'AverageMinutesDelayed');
-				$this->set('AirportValue', 'Dest');
+				$AirportValue = 'Dest';
 				
 				break;
 				
@@ -272,9 +275,14 @@ class StatisticsController extends AppController {
 		}
 		
 		$months = $this->GetMonths($airports);
+		$geocodes = $this->GetAirportGeocodes($airports, $AirportValue);
+		$airport_names = $this->GetAirportNames($airports, $AirportValue);
 		
+		$this->set('AirportValue', $AirportValue);
 		$this->set('Airports', $airports);
 		$this->set('Months', $months);
+		$this->set('AirportNames', $airport_names);
+		$this->set('Geocodes', $geocodes);
 	}
 	
 	
@@ -880,6 +888,68 @@ class StatisticsController extends AppController {
 		}
 		
 		return $airports_arr;
+	}
+	
+	private function GetAirportGeocodes($airports, $AirportValue)
+	{
+		$airport_codes = array();
+		
+		foreach($airports as $airport)
+		{
+			$airport_codes[] = $airport['Log'][$AirportValue];
+		}
+		
+		$coords = $this->Enum->find('all',
+			array(
+				'conditions' => array(
+					'Enum.category' => 'AIRPORTS_GEOCODE',
+					'Enum.code' => $airport_codes
+				)
+			)
+		);
+		
+		$geocodes = array();
+		
+		foreach($coords as $coord)
+		{
+			$coord_arr = explode(',', $coord['Enum']['description']);
+			
+			$Lng = $coord_arr[0];
+			$Lat = $coord_arr[1];
+			$code = $coord['Enum']['code'];
+			
+			$geocodes[$code] = array('Lat' => $Lat, 'Lng' => $Lng);
+		}
+		
+		return $geocodes;
+	}
+	
+	private function GetAirportNames($airports, $AirportValue)
+	{
+		$airport_codes = array();
+		
+		foreach($airports as $airport)
+		{
+			$airport_codes[] = $airport['Log'][$AirportValue];
+		}
+		
+		$result = $this->Enum->find('all',
+			array(
+				'conditions' => array(
+					'Enum.category' => 'AIRPORTS',
+					'Enum.code' => $airport_codes
+				)
+			)
+		);
+		
+		$airport_names = array();
+		
+		foreach($result as $item)
+		{
+			$airport_names[$item['Enum']['code']] = $item['Enum']['description'];
+		}
+		
+		return $airport_names;
 	}
 
 }
