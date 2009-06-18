@@ -72,6 +72,9 @@
 		
 		<a href="/statistics/airlines/scheduledflights">Number of Scheduled Flights</a>
 		<br /><br />
+		
+		<a href="/airlines">Details</a>
+		<br /><br />
 	</td>
 </tr>
 </table>

@@ -23,7 +23,7 @@
 			Help American air travelers find the most on-time flights.
 		</li>
 		<li>
-			Help the American public understand the data from the BTS by presenting it in interesting and attractive ways.
+			Help the American public understand the data from the BTS by presenting it in interesting and attractive ways.  For example, look at <a href="/airlines/NW">this</a> or <a href="/statistics/airports/percentcancelleddepartures">this</a> or <a href="/statistics/airlines/percentontime">this</a>.
 		</li>
 		<li>
 			Allow developers to access data from the BTS in a simple, programmatic way.  See more at the <a href="/developers">developers</a> page.
