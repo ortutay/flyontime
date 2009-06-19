@@ -27,6 +27,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 	
+	//Turn out extension parsing
+	Router::parseExtensions('json', 'xml');
+	
 	//AIRLINES
 	Router::connect(
 		'/airlines/:UniqueCarrier',

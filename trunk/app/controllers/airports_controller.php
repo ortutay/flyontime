@@ -3,11 +3,13 @@ class AirportsController extends AppController {
 	var $name = 'Airports';
 	var $uses = array();
 	
+	var $components = array('RequestHandler');
+	
 	function index()
 	{
 		$this->Log =& ClassRegistry::init('Log');
 		$this->Enum =& ClassRegistry::init('Enum');
-
+		
 		//get params
 		$from = "";
 		if(isset($this->params['url']['from']))
