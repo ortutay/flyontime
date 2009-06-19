@@ -3,6 +3,8 @@ class FlightsController extends AppController {
 	var $name = 'Flights';
 	var $uses = array();
 	
+	var $components = array('RequestHandler');
+	
 	function index()
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
