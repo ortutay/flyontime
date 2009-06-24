@@ -1,35 +1,36 @@
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr valign="top">
 	<td align="center">
-		<table border=0 cellpadding=0 cellspacing=0>
-		<tr>
-			<td style="background-color: #FFFF00" align="left">
-				<div style="background-image: url('/img/top_left.png'); background-repeat: no-repeat; width: 258px; height: 72px;">
-					
-					<div style="position: relative; left: 365px; top: 40px; width: 500px;">
-						<a href="/about" style="font-size: 16pt;">About</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="/statistics" style="font-size: 16pt;">Statistics</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="/developers" style="font-size: 16pt;">Developers</a>
+		<div style="border-bottom: solid yellow; width: 100%; text-align: left;">
+			<div style="padding: 5px;">
+				<a href="/about">About</a>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="/statistics">Statistics</a>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="/developers">Developers</a>
+			</div>
+		</div>
+		
+		<br /><br />
+		
+		<table border=0 cellpadding=0 cellspacing=0 width="800px">
+		<tr valign="top">
+			<td>
+				<div style="background-image: url('/img/airplane.jpg'); width: 800px; height: 215px; text-align: left;">
+					<div style="position: relative; left: 380px; top: -20px; display: block; width: 350px;">
+						<div style="font-size: 10pt; color: #666666; line-height: 14pt; text-align: justify;">
+							Using data from the <a href="/about" style="font-size: 10pt;">Federal Government</a>, we can tell you how late your flight is on average or help you find the most on-time flight from one city to another.
+						</div>
 					</div>
 					
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td align="left">
-				<div style="background-image: url('/img/middle.png'); width: 720px; height: 186px;">
-					
-					<div style="text-align: left; position: relative; left: 335px; top: 30px; width: 350px; font-size: 10pt; color: 666666; line-height: 14pt;">
-						Using data from the <a href="/about" style="font-size: 10pt;">Federal Government</a>, we can tell you how late your flight is on average or help you find the most on-time flight from one city to another.
+					<div style="position: relative; left: 575px; top: 110px; display: block; width: 225px;">
+						<div style="font-size: 24pt;">Fly<div style="color: #FF0000; display: inline; font-size: 24pt;">OnTime</div>.us</div>
 					</div>
-					
 				</div>
 			</td>
 		</tr>
 		<tr valign="top">
-			<td style="background-color: white;">
+			<td>
 				<div style="margin: 10px;">
 					
 					<br />
@@ -153,19 +154,6 @@
 		</table>
 		
 		<a href="/terms" style="font-size: 10pt;">Terms of Use</a>
-		
-		<br /><br /><br />
-		
-		<table border=0 cellpadding=0 cellspacing=0 width="720px">
-		<tr>
-			<td>
-				<div>
-					Please add your comments or suggestions about FlyOnTime.us:<br /><br />
-				</div>
-				<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/flyontime/embed.js"></script><noscript><a href="http://flyontime.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-			</td>
-		</tr>
-		</table>
 		
 	</td>
 </tr>

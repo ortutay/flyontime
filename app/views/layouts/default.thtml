@@ -13,24 +13,37 @@
 	<table border=0 cellpadding=0 cellspacing=0 width="100%">
 	<tr valign="top">
 		<td align="center">
-			<table border=0 cellpadding=0 cellspacing=0>
+			<table border=0 cellpadding=0 cellspacing=0 width="100%">
 			<tr>
-				<td align="left">
-					<div style="background-image: url('/img/top-std.png'); width: 720px; height: 78px;">
-						
-						<div style="position: relative; left: 365px; top: 40px; width: 450px;">
-							<a href="/about" style="font-size: 16pt;">About</a>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<a href="/statistics" style="font-size: 16pt;">Statistics</a>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<a href="/developers" style="font-size: 16pt;">Developers</a>
-						</div>
-						
+				<td>
+					<div style="border-bottom: solid yellow; width: 100%; text-align: left;">
+						<table border=0 cellpadding=5 cellspacing=0 width="100%">
+						<tr>
+							<td align="left">
+								<div>
+									<a href="/about">About</a>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="/statistics">Statistics</a>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="/developers">Developers</a>
+								</div>
+							</td>
+							<td align="right">
+								<a href="/">
+									<div style="font-size: 12pt;">Fly<div style="color: #FF0000; display: inline; font-size: 12pt;">OnTime</div>.us</div>
+								</a>
+							</td>
+						</tr>
+						</table>
 					</div>
+					
 				</td>
 			</tr>
+			</table>
+			
+			<table border=0 cellpadding=0 cellspacing=0 width="100%">
 			<tr valign="top">
-				<td align="left" style="background-color: white; width: 720px;">
+				<td align="left">
 					<div style="margin: 20px;">
 						
 						<?php echo $content_for_layout; ?>

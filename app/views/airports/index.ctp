@@ -97,13 +97,9 @@ if($Day != '')
   }
 </script>
 
-
-<div class="subheader">Modify your search:</div>
-<br />
-
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr>
-	<td align="center">
+	<td align="left">
 
 		<form method="GET" action="/disambiguate/airports">
 			
@@ -155,161 +151,182 @@ if($Day != '')
 </tr>
 </table>
 
-<br />
-<div class="header">
-	Most On-Time Flights and Airlines
-</div>
-<div style="color: #777777;">
-	Data from 
-	<?php
-	$i = 0;
-	$num = count($Months);
-	foreach($Months as $month => $foo)
-	{
-		echo $month;
-		
-		if($i < ($num - 1))
-			echo ', ';
-	}
-	?>
-</div>
-<br />
-
-<div>
-	<u>From <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b> to <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b><?php echo $day_str; ?>:</u>
-</div>
-
-<br />
-
-<table border=0 cellpadding=0 cellspacing=0 width="100%">
-<tr valign="top">
-	<td align="left">
-	
-		<table border=0 cellpadding=5 cellspacing=1>
-		<tr>
-			<td><div><b>Flight</b></div></td>
-			<td><div><b>Averge Arrival</b></div></td>
-		</tr>
-		
-		<?php
-		$i = 0;
-		foreach($FlightsFrom as $flight)
-		{
-			$style = '';
-			
-			$delay = round($flight[0]['AvgArrDelay'], 1);
-			
-			$delay_style = '';
-			$delay_str = '';
-			if($delay < 0)
-			{
-				$delay_str = abs($delay).' min. early';
-				$delay_style = 'color: green;';
-			}
-			elseif($delay > 0)
-			{
-				$delay_str = $delay.' min. late';
-				$delay_style = 'color: red;';
-			}
-			else
-			{
-				$delay_str = 'on time';
-				$delay_style = 'color: black;';
-			}
-			
-			if(($i % 2) == 0)
-				$style = 'background-color: #DDDDDD;';
-		?>
-		
-		<tr style="<?php echo $style; ?>">
-			<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $From; ?>&to=<?php echo $To; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
-			<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
-		</tr>
-		
-		<?php
-			$i++;
-		}
-		?>
-		
-		</table>
-
-	</td>
-	
-	<td align="right">
-	
-		<div id='chart_div_from'></div>
-
-	</td>
-</tr>
-</table>
-
-
-
 <br /><br />
 
-<div>
-	<u>From <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b> to <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b><?php echo $day_str; ?>:</u>
-</div>
-
-<br />
-
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
-<tr valign="top">
-	<td align="left">
-
-		<table border=0 cellpadding=5 cellspacing=1>
+<tr>
+	<td align="center">
+	
+		<table border=0 cellpadding=0 cellspacing=0 width="800px">
 		<tr>
-			<td><div><b>Flight</b></div></td>
-			<td><div><b>Averge Arrival</b></div></td>
+			<td align="left">
+
+				<div class="header">
+					Most On-Time Flights and Airlines
+				</div>
+				<div style="color: #777777;">
+					Data from 
+					<?php
+					$i = 0;
+					$num = count($Months);
+					foreach($Months as $month => $foo)
+					{
+						echo $month;
+						
+						if($i < ($num - 1))
+							echo ', ';
+					}
+					?>
+				</div>
+				<br />
+				
+				<div>
+					<u>From <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b> to <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b><?php echo $day_str; ?>:</u>
+				</div>
+				
+				<br />
+				
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
+				<tr valign="top">
+					<td align="left">
+					
+						<table border=0 cellpadding=5 cellspacing=1>
+						<tr>
+							<td><div><b>Flight</b></div></td>
+							<td><div><b>Averge Arrival</b></div></td>
+							<td><div><b>Num Flights</b></div></td>
+						</tr>
+						
+						<?php
+						$i = 0;
+						foreach($FlightsFrom as $flight)
+						{
+							$style = '';
+							
+							$delay = round($flight[0]['AvgArrDelay'], 1);
+							
+							$delay_style = '';
+							$delay_str = '';
+							if($delay < 0)
+							{
+								$delay_str = abs($delay).' min. early';
+								$delay_style = 'color: green;';
+							}
+							elseif($delay > 0)
+							{
+								$delay_str = $delay.' min. late';
+								$delay_style = 'color: red;';
+							}
+							else
+							{
+								$delay_str = 'on time';
+								$delay_style = 'color: black;';
+							}
+							
+							if(($i % 2) == 0)
+								$style = 'background-color: #DDDDDD;';
+						?>
+						
+						<tr style="<?php echo $style; ?>">
+							<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $From; ?>&to=<?php echo $To; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
+							<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
+							<td><div><?php echo $flight[0]['NumScheduled']; ?></div></td>
+						</tr>
+						
+						<?php
+							$i++;
+						}
+						?>
+						
+						</table>
+				
+					</td>
+					
+					<td align="right">
+					
+						<div id='chart_div_from'></div>
+				
+					</td>
+				</tr>
+				</table>
+				
+				
+				
+				<br /><br />
+				
+				<div>
+					<u>From <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b> to <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b><?php echo $day_str; ?>:</u>
+				</div>
+				
+				<br />
+				
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
+				<tr valign="top">
+					<td align="left">
+				
+						<table border=0 cellpadding=5 cellspacing=1>
+						<tr>
+							<td><div><b>Flight</b></div></td>
+							<td><div><b>Averge Arrival</b></div></td>
+							<td><div><b>Num Flights</b></div></td>
+						</tr>
+						
+						<?php
+						$i = 0;
+						foreach($FlightsTo as $flight)
+						{
+							$style = '';
+							
+							$delay = round($flight[0]['AvgArrDelay'], 1);
+							
+							$delay_style = '';
+							$delay_str = '';
+							if($delay < 0)
+							{
+								$delay_str = abs($delay).' min. early';
+								$delay_style = 'color: green;';
+							}
+							elseif($delay > 0)
+							{
+								$delay_str = $delay.' min. late';
+								$delay_style = 'color: red;';
+							}
+							else
+							{
+								$delay_str = 'on time';
+								$delay_style = 'color: black;';
+							}
+							
+							if(($i % 2) == 0)
+								$style = 'background-color: #DDDDDD;';
+						?>
+						
+						<tr style="<?php echo $style; ?>">
+							<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $To; ?>&to=<?php echo $From; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
+							<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
+							<td><div><?php echo $flight[0]['NumScheduled']; ?></div></td>
+						</tr>
+						
+						<?php
+							$i++;
+						}
+						?>
+						
+						</table>
+						
+					</td>
+					
+					<td align="right">
+					
+						<div id='chart_div_to'></div>
+				
+					</td>
+				</tr>
+				</table>
+
+			</td>
 		</tr>
-		
-		<?php
-		$i = 0;
-		foreach($FlightsTo as $flight)
-		{
-			$style = '';
-			
-			$delay = round($flight[0]['AvgArrDelay'], 1);
-			
-			$delay_style = '';
-			$delay_str = '';
-			if($delay < 0)
-			{
-				$delay_str = abs($delay).' min. early';
-				$delay_style = 'color: green;';
-			}
-			elseif($delay > 0)
-			{
-				$delay_str = $delay.' min. late';
-				$delay_style = 'color: red;';
-			}
-			else
-			{
-				$delay_str = 'on time';
-				$delay_style = 'color: black;';
-			}
-			
-			if(($i % 2) == 0)
-				$style = 'background-color: #DDDDDD;';
-		?>
-		
-		<tr style="<?php echo $style; ?>">
-			<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $To; ?>&to=<?php echo $From; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
-			<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
-		</tr>
-		
-		<?php
-			$i++;
-		}
-		?>
-		
 		</table>
-		
-	</td>
-	
-	<td align="right">
-	
-		<div id='chart_div_to'></div>
 
 	</td>
 </tr>

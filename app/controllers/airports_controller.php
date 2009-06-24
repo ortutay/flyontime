@@ -104,7 +104,8 @@ class AirportsController extends AppController {
 					'Log.Year',
 					'Log.OriginCityName',
 					'Log.DestCityName',
-					'AVG(Log.ArrDelay) as AvgArrDelay'
+					'AVG(Log.ArrDelay) as AvgArrDelay',
+					'COUNT(Log.UniqueCarrier) as NumScheduled'
 				),
 				'conditions' => $conditions,
 				'group' => array(
