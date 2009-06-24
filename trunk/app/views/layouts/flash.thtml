@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title><?php echo $title_for_layout; ?></title>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" type="text/css" href="/css/flyontime.generic.css" />
+	
+	<meta http-equiv="Refresh" content="<?php echo $pause?>; url=<?php echo $url?>" />
+	
+	<?php echo $scripts_for_layout; ?>
+</head>
+
+<body>
+
+	<table border=0 cellpadding=0 cellspacing=0 width="100%">
+	<tr valign="top">
+		<td align="center">
+			
+			<br /><br /><br /><br /><br />
+			<div><?php echo $message?></div>
+			<br /><br />
+			<div style="font-size: 24pt;">Fly<div style="color: #FF0000; display: inline; font-size: 24pt;">OnTime</div>.us</div>
+			<br /><br />
+			<img src="/img/loading.gif" />
+		
+		</td>
+	</tr>
+	</table>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-9334607-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+
+</html>

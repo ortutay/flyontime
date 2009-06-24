@@ -86,48 +86,63 @@
   }
 </script>
 
-
-<div class="header">
-	<?php echo $FullName; ?>
-</div>
-<div style="color: #777777;">
-	Data from 
-	<?php
-	$i = 0;
-	$num = count($Months);
-	foreach($Months as $month => $foo)
-	{
-		echo $month;
-		
-		if($i < ($num - 1))
-			echo ', ';
-	}
-	?>
-</div>
-<br />
-
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
-<tr valign="middle">
-	<td align="left">
-		
-		<div>
-			Total Flights Scheduled: <?php echo $Stats['NumScheduled']; ?>
-			<br /><br />
-			Average Minutes Arriving Late: <?php echo round($Stats['TotalArrivalDelay']/($Stats['NumScheduled'] - $Stats['NumCancelled'] - $Stats['NumDiverted']), 1); ?>
-		</div>
-		
-	</td>
+<tr>
+	<td align="center">
 	
-	<td align="right">
-		
-		<div id="pie_chart_div"></div>
-		
+		<table border=0 cellpadding=0 cellspacing=0 width="800px">
+		<tr>
+			<td align="left">
+			
+				<div class="header">
+					<?php echo $FullName; ?>
+				</div>
+				<div style="color: #777777;">
+					Data from 
+					<?php
+					$i = 0;
+					$num = count($Months);
+					foreach($Months as $month => $foo)
+					{
+						echo $month;
+						
+						if($i < ($num - 1))
+							echo ', ';
+					}
+					?>
+				</div>
+				<br />
+				
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
+				<tr valign="middle">
+					<td align="left">
+						
+						<div>
+							Total Flights Scheduled: <?php echo $Stats['NumScheduled']; ?>
+							<br /><br />
+							Average Minutes Arriving Late: <?php echo round($Stats['TotalArrivalDelay']/($Stats['NumScheduled'] - $Stats['NumCancelled'] - $Stats['NumDiverted']), 1); ?>
+						</div>
+						
+					</td>
+					
+					<td align="right">
+						
+						<div id="pie_chart_div"></div>
+						
+					</td>
+				</tr>
+				</table>
+				
+				<div id="map_canvas" style="width: 100%; height: 400px"></div>
+				
+				<br />
+				
+				<div id='bar_chart_div'></div>
+
+			</td>
+		</tr>
+		</table>
+
 	</td>
 </tr>
 </table>
-
-<div id="map_canvas" style="width: 100%; height: 400px"></div>
-
-<br />
-
-<div id='bar_chart_div'></div>
