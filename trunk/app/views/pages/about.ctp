@@ -40,6 +40,16 @@
 					
 					<br />
 					
+					<b><u>In the News</u></b>
+				
+					<br /><br />
+					
+					<ul>
+						<li><a href="http://www.politico.com/news/stories/0609/24118.html" target="_blank">Politico.com</a> - 6/24/2009</li>
+					</ul>
+					
+					<br />
+					
 					<b><u>Contact</u></b>
 				
 					<br /><br />
