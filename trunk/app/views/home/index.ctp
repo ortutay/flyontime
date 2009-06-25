@@ -69,7 +69,7 @@
 								</tr>
 								<tr>
 									<td>
-										<div>Flight #:</div>
+										<div>Flight #: <div style="color: #666666; display: inline;">(optional)</div></div>
 									</td>
 								</tr>
 								<tr>
@@ -105,7 +105,7 @@
 								<table border=0 cellpadding=5 cellspacing=0>
 								<tr>
 									<td>
-										<div>From: (city or airport)</div>
+										<div>From: <div style="color: #666666; display: inline;">(city or airport)</div></div>
 									</td>
 								</tr>
 								<tr>
@@ -120,7 +120,7 @@
 								</tr>
 								<tr>
 									<td>
-										<div>To: (city or airport)</div>
+										<div>To: <div style="color: #666666; display: inline;">(city or airport)</div></div>
 									</td>
 								</tr>
 								<tr>
