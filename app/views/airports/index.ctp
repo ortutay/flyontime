@@ -49,11 +49,11 @@ if($Day != '')
   google.load("visualization", "1", {packages:["barchart"]});
   google.setOnLoadCallback(drawChart);
   function drawChart() {
-    //FROM
-	var data_from = new google.visualization.DataTable();
-	data_from.addColumn('string', 'Airline');
-	data_from.addColumn('number', 'Percent On-Time Arrival');
-	data_from.addRows(<?php echo count($AirlinesFrom); ?>);
+    //AIRLINE FROM
+	var data_airline_from = new google.visualization.DataTable();
+	data_airline_from.addColumn('string', 'Airline');
+	data_airline_from.addColumn('number', 'Percent On-Time Arrival');
+	data_airline_from.addRows(<?php echo count($AirlinesFrom); ?>);
 	
 	<?php
 	$i = 0;
@@ -61,39 +61,104 @@ if($Day != '')
 	{
 	?>
 	
-	data_from.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['Carrier']]; ?>');
-	data_from.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['PercentOnTime']; ?>);
+	data_airline_from.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['Carrier']]; ?>');
+	data_airline_from.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['PercentOnTime']; ?>);
 
 	<?php
 	$i++;
 	}
 	?>
 
-	var chart_from = new google.visualization.BarChart(document.getElementById('chart_div_from'));
-	chart_from.draw(data_from, {width: 325, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, min: 0, max: 100});
+	var chart_airline_from = new google.visualization.BarChart(document.getElementById('chart_div_airline_from'));
+	chart_airline_from.draw(data_airline_from, {width: 325, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, min: 0, max: 100});
 	
-	//TO
-	var data_to = new google.visualization.DataTable();
-	data_to.addColumn('string', 'Airline');
-	data_to.addColumn('number', 'Percent On-Time Arrival');
-	data_to.addRows(<?php echo count($AirlinesTo); ?>);
-	
+	//DAY FROM
 	<?php
-	$i = 0;
-	foreach($AirlinesTo as $airline)
+	if($Day == '')
 	{
 	?>
 	
-	data_to.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['UniqueCarrier']]; ?>');
-	data_to.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['PercentOnTime']; ?>);
+	var data_day_from = new google.visualization.DataTable();
+	data_day_from.addColumn('string', 'Day');
+	data_day_from.addColumn('number', 'Arrived On-Time');
+	data_day_from.addColumn('number', 'Arrived Late');
+	data_day_from.addColumn('number', 'Cancelled');
+	data_day_from.addColumn('number', 'Diverted');
+	data_day_from.addRows(<?php echo count($DaysFrom); ?>);
+	
+	<?php
+	$i = 0;
+	foreach($DaysFrom as $day)
+	{
+	?>
+	
+	data_day_from.setValue(<?php echo $i; ?>, 0, '<?php echo GetDayName($day['Log']['DayOfWeek']); ?>');
+	data_day_from.setValue(<?php echo $i; ?>, 1, <?php echo ($day[0]['NumScheduled'] - $day[0]['NumDelayed'] - $day[0]['NumCancelled'] - $day[0]['NumDiverted']); ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 2, <?php echo $day[0]['NumDelayed']; ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 3, <?php echo $day[0]['NumCancelled']; ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 4, <?php echo $day[0]['NumDiverted']; ?>);
 
 	<?php
 	$i++;
 	}
 	?>
 
-	var chart_to = new google.visualization.BarChart(document.getElementById('chart_div_to'));
-	chart_to.draw(data_to, {width: 325, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, min: 0, max: 100});
+	var chart_day_from = new google.visualization.BarChart(document.getElementById('chart_div_day_from'));
+	chart_day_from.draw(data_day_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Day of Week', min: 0});
+	
+	<?php
+	}
+	?>
+	
+	//TIME FROM
+	var data_time_from = new google.visualization.DataTable();
+	data_time_from.addColumn('string', 'Time');
+	data_time_from.addColumn('number', 'Arrived On-Time');
+	data_time_from.addColumn('number', 'Arrived Late');
+	data_time_from.addColumn('number', 'Cancelled');
+	data_time_from.addColumn('number', 'Diverted');
+	data_time_from.addRows(<?php echo count($TimesFrom); ?>);
+	
+	<?php
+	$i = 0;
+	foreach($TimesFrom as $time)
+	{
+	?>
+	
+	data_time_from.setValue(<?php echo $i; ?>, 0, '<?php echo $time['Log']['DepTimeBlk']; ?>');
+	data_time_from.setValue(<?php echo $i; ?>, 1, <?php echo ($time[0]['NumScheduled'] - $time[0]['NumDelayed'] - $time[0]['NumCancelled'] - $time[0]['NumDiverted']); ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 2, <?php echo $time[0]['NumDelayed']; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 3, <?php echo $time[0]['NumCancelled']; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 4, <?php echo $time[0]['NumDiverted']; ?>);
+
+	<?php
+	$i++;
+	}
+	?>
+
+	var chart_time_from = new google.visualization.BarChart(document.getElementById('chart_div_time_from'));
+	
+	<?php
+	if($Day == '')
+	{
+	?>
+	chart_time_from.draw(data_time_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Time of Day (24-hour format)', min: 0});
+	<?php
+	}
+	else
+	{
+	?>
+	chart_time_from.draw(data_time_from, {width: 800, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Time of Day (24-hour format)', min: 0});
+	<?php
+	}
+	?>
+  }
+  
+  function swap_search()
+  {
+  	var temp = document.search.from.value;
+  	document.search.from.value = document.search.to.value;
+  	document.search.to.value = temp;
   }
 </script>
 
@@ -101,7 +166,7 @@ if($Day != '')
 <tr>
 	<td align="left">
 
-		<form method="GET" action="/disambiguate/airports">
+		<form method="GET" action="/disambiguate/airports" name="search">
 			
 			<table border=0 cellpadding=0 cellspacing=0>
 			<tr>
@@ -112,7 +177,9 @@ if($Day != '')
 				<td>
 					<input name="from" type="text" style="width: 125px;" value="<?php echo $From; ?>" />
 				</td>
-				<td width="15px"></td>
+				<td width="10px"></td>
+				<td><a href="javascript: swap_search();"><img border=0 src="/img/swap.png" /></a></td>
+				<td width="10px"></td>
 				<td>
 					<div>To:</div>
 				</td>
@@ -185,7 +252,7 @@ if($Day != '')
 				</div>
 				
 				<br />
-				
+
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 				<tr valign="top">
 					<td align="left">
@@ -244,85 +311,76 @@ if($Day != '')
 					
 					<td align="right">
 					
-						<div id='chart_div_from'></div>
+						<div id='chart_div_airline_from'></div>
 				
 					</td>
 				</tr>
 				</table>
 				
-				
-				
 				<br /><br />
 				
+				<div class="header">
+					<?php
+					if($Day == '')
+					{
+					?>
+					Best Days and Times to Fly
+					<?php
+					}
+					else
+					{
+					?>
+					Best Times to Fly
+					<?php
+					}
+					?>
+				</div>
+				<div style="color: #777777;">
+					Data from 
+					<?php
+					$i = 0;
+					$num = count($Months);
+					foreach($Months as $month => $foo)
+					{
+						echo $month;
+						
+						if($i < ($num - 1))
+							echo ', ';
+					}
+					?>
+				</div>
+				<br />
+				
 				<div>
-					<u>From <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b> to <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b><?php echo $day_str; ?>:</u>
+					<u>From <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b> to <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b><?php echo $day_str; ?>:</u>
 				</div>
 				
 				<br />
 				
+				<?php
+				if($Day == '')
+				{
+				?>
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
-				<tr valign="top">
+				<tr>
+					
 					<td align="left">
-				
-						<table border=0 cellpadding=5 cellspacing=1>
-						<tr>
-							<td><div><b>Flight</b></div></td>
-							<td><div><b>Averge Arrival</b></div></td>
-							<td><div><b>Num Flights</b></div></td>
-						</tr>
-						
-						<?php
-						$i = 0;
-						foreach($FlightsTo as $flight)
-						{
-							$style = '';
-							
-							$delay = round($flight[0]['AvgArrDelay'], 1);
-							
-							$delay_style = '';
-							$delay_str = '';
-							if($delay < 0)
-							{
-								$delay_str = abs($delay).' min. early';
-								$delay_style = 'color: green;';
-							}
-							elseif($delay > 0)
-							{
-								$delay_str = $delay.' min. late';
-								$delay_style = 'color: red;';
-							}
-							else
-							{
-								$delay_str = 'on time';
-								$delay_style = 'color: black;';
-							}
-							
-							if(($i % 2) == 0)
-								$style = 'background-color: #DDDDDD;';
-						?>
-						
-						<tr style="<?php echo $style; ?>">
-							<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $To; ?>&to=<?php echo $From; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
-							<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
-							<td><div><?php echo $flight[0]['NumScheduled']; ?></div></td>
-						</tr>
-						
-						<?php
-							$i++;
-						}
-						?>
-						
-						</table>
-						
+						<div id='chart_div_day_from'></div>
 					</td>
-					
 					<td align="right">
-					
-						<div id='chart_div_to'></div>
-				
+						<div id='chart_div_time_from'></div>
 					</td>
 				</tr>
 				</table>
+				<?php
+				}
+				else
+				{
+				?>
+				<div id='chart_div_time_from'></div>
+				<?php
+				}
+				?>
 
 			</td>
 		</tr>
@@ -332,5 +390,6 @@ if($Day != '')
 </tr>
 </table>
 
-<br />
+<br /><br />
+
 

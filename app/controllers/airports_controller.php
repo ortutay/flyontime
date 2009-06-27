@@ -30,21 +30,29 @@ class AirportsController extends AppController {
 			$this->set('To', $to);
 			$this->set('Day', $day);
 			
+			//flights
 			$flights_from = $this->GetBestFlights($from, $to, $day);
-			$flights_to = $this->GetBestFlights($to, $from, $day);
 			
 			$this->set('FlightsFrom', $flights_from);
-			$this->set('FlightsTo', $flights_to);
 			
+			//airlines
 			$airlines_from = $this->GetBestAirlines($from, $to, $day);
-			$airlines_to = $this->GetBestAirlines($to, $from, $day);
 			
 			$this->set('AirlinesFrom', $airlines_from);
-			$this->set('AirlinesTo', $airlines_to);
 
-			$airline_names = $this->GetAirlineNames($airlines_from, $airlines_to);
+			$airline_names = $this->GetAirlineNames($airlines_from, array());
 			
 			$this->set('AirlineNames', $airline_names);
+			
+			//days
+			$days_from = $this->GetDays($from, $to);
+			
+			$this->set('DaysFrom', $days_from);
+			
+			//times
+			$times_from = $this->GetTimes($from, $to, $day);
+			
+			$this->set('TimesFrom', $times_from);
 			
 			//get months and cities
 			$months = array();
@@ -59,13 +67,6 @@ class AirportsController extends AppController {
 				
 				$from_city = $flight['Log']['OriginCityName'];
 				$to_city = $flight['Log']['DestCityName'];
-			}
-			
-			foreach($flights_to as $flight)
-			{
-				$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
-				$date_str = date('F, Y', strtotime($date));
-				$months[$date_str] = '';
 			}
 			
 			$this->set('Months', $months);
@@ -151,6 +152,67 @@ class AirportsController extends AppController {
 		);
 		
 		return $airlines;
+	}
+	
+	private function GetDays($from, $to)
+	{
+		$days = $this->Log->find('all',
+			array(
+				'fields' => array(
+					'Log.DayOfWeek',
+					'COUNT(Log.DayOfWeek) as NumScheduled',
+					'SUM(Log.ArrDel15) as NumDelayed',
+					'SUM(Log.Cancelled) as NumCancelled',
+					'SUM(Log.Diverted) as NumDiverted'
+				),
+				'conditions' => array(
+					'Log.Origin' => $from,
+					'Log.Dest' => $to
+				),
+				'group' => array(
+					'Log.DayOfWeek'
+				),
+				'order' => array(
+					'Log.DayOfWeek ASC'
+				)
+			)
+		);
+		
+		return $days;
+	}
+	
+	private function GetTimes($from, $to, $day = '')
+	{
+		$conditions = array(
+			'Log.Origin' => $from,
+			'Log.Dest' => $to
+		);
+		
+		if($day != '' && $day >=1 && $day <= 7)
+		{
+			$conditions['Log.DayOfWeek'] = $day;
+		}
+		
+		$times = $this->Log->find('all',
+			array(
+				'fields' => array(
+					'Log.DepTimeBlk',
+					'COUNT(Log.DepTimeBlk) as NumScheduled',
+					'SUM(Log.ArrDel15) as NumDelayed',
+					'SUM(Log.Cancelled) as NumCancelled',
+					'SUM(Log.Diverted) as NumDiverted'
+				),
+				'conditions' => $conditions,
+				'group' => array(
+					'Log.DepTimeBlk'
+				),
+				'order' => array(
+					'Log.DepTimeBlk ASC'
+				)
+			)
+		);
+		
+		return $times;
 	}
 	
 	private function GetAirlineNames($airlines1, $airlines2)
