@@ -111,11 +111,13 @@ class FlightsController extends AppController {
 					$flight_stats[$airports]['diverted'] = 0;
 					$flight_stats[$airports]['arrived_on_time'] = 0;
 					$flight_stats[$airports]['avg_arrival_delay'] = 0;
+					$flight_stats[$airports]['days'] = array();
+					$flight_stats[$airports]['times'] = array();
 				}
 				
 				$flights_by_airports[$airports][] = $flight;
 				
-				
+				//arrival outcome
 				$flight_stats[$airports]['total']++;
 				
 				if($flight['Log']['Cancelled'] == 1)
@@ -132,10 +134,43 @@ class FlightsController extends AppController {
 					if($flight['Log']['ArrDel15'] == 0)
 						$flight_stats[$airports]['arrived_on_time']++;
 				}
+				
+				//days
+				$flight_day_index = $flight['Log']['DayOfWeek'];
+				if(!isset($flight_stats[$airports]['days'][$flight_day_index]))
+					$flight_stats[$airports]['days'][$flight_day_index] = array(
+						'total' => 0,
+						'delayed' => 0,
+						'cancelled' => 0,
+						'diverted' => 0
+					);
+				
+				$flight_stats[$airports]['days'][$flight_day_index]['total']++;
+				$flight_stats[$airports]['days'][$flight_day_index]['delayed'] += $flight['Log']['ArrDel15'];
+				$flight_stats[$airports]['days'][$flight_day_index]['cancelled'] += $flight['Log']['Cancelled'];
+				$flight_stats[$airports]['days'][$flight_day_index]['diverted'] += $flight['Log']['Diverted'];
+				
+				//times
+				$time_block = $flight['Log']['DepTimeBlk'];
+				if(!isset($flight_stats[$airports]['times'][$time_block]))
+					$flight_stats[$airports]['times'][$time_block] = array(
+						'total' => 0,
+						'delayed' => 0,
+						'cancelled' => 0,
+						'diverted' => 0
+					);
+
+				$flight_stats[$airports]['times'][$time_block]['total']++;
+				$flight_stats[$airports]['times'][$time_block]['delayed'] += $flight['Log']['ArrDel15'];
+				$flight_stats[$airports]['times'][$time_block]['cancelled'] += $flight['Log']['Cancelled'];
+				$flight_stats[$airports]['times'][$time_block]['diverted'] += $flight['Log']['Diverted'];
 			}
 			
 			foreach($flight_stats as $airports => $stats)
 			{
+				ksort($flight_stats[$airports]['days']);
+				ksort($flight_stats[$airports]['times']);
+				
 				$flight_stats[$airports]['avg_arrival_delay'] /= $flight_stats[$airports]['arrived'];
 			}
 			

@@ -29,6 +29,32 @@ foreach($AirportPairStats as $airport_pair => $stats)
 	if(isset($Day) && intval($Day) > 0)
 		$day_val = intval($Day);
 	
+	$days = array();
+	foreach($stats['days'] as $day_index => $day)
+	{
+		$days[] = array(
+			'index' => $day_index,
+			'scheduled' => $day['total'],
+			'on_time' => ($day['total'] - $day['delayed'] - $day['cancelled'] - $day['diverted']),
+			'late' => $day['delayed'],
+			'cancelled' => $day['cancelled'],
+			'diverted' => $day['diverted']
+		);
+	}
+	
+	$times = array();
+	foreach($stats['times'] as $time_block => $time)
+	{
+		$times[] = array(
+			'block' => $time_block,
+			'scheduled' => $time['total'],
+			'on_time' => ($time['total'] - $time['delayed'] - $time['cancelled'] - $time['diverted']),
+			'late' => $time['delayed'],
+			'cancelled' => $time['cancelled'],
+			'diverted' => $time['diverted']
+		);
+	}
+
 	$obj['flight']['routes'][] = array(
 		'from' => array(
 			'code' => $Origin,
@@ -44,7 +70,9 @@ foreach($AirportPairStats as $airport_pair => $stats)
 		'late' => intval($stats['arrived'] - $stats['arrived_on_time']),
 		'cancelled' => intval($stats['cancelled']),
 		'diverted' => intval($stats['diverted']),
-		'average_arrival_delay' => floatval(round($stats['avg_arrival_delay'], 4))
+		'average_arrival_delay' => floatval(round($stats['avg_arrival_delay'], 4)),
+		'days' => $days,
+		'times' => $times
 	);
 }
 
