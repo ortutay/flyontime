@@ -40,6 +40,92 @@ function GetDayName($day)
 
 ?>
 
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load('visualization', '1', {'packages':['piechart', 'barchart']});
+  google.setOnLoadCallback(drawVisualizations);
+  
+  function drawVisualizations() {
+  
+    <?php
+	$i = 0;
+	foreach($AirportPairStats as $airport_pair => $stats)
+	{
+	?>
+	
+	//===========================================
+	//Flight Outcome <?php echo $i; ?>
+	
+	//===========================================
+	
+	var data_outcome_<?php echo $i; ?> = new google.visualization.DataTable();
+	data_outcome_<?php echo $i; ?>.addColumn('string', 'Flight Outcome');
+	data_outcome_<?php echo $i; ?>.addColumn('number', 'Number of Flights');
+	data_outcome_<?php echo $i; ?>.addRows(4);
+	data_outcome_<?php echo $i; ?>.setValue(0, 0, 'Arrived On-Time');
+	data_outcome_<?php echo $i; ?>.setValue(0, 1, <?php echo $stats['arrived_on_time']; ?>);
+	data_outcome_<?php echo $i; ?>.setValue(1, 0, 'Arrived Late');
+	data_outcome_<?php echo $i; ?>.setValue(1, 1, <?php echo ($stats['arrived'] - $stats['arrived_on_time']); ?>);
+	data_outcome_<?php echo $i; ?>.setValue(2, 0, 'Cancelled');
+	data_outcome_<?php echo $i; ?>.setValue(2, 1, <?php echo $stats['cancelled']; ?>);
+	data_outcome_<?php echo $i; ?>.setValue(3, 0, 'Diverted');
+	data_outcome_<?php echo $i; ?>.setValue(3, 1, <?php echo $stats['diverted']; ?>);
+
+	var chart_outcome_<?php echo $i; ?> = new google.visualization.PieChart(document.getElementById('chart_div_outcome_<?php echo $i; ?>'));
+	chart_outcome_<?php echo $i; ?>.draw(data_outcome_<?php echo $i; ?>, {width: 400, height: 325, is3D: true, legend: 'bottom', legendFontSize: 12});
+	
+	
+	<?php
+	if($Day == '')
+	{
+	?>
+	
+	//===========================================
+	//Flight Days <?php echo $i; ?>
+	
+	//===========================================
+	
+	var data_day_<?php echo $i; ?> = new google.visualization.DataTable();
+	data_day_<?php echo $i; ?>.addColumn('string', 'Day');
+	data_day_<?php echo $i; ?>.addColumn('number', 'Arrived On-Time');
+	data_day_<?php echo $i; ?>.addColumn('number', 'Arrived Late');
+	data_day_<?php echo $i; ?>.addColumn('number', 'Cancelled');
+	data_day_<?php echo $i; ?>.addColumn('number', 'Diverted');
+	data_day_<?php echo $i; ?>.addRows(<?php echo count($stats['days']); ?>);
+	
+	<?php
+	$j = 0;
+	foreach($stats['days'] as $day_index => $day)
+	{
+	?>
+	
+	data_day_<?php echo $i; ?>.setValue(<?php echo $j; ?>, 0, '<?php echo GetDayName($day_index); ?>');
+	data_day_<?php echo $i; ?>.setValue(<?php echo $j; ?>, 1, <?php echo ($day['total'] - $day['delayed'] - $day['cancelled'] - $day['diverted']); ?>);
+	data_day_<?php echo $i; ?>.setValue(<?php echo $j; ?>, 2, <?php echo $day['delayed']; ?>);
+	data_day_<?php echo $i; ?>.setValue(<?php echo $j; ?>, 3, <?php echo $day['cancelled']; ?>);
+	data_day_<?php echo $i; ?>.setValue(<?php echo $j; ?>, 4, <?php echo $day['diverted']; ?>);
+
+	<?php
+	$j++;
+	}
+	?>
+	
+	var chart_day_<?php echo $i; ?> = new google.visualization.BarChart(document.getElementById('chart_div_day_<?php echo $i; ?>'));
+	chart_day_<?php echo $i; ?>.draw(data_day_<?php echo $i; ?>, {width: 380, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 12, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Day of Week', min: 0});
+	
+	<?php
+	}
+	?>
+	
+	<?php
+	$i++;
+	}
+	?>
+	
+  }
+</script>
+
+
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr>
 	<td align="left">
@@ -152,9 +238,15 @@ function GetDayName($day)
 					
 					$ArrDelay_str = 'on time';
 					if($stats['avg_arrival_delay'] < 0)
+					{
 						$ArrDelay_str = abs(round($stats['avg_arrival_delay'], 1)).' min. early';
+						$ArrDelay_style = 'color: green; display: inline;';
+					}
 					elseif($stats['avg_arrival_delay'] > 0)
+					{
 						$ArrDelay_str = round($stats['avg_arrival_delay'], 1).' min. late';
+						$ArrDelay_style = 'color: red; display: inline;';
+					}
 					
 					$day_str = '';
 					if($Day != '')
@@ -165,45 +257,43 @@ function GetDayName($day)
 					<u>From <b><?php echo $OriginCityName.' ('.$Origin.')'; ?></b> to <b><?php echo $DestCityName.' ('.$Dest.')'; ?></b><?php echo $day_str; ?>:</u>
 					<br /><br />
 					
-					Out of <?php echo $stats['total']; ?> flights scheduled:
-					<br /><br />
+					<table border=0 cellpadding=0 cellspacing=0 width="100%">
+					<tr valign="top">
+						<td align="left">
+							<div>
+								Out of <?php echo $stats['total']; ?> flights scheduled:
+								<br /><br />
+								
+								<div id="chart_div_outcome_<?php echo $i; ?>"></div>
+								
+								<br />
+								
+								Average arrival: <div style="<?php echo $ArrDelay_style; ?>"><?php echo $ArrDelay_str; ?></div>
+								
+								<br /><br />
+								
+								Departure Time(s) in 24-hour format:
+								
+								<?php
+								foreach($stats['times'] as $time_block => $time)
+								{
+								?>
+								
+								<br /><br />
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?php echo $time['total']; ?> flights</b> in the range <b><?php echo $time_block; ?></b>
+								
+								<?php
+								}
+								?>
+							</div>
+						</td>
+						<td align="right">
+							<div id="chart_div_day_<?php echo $i; ?>"></div>
+						</td>
+					</tr>
+					</table>
 					
-					<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-					<script type="text/javascript">
-					
-					  // Load the Visualization API and the piechart package.
-					  google.load('visualization', '1', {'packages':['piechart']});
-					  
-					  // Set a callback to run when the API is loaded.
-					  google.setOnLoadCallback(drawChart);
-					  
-					  // Callback that creates and populates a data table, 
-					  // instantiates the pie chart, passes in the data and
-					  // draws it.
-					  function drawChart() {
-						var data = new google.visualization.DataTable();
-						data.addColumn('string', 'Flight Outcome');
-						data.addColumn('number', 'Number of Flights');
-						data.addRows(4);
-						data.setValue(0, 0, 'Arrived On-Time');
-						data.setValue(0, 1, <?php echo $stats['arrived_on_time']; ?>);
-						data.setValue(1, 0, 'Arrived Late');
-						data.setValue(1, 1, <?php echo ($stats['arrived'] - $stats['arrived_on_time']); ?>);
-						data.setValue(2, 0, 'Cancelled');
-						data.setValue(2, 1, <?php echo $stats['cancelled']; ?>);
-						data.setValue(3, 0, 'Diverted');
-						data.setValue(3, 1, <?php echo $stats['diverted']; ?>);
-					
-						var chart = new google.visualization.PieChart(document.getElementById('chart_div_<?php echo $i; ?>'));
-						chart.draw(data, {width: 400, height: 240, is3D: true});
-					  }
-					</script>
-					
-					
-					<div id="chart_div_<?php echo $i; ?>"></div>
-					
-					Average arrival: <?php echo $ArrDelay_str; ?>
-					<br /><br />
+					<br /><br /><br />
 				</div>
 				
 				<?php

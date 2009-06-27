@@ -38,6 +38,40 @@
 			<cancelled><?php echo $stats['cancelled']; ?></cancelled>
 			<diverted><?php echo $stats['diverted']; ?></diverted>
 			<average_arrival_delay><?php echo round($stats['avg_arrival_delay'], 4); ?></average_arrival_delay>
+			<days>
+				<?php
+				foreach($stats['days'] as $day_index => $day)
+				{
+				?>
+				<day>
+					<index><?php echo $day_index; ?></index>
+					<scheduled><?php echo $day['total']; ?></scheduled>
+					<on_time><?php echo ($day['total'] - $day['delayed'] - $day['cancelled'] - $day['diverted']); ?></on_time>
+					<late><?php echo $day['delayed']; ?></late>
+					<cancelled><?php echo $day['cancelled']; ?></cancelled>
+					<diverted><?php echo $day['diverted']; ?></diverted>
+				</day>
+				<?php
+				}
+				?>
+			</days>
+			<times>
+				<?php
+				foreach($stats['times'] as $time_block => $time)
+				{
+				?>
+				<time>
+					<block><?php echo $time_block; ?></block>
+					<scheduled><?php echo $time['total']; ?></scheduled>
+					<on_time><?php echo ($time['total'] - $time['delayed'] - $time['cancelled'] - $time['diverted']); ?></on_time>
+					<late><?php echo $time['delayed']; ?></late>
+					<cancelled><?php echo $time['cancelled']; ?></cancelled>
+					<diverted><?php echo $time['diverted']; ?></diverted>
+				</time>
+				<?php
+				}
+				?>
+			</times>
 		</route>
 		<?php
 		}
