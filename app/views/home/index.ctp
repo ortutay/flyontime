@@ -41,104 +41,128 @@
 						
 							<form method="GET" action="/disambiguate/flights">
 							
-								<table border=0 cellpadding=5 cellspacing=0>
-								<tr>
-									<td>
-										<div>Airline:</div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<select name="airline" class="big" style="width: 250px;">
-											<option value=""></option>
-											<?php
-											foreach($Airlines as $airline)
-											{
-											?>
-											<option value="<?php echo $airline['Enum']['code']; ?>"><?php echo $airline['Enum']['description']; ?></option>
-											<?php
-											}
-											?>
-										</select>
-									</td>
-								</tr>
-								<tr>
-									<td>
+								<div style="width: 350px; border: 1px solid #C3D9FF; padding: 3px;">
+
+									<div style="width: 100%; height: 100%; background-color: #E8EEFA;">
+										
 										<br />
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div>Flight #: <div style="color: #666666; display: inline;">(optional)</div></div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<input name="flight_num" type="text" class="big" style="width: 250px;" />
-									</td>
-								</tr>
-								<tr>
-									<td>
+										
+										<table border=0 cellpadding=5 cellspacing=0>
+										<tr>
+											<td align="left">
+												<div>Airline:</div>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<select name="airline" class="big" style="width: 250px;">
+													<option value=""></option>
+													<?php
+													foreach($Airlines as $airline)
+													{
+													?>
+													<option value="<?php echo $airline['Enum']['code']; ?>"><?php echo $airline['Enum']['description']; ?></option>
+													<?php
+													}
+													?>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<br />
+											</td>
+										</tr>
+										<tr>
+											<td align="left">
+												<div>Flight #: <div style="color: #666666; display: inline;">(optional)</div></div>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input name="flight_num" type="text" class="big" style="width: 250px;" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<br />
+											</td>
+										</tr>
+										<tr>
+											<td align="right">
+												<input type="submit" value="Search >>" />
+											</td>
+										</tr>
+										</table>
+										
 										<br />
-									</td>
-								</tr>
-								<tr>
-									<td align="right">
-										<input type="submit" value="Search >>" />
-									</td>
-								</tr>
-								</table>
+								
+									</div>
+	
+								</div>
 							
 							</form>
 							
 						</td>
 
-						<td width="5px"></td>
-						<td>
-							<img border=0 src="/img/or.png" />
-						</td>
+
+
+
+
 
 						<td align="center">
 						
 							<form method="GET" action="/disambiguate/airports">
 							
-								<table border=0 cellpadding=5 cellspacing=0>
-								<tr>
-									<td>
-										<div>From: <div style="color: #666666; display: inline;">(city or airport)</div></div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<input name="from" type="text" class="big" style="width: 250px;" />
-									</td>
-								</tr>
-								<tr>
-									<td>
+								<div style="width: 350px; border: 1px solid #C3D9FF; padding: 3px;">
+
+									<div style="width: 100%; height: 100%; background-color: #E8EEFA;">
+										
 										<br />
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div>To: <div style="color: #666666; display: inline;">(city or airport)</div></div>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<input name="to" type="text" class="big" style="width: 250px;" />
-									</td>
-								</tr>
-								<tr>
-									<td>
+										
+										<table border=0 cellpadding=5 cellspacing=0>
+										<tr>
+											<td align="left">
+												<div>From: <div style="color: #666666; display: inline;">(city or airport)</div></div>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input name="from" type="text" class="big" style="width: 250px;" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<br />
+											</td>
+										</tr>
+										<tr>
+											<td align="left">
+												<div>To: <div style="color: #666666; display: inline;">(city or airport)</div></div>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input name="to" type="text" class="big" style="width: 250px;" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<br />
+											</td>
+										</tr>
+										<tr>
+											<td align="right">
+												<input type="submit" value="Search >>" />
+											</td>
+										</tr>
+										</table>
+										
 										<br />
-									</td>
-								</tr>
-								<tr>
-									<td align="right">
-										<input type="submit" value="Search >>" />
-									</td>
-								</tr>
-								</table>
+								
+									</div>
+	
+								</div>
 								
 							</form>
 							
@@ -146,7 +170,7 @@
 					</tr>
 					</table>
 					
-					<br /><br />
+					<br />
 					
 				</div>
 			</td>
@@ -158,3 +182,5 @@
 	</td>
 </tr>
 </table>
+
+<br />
