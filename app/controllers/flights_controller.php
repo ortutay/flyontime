@@ -66,10 +66,7 @@ class FlightsController extends AppController {
 			//load flights
 			$flights = array();
 			
-			$conditions = array(
-				'Log.UniqueCarrier' => $airline,
-				'Log.FlightNum' => $flight_num
-			);
+			$conditions = array();
 			
 			if($from != '' && $to != '')
 			{
@@ -81,6 +78,9 @@ class FlightsController extends AppController {
 			{
 				$conditions['Log.DayOfWeek'] = $day;
 			}
+			
+			$conditions['Log.UniqueCarrier'] = $airline;
+			$conditions['Log.FlightNum'] = $flight_num;
 			
 			$flights = $this->Log->find('all',
 				array(

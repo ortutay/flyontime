@@ -85,9 +85,7 @@ class AirportsController extends AppController {
 	{
 		$conditions = array(
 			'Log.Origin' => $from,
-			'Log.Dest' => $to,
-			'Log.Cancelled' => 0,
-			'Log.Diverted' => 0
+			'Log.Dest' => $to
 		);
 		
 		if($day != '' && $day >=1 && $day <= 7)
@@ -105,7 +103,7 @@ class AirportsController extends AppController {
 					'Log.Year',
 					'Log.OriginCityName',
 					'Log.DestCityName',
-					'AVG(Log.ArrDelay) as AvgArrDelay',
+					'(SUM(Log.ArrDelay) / (COUNT(Log.UniqueCarrier) - SUM(Log.Cancelled) - SUM(Log.Diverted))) as AvgArrDelay',
 					'COUNT(Log.UniqueCarrier) as NumScheduled'
 				),
 				'conditions' => $conditions,
