@@ -37,7 +37,7 @@
 						
 						<div>
 						
-							From (city or airport): <input name="from" type="text" style="width: 250px;" />
+							From (city or airport): <input name="from" type="text" style="width: 250px;" value="<?php echo $From; ?>" />
 							<br /><br />
 						</div>
 					
@@ -90,7 +90,7 @@
 						
 						<div>
 						
-							To (city or airport): <input name="to" type="text" style="width: 250px;" />
+							To (city or airport): <input name="to" type="text" style="width: 250px;" value="<?php echo $To; ?>" />
 							<br /><br />
 						</div>
 					
