@@ -4,6 +4,16 @@ class HomeController extends AppController {
 	var $uses = array();
 	
 	function index() {
+		
+		//detect mobile phone
+		if(
+			!(stripos($_SERVER['HTTP_USER_AGENT'], 'iphone') === FALSE) ||		//is iphone or
+			!(stripos($_SERVER['HTTP_USER_AGENT'], 'blackberry') === FALSE)		//is blackberry
+		)
+			$this->redirect('/m/lines/security/');
+			
+		//continue as normal
+		
 		$this->pageTitle = 'FlyOnTime.us';
 		$this->layout = 'blank';
 		
