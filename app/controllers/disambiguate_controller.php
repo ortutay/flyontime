@@ -2,6 +2,7 @@
 class DisambiguateController extends AppController {
 	var $name = 'Disambiguate';
 	var $uses = array();
+	var $components = array('Disambiguate');
 	
 	function index()
 	{
@@ -29,11 +30,11 @@ class DisambiguateController extends AppController {
 		//get data
 		if($from != '' && $to != '')
 		{
-			$airports_used = $this->GetAirportsUsed();
+			$airports_used = $this->Disambiguate->GetAirportsUsed();
 			
-			$airports_from = $this->GetAirports($from, $airports_used);
+			$airports_from = $this->Disambiguate->GetAirports($from, $airports_used);
 			
-			$airports_to = $this->GetAirports($to, $airports_used);
+			$airports_to = $this->Disambiguate->GetAirports($to, $airports_used);
 			
 			if(count($airports_from) == 1 && count($airports_to) == 1)
 			{
@@ -129,129 +130,6 @@ class DisambiguateController extends AppController {
 		{
 			$this->redirect('/');
 		}
-	}
-	
-	private function GetAirports($name, $airports_used)
-	{
-		$airports = array();
-		
-		if(strlen($name) == 3)
-		{
-			$airports = $this->GetAirportsByCode($name, $airports_used);
-			
-			if(count($airports) == 0)
-			{
-				$airports = $this->GetAirportsByKeywords($name, $airports_used);
-			}
-		}
-		elseif($name != "")
-		{
-			$airports = $this->GetAirportsByKeywords($name, $airports_used);
-		}
-		
-		return $airports;
-	}
-	
-	private function GetAirportsByCode($name, $airports_used)
-	{
-		if($this->IsAirportUsed($name, $airports_used))
-		{
-			$airports = $this->Enum->find('all',
-				array(
-					'conditions' => array(
-						'Enum.category' => 'AIRPORTS',
-						'Enum.code' => strtoupper($name)
-					)
-				)
-			);
-			
-			return $airports;
-		}
-		
-		return array();
-	}
-	
-	private function IsAirportUsed($name, $airports_used)
-	{
-		$name_upper = strtoupper($name);
-		
-		foreach($airports_used as $code)
-		{
-			if($name_upper == $code)
-				return true;
-		}
-		
-		return false;
-	}
-	
-	private function GetAirportsByKeywords($name, $airports_used)
-	{
-		$keywords = $this->ParseCityName($name);
-			
-		$like = '';
-		foreach($keywords as $keyword)
-		{
-			$like .= '%'.$keyword;
-		}
-		$like .= '%';
-		
-		$conditions = array(
-			'Enum.category' => 'AIRPORTS',
-			'Enum.description LIKE' => $like
-		);
-		
-		if($airports_used != null)
-		{
-			$conditions['Enum.code'] = $airports_used;
-		}
-		
-		$airports = $this->Enum->find('all',
-			array(
-				'conditions' => $conditions
-			)
-		);
-		
-		return $airports;
-	}
-	
-	private function ParseCityName($name)
-	{
-		$parts = explode(' ', $name);
-		
-		$keywords = array();
-		
-		foreach($parts as $part)
-		{
-			$keyword = preg_replace("/[^a-zA-Z]/", '', $part);
-			
-			if($keyword != '')
-				$keywords[] = $keyword;
-		}
-		
-		return $keywords;
-	}
-	
-	private function GetAirportsUsed()
-	{
-		$airports_used = $this->Log->find('all',
-			array(
-				'fields' => array(
-					'Log.Origin'
-				),
-				'group' => array(
-					'Log.Origin'
-				)
-			)
-		);
-		
-		$airports_used_arr = array();
-		
-		foreach($airports_used as $airport)
-		{
-			$airports_used_arr[] = $airport['Log']['Origin'];
-		}
-		
-		return $airports_used_arr;
 	}
 	
 }

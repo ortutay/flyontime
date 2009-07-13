@@ -30,6 +30,18 @@
 	//Turn out extension parsing
 	Router::parseExtensions('json', 'xml');
 	
+	//MOBILE - /m
+	Router::connect(
+		'/m/lines/security/:Mode',
+		array('controller' => 'lines', 'action' => 'security_mobile'),
+		array('Mode' => '(in|out)')
+	);
+	
+	Router::connect(
+		'/m/lines/security',
+		array('controller' => 'lines', 'action' => 'security_mobile', '')
+	);
+	
 	//AIRLINES
 	Router::connect(
 		'/airlines/:UniqueCarrier',
