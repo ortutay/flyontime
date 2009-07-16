@@ -9,7 +9,7 @@ class DisambiguateComponent extends Object {
 		$this->controller =& $controller;
 		
 		$this->Enum =& ClassRegistry::init('Enum');
-		$this->Log =& ClassRegistry::init('Log');
+		$this->Ontime =& ClassRegistry::init('Ontime');
 	}
 
 	//called after Controller::beforeFilter()
@@ -137,13 +137,13 @@ class DisambiguateComponent extends Object {
 	
 	public function GetAirportsUsed()
 	{
-		$airports_used = $this->Log->find('all',
+		$airports_used = $this->Ontime->find('all',
 			array(
 				'fields' => array(
-					'Log.Origin'
+					'origin'
 				),
 				'group' => array(
-					'Log.Origin'
+					'origin'
 				)
 			)
 		);
@@ -152,7 +152,7 @@ class DisambiguateComponent extends Object {
 		
 		foreach($airports_used as $airport)
 		{
-			$airports_used_arr[] = $airport['Log']['Origin'];
+			$airports_used_arr[] = $airport['Ontime']['origin'];
 		}
 		
 		return $airports_used_arr;

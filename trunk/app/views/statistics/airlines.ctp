@@ -11,20 +11,6 @@
 				<div class="header">
 					Statistics - <?php echo $Name; ?>
 				</div>
-				<div style="color: #777777;">
-					Data from 
-					<?php
-					$i = 0;
-					$num = count($Months);
-					foreach($Months as $month => $foo)
-					{
-						echo $month;
-						
-						if($i < ($num - 1))
-							echo ', ';
-					}
-					?>
-				</div>
 				<br />
 
 			</td>
@@ -47,7 +33,7 @@
 			{
 			?>
 			
-			data.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['UniqueCarrier']]; ?>');
+			data.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Ontime']['carrier']]; ?>');
 			data.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0][$DataValue]; ?>);
 			
 			<?php

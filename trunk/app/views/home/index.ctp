@@ -19,7 +19,7 @@
 				<div style="background-image: url('/img/airplane.jpg'); width: 800px; height: 215px; text-align: left;">
 					<div style="position: relative; left: 380px; top: -20px; display: block; width: 350px;">
 						<div style="font-size: 10pt; color: #666666; line-height: 14pt; text-align: justify;">
-							Using data from the <a href="/about" style="font-size: 10pt;">Federal Government</a>, we can tell you how late your flight is on average or help you find the most on-time flight from one city to another.
+							Using data from the federal government, we can tell you how late your flight is on average or help you find the most on-time flight from one city to another.
 						</div>
 					</div>
 					
@@ -138,7 +138,7 @@
 										</tr>
 										<tr>
 											<td align="left">
-												<div>To: <div style="color: #666666; display: inline;">(city or airport)</div></div>
+												<div>To: <div style="color: #666666; display: inline;">(city or airport; optional)</div></div>
 											</td>
 										</tr>
 										<tr>

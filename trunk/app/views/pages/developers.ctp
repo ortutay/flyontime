@@ -21,7 +21,7 @@
 					This website is completely open source.  All of the code is available at:
 					<br /><br />
 					
-					<a href="http://flyontime.googlecode.com/svn/trunk/">http://flyontime.googlecode.com/svn/trunk/</a>
+					<a href="http://code.google.com/p/flyontime/">http://code.google.com/p/flyontime/</a>
 					<br /><br />
 					
 					and the code is licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>.
@@ -33,17 +33,28 @@
 					The data presented on this website is also available in XML and JSON formats.  To access this data, simply add a ".xml" or ".json" extension to the end of a URL (prior to the query string).  For exmaple:
 					<br /><br />
 					
-					<a href="/airports.xml?from=ORD&to=LAX&day=">/airports.xml?from=ORD&to=LAX&day=</a>
+					<a href="/airports/ORD">/airports/ORD</a>
 					<br />
-					<a href="/airports.json?from=ORD&to=LAX&day=">/airports.json?from=ORD&to=LAX&day=</a>
+					<a href="/airports/ORD.xml">/airports/ORD.xml</a>
+					<br />
+					<a href="/airports/ORD.json">/airports/ORD.json</a>
+					<br /><br />
+
+					<a href="/routes/ORD/LAX">/routes/ORD/LAX</a>
+					<br />
+					<a href="/routes/ORD/LAX.xml">/routes/ORD/LAX.xml</a>
+					<br />
+					<a href="/routes/ORD/LAX.json">/routes/ORD/LAX.json</a>
 					<br /><br />
 					
-					<a href="/flights.xml?airline=UA&flight_num=996&from=ORD&to=LAX&day=">/flights.xml?airline=UA&flight_num=996&from=ORD&to=LAX&day=</a>
+					<a href="/flights/UA/996/ORD/LAX">/flights/UA/996/ORD/LAX</a>
 					<br />
-					<a href="/flights.json?airline=UA&flight_num=996&from=ORD&to=LAX&day=">/flights.json?airline=UA&flight_num=996&from=ORD&to=LAX&day=</a>
+					<a href="/flights/UA/996/ORD/LAX.xml">/flights/UA/996/ORD/LAX.xml</a>
+					<br />
+					<a href="/flights/UA/996/ORD/LAX.json">/flights/UA/996/ORD/LAX.json</a>
 					<br /><br />
 					
-					Please note that right now only the /airports and /flights pages have XML and JSON data available.  The rest of the pages will have this feature soon.
+					Please note that right now only the /airports, /routes, and /flights pages have XML and JSON data available.
 				</div>
 				
 				<br /><br /><br />

@@ -9,7 +9,7 @@
 			<td align="left">
 
 				<div class="header">
-					Disambiguate Flight
+					Choose Flight
 				</div>
 				
 				<br />
@@ -28,7 +28,7 @@
 				{
 				?>
 				
-				<form method="GET" action="/flights">
+				<form method="GET" action="/disambiguate/flights">
 				
 					<input type="hidden" name="airline" value="<?php echo $Airline; ?>" />
 					<input type="hidden" name="flight_num" value="<?php echo $FlightNum; ?>" />
@@ -45,14 +45,19 @@
 					?>
 					
 					<div>
-						<div class="subheader">This flight travels on multiple routes.  Please select which airports you're traveling between:</div>
-						<br /><br />
+						<p class="subheader">This flight travels on multiple routes.  Please select which airports you're traveling between:</p>
+
 						<?php
 						foreach($Flights as $flight)
 						{
 						?>
 						
-						<input type="radio" name="from_to" value="<?php echo $flight['Log']['Origin']; ?>_<?php echo $flight['Log']['Dest']; ?>" /> From <b><?php echo $flight['Log']['OriginCityName']; ?> (<?php echo $flight['Log']['Origin']; ?>)</b> to <b><?php echo $flight['Log']['DestCityName']; ?> (<?php echo $flight['Log']['Dest']; ?>)</b><br /><br />
+						<div>
+						<input type="radio" name="from_to" value="<?php echo $flight['Ontime']['origin']; ?>_<?php echo $flight['Ontime']['dest']; ?>" /> 
+							<?php echo $flight["Ontime"]["origin"] ?>
+							to
+							<?php echo $flight["Ontime"]["dest"] ?>
+						</div>
 						
 						<?php
 						}

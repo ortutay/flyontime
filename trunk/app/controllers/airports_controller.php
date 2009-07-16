@@ -7,224 +7,207 @@ class AirportsController extends AppController {
 	
 	function index()
 	{
-		$this->Log =& ClassRegistry::init('Log');
+		$this->Ontime =& ClassRegistry::init('Ontime');
 		$this->Enum =& ClassRegistry::init('Enum');
+		$this->Weather =& ClassRegistry::init('Weather');
 		
-		//get params
-		$from = "";
-		if(isset($this->params['url']['from']))
-			$from = $this->params['url']['from'];
+		// Load parameters and pass on to the view
 		
-		$to = "";
-		if(isset($this->params['url']['to']))
-			$to = $this->params['url']['to'];
-			
-		$day = "";
-		if(isset($this->params['url']['day']))
-			$day = $this->params['url']['day'];
-			
-		//get data
-		if($from != '' && $to != '')
-		{
-			$this->set('From', $from);
-			$this->set('To', $to);
-			$this->set('Day', $day);
-			
-			//flights
-			$flights_from = $this->GetBestFlights($from, $to, $day);
-			
-			$this->set('FlightsFrom', $flights_from);
-			
-			//airlines
-			$airlines_from = $this->GetBestAirlines($from, $to, $day);
-			
-			$this->set('AirlinesFrom', $airlines_from);
+		$from = '';
+		$to = '';
+		$carrier = '';
+		$flightnum = '0'; # database field is numeric so an empty value became 0
+		
+		if (isset($this->params['from'])) { $from = $this->params['from']; }
+		if (isset($this->params['to'])) { $to = $this->params['to']; }
+		if (isset($this->params['carrier'])) { $carrier = $this->params['carrier']; }
+		if (isset($this->params['flightnum'])) { $flightnum = $this->params['flightnum']; }
+		
+		// if this is for a flight and from/to isn't specified in URL, load from and to from the database.
+		if ($carrier != '' && $to == '') {
+			$flight = $this->Ontime->find('all',
+					array('conditions' => array(
+							'carrier' => $carrier,
+							'flightnum' => $flightnum)));
+			$from = $flight[0]["Ontime"]["origin"];
+			$to = $flight[0]["Ontime"]["dest"];
+		}
 
-			$airline_names = $this->GetAirlineNames($airlines_from, array());
+		$this->set('From', $from);
+		$this->set('To', $to);
+		$this->set('Carrier', $carrier);
+		$this->set('FlightNum', $flightnum);
+		
+		// Get the nice names of the airports and carrier
+
+		$from_airport = $this->Enum->find('first',
+				array('conditions' => array(
+						'Enum.category' => 'AIRPORTS',
+						'Enum.code' => $from)));
+		$this->set('FromCity', $from_airport['Enum']['description']);
+		
+		if ($to != '') {
+			$to_airport = $this->Enum->find('first',
+					array('conditions' => array(
+							'Enum.category' => 'AIRPORTS',
+							'Enum.code' => $to)));
+			$this->set('ToCity', $to_airport['Enum']['description']);
+		}
+		
+		if ($carrier != '') {
+			$carrier_rec = $this->Enum->find('first',
+					array('conditions' => array(
+							'Enum.category' => 'UNIQUE_CARRIERS',
+							'Enum.code' => $carrier)));
+			$carrier_name = $carrier_rec['Enum']['description'];
+			$carrier_name = str_replace("Inc.", "", $carrier_name);
+			$this->set('CarrierName', $carrier_name);
+		}
+		
+		$summary = $this->GetSummary($from, $to, $carrier, $flightnum, 'all');
+		$this->set('Summary', $summary);
+		$this->set('SummaryGoodWeather', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_any_no'));
+		$this->set('SummaryBadWeather', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_any_yes'));
+		$this->set('SummaryDestBadWeather', $this->GetSummary($from, $to, $carrier, $flightnum, 'dest_any_yes'));
+		$this->set('SummaryFog', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_fog_yes'));
+		$this->set('SummaryRain', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_rain_yes'));
+		$this->set('SummarySnow', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_snow_yes'));
+		$this->set('SummaryHail', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_hail_yes'));
+		$this->set('SummaryThunder', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_thunder_yes'));
+		$this->set('SummaryTornado', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_tornado_yes'));
+
+		if ($to != '') {
+			$best_flights = $this->GetBestFlights($from, $to);
+			$this->set('BestFlights', $best_flights);
 			
+			$best_airlines = $this->GetBestAirlines($from, $to);
+			$this->set('BestAirlines', $best_airlines);
+			
+			$airline_names = $this->GetAirlineNames($best_airlines, array());
 			$this->set('AirlineNames', $airline_names);
-			
-			//days
-			$days_from = $this->GetDays($from, $to);
-			
-			$this->set('DaysFrom', $days_from);
-			
-			//times
-			$times_from = $this->GetTimes($from, $to, $day);
-			
-			$this->set('TimesFrom', $times_from);
-			
-			//get months and cities
-			$months = array();
-			$from_city = '';
-			$to_city = '';
-			
-			foreach($flights_from as $flight)
-			{
-				$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
-				$date_str = date('F, Y', strtotime($date));
-				$months[$date_str] = '';
-				
-				$from_city = $flight['Log']['OriginCityName'];
-				$to_city = $flight['Log']['DestCityName'];
+		}
+		
+		if ($carrier != '') {
+			$flight_other_count = 0;
+			$flight_better_than = 0;
+			$flight_worse_than = 0;
+			foreach ($best_flights as $flight) {
+				if ($summary['Ontime']['delay_median'] < $flight['Ontime']['delay_median']) { $flight_better_than++; }
+				if ($summary['Ontime']['delay_median'] > $flight['Ontime']['delay_median']) { $flight_worse_than++; }
+				$flight_other_count++;
 			}
-			
-			$this->set('Months', $months);
-			
-			$this->set('FromCity', $from_city);
-			$this->set('ToCity', $to_city);
+			$flight_other_count--; // don't count this flight
+			if ($flight_other_count > 0) {
+				$flight_better_than /= $flight_other_count;
+				$flight_worse_than /= $flight_other_count;
+			}
+			if ($flight_other_count == 0) {
+				$this->set('FlightComparison', '');
+			} else if ($flight_better_than > $flight_worse_than) {
+				$this->set('FlightComparison', "better than " . round($flight_better_than*100) . '%');
+			} else {
+				$this->set('FlightComparison', "worse than " . round($flight_worse_than*100) . '%');
+			}
 		}
-		else
-		{
-			$this->redirect('/');
-		}
+
+		$this->set('DaysFrom', $this->GetDays($from, $to));
+		$this->set('TimesFrom', $this->GetTimes($from, $to));
+		$this->set('Holidays', $this->GetHolidays($from, $to));
+		
+		$this->set('WeatherInfo', $this->Weather->find('first',
+			array('conditions' => array('airport' => $from))));
 	}
 	
-	
-	private function GetBestFlights($from, $to, $day = '')
+	private function GetSummary($from, $to, $carrier, $flightnum, $condition)
 	{
-		$conditions = array(
-			'Log.Origin' => $from,
-			'Log.Dest' => $to
-		);
-		
-		if($day != '' && $day >=1 && $day <= 7)
-		{
-			$conditions['Log.DayOfWeek'] = $day;
-		}
-		
-		$flights = $this->Log->find('all',
+		return $this->Ontime->find('first',
 			array(
-				'fields' => array(
-					'Log.UniqueCarrier',
-					'Log.Carrier',
-					'Log.FlightNum',
-					'Log.Month',
-					'Log.Year',
-					'Log.OriginCityName',
-					'Log.DestCityName',
-					'(SUM(Log.ArrDelay) / (COUNT(Log.UniqueCarrier) - SUM(Log.Cancelled) - SUM(Log.Diverted))) as AvgArrDelay',
-					'COUNT(Log.UniqueCarrier) as NumScheduled'
-				),
-				'conditions' => $conditions,
-				'group' => array(
-					'Log.UniqueCarrier',
-					'Log.FlightNum'
-				),
-				'order' => array(
-					'AvgArrDelay ASC'
-				)
+				'fields' => array('firstdate', 'lastdate', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+				'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => $condition, 'carrier' => $carrier, 'flightnum' => $flightnum, 'dayofweek' => '0', 'hour' => '', 'holiday' => ''),
 			)
 		);
-		
-		return $flights;
 	}
 	
-	private function GetBestAirlines($from, $to, $day = '')
+	private function GetBestFlights($from, $to)
 	{
-		$conditions = array(
-			'Log.Origin' => $from,
-			'Log.Dest' => $to
-		);
-		
-		if($day != '' && $day >=1 && $day <= 7)
-		{
-			$conditions['Log.DayOfWeek'] = $day;
-		}
-		
-		$airlines = $this->Log->find('all',
+		return $this->Ontime->find('all',
 			array(
-				'fields' => array(
-					'Log.UniqueCarrier',
-					'Log.Carrier',
-					'((1 - ((SUM(Log.Cancelled) + SUM(Log.Diverted) + SUM(Log.ArrDel15)) / COUNT(Log.UniqueCarrier)))*100) as PercentOnTime'
-				),
-				'conditions' => $conditions,
-				'group' => array(
-					'Log.UniqueCarrier'
-				),
-				'order' => array(
-					'PercentOnTime DESC'
-				)
+				'fields' => array('carrier', 'flightnum', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+				
+				'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', "carrier != ''"),
+				
+				'order' => array('delay_median ASC')
 			)
 		);
-		
-		return $airlines;
+	}
+	
+	private function GetBestAirlines($from, $to)
+	{
+		return $this->Ontime->find('all',
+			array(
+				'fields' => array('carrier', 'sum(count) as carrier_count', 'sum(count*pct_ontime) as carrier_ontime'),
+				
+				'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', "carrier != ''"),
+				
+				'group' => array('carrier'),
+				
+				'order' => array('sum(count*pct_ontime)/sum(count) DESC')
+			)
+		);
 	}
 	
 	private function GetDays($from, $to)
 	{
-		$days = $this->Log->find('all',
+		return $this->Ontime->find('all',
 			array(
-				'fields' => array(
-					'Log.DayOfWeek',
-					'COUNT(Log.DayOfWeek) as NumScheduled',
-					'SUM(Log.ArrDel15) as NumDelayed',
-					'SUM(Log.Cancelled) as NumCancelled',
-					'SUM(Log.Diverted) as NumDiverted'
-				),
-				'conditions' => array(
-					'Log.Origin' => $from,
-					'Log.Dest' => $to
-				),
-				'group' => array(
-					'Log.DayOfWeek'
-				),
-				'order' => array(
-					'Log.DayOfWeek ASC'
-				)
+				'fields' => array('dayofweek', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+				
+				'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek != 0', 'hour' => '', 'holiday' => ''),
+				
+				'order' => array('dayofweek ASC')
 			)
 		);
-		
-		return $days;
+
 	}
 	
-	private function GetTimes($from, $to, $day = '')
+	private function GetTimes($from, $to)
 	{
-		$conditions = array(
-			'Log.Origin' => $from,
-			'Log.Dest' => $to
-		);
-		
-		if($day != '' && $day >=1 && $day <= 7)
-		{
-			$conditions['Log.DayOfWeek'] = $day;
-		}
-		
-		$times = $this->Log->find('all',
+		return $this->Ontime->find('all',
 			array(
-				'fields' => array(
-					'Log.DepTimeBlk',
-					'COUNT(Log.DepTimeBlk) as NumScheduled',
-					'SUM(Log.ArrDel15) as NumDelayed',
-					'SUM(Log.Cancelled) as NumCancelled',
-					'SUM(Log.Diverted) as NumDiverted'
-				),
-				'conditions' => $conditions,
-				'group' => array(
-					'Log.DepTimeBlk'
-				),
-				'order' => array(
-					'Log.DepTimeBlk ASC'
-				)
+				'fields' => array('hour', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+				
+				'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek' => 0, 'hour != ""', 'holiday' => ''),
+				
+				'order' => array('hour ASC')
 			)
 		);
-		
-		return $times;
+
 	}
 	
+	private function GetHolidays($from, $to)
+	{
+		return $this->Ontime->find('all',
+			array(
+				'fields' => array('holiday', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+				
+				'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek' => 0, 'hour' => '', 'holiday != ""'),
+			)
+		);
+
+	}
+
 	private function GetAirlineNames($airlines1, $airlines2)
 	{
 		$unique_carriers = array();
 		
 		foreach($airlines1 as $airline)
 		{
-			$unique_carriers[] = $airline['Log']['UniqueCarrier'];
+			$unique_carriers[] = $airline['Ontime']['carrier'];
 		}
 		
 		foreach($airlines2 as $airline)
 		{
-			$unique_carriers[] = $airline['Log']['UniqueCarrier'];
+			$unique_carriers[] = $airline['Ontime']['carrier'];
 		}
 
 		$result = $this->Enum->find('all',

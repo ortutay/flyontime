@@ -12,7 +12,6 @@ class DisambiguateController extends AppController {
 	function airports()
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
-		$this->Log =& ClassRegistry::init('Log');
 
 		//get params
 		$from = "";
@@ -22,23 +21,27 @@ class DisambiguateController extends AppController {
 		$to = "";
 		if(isset($this->params['url']['to']))
 			$to = $this->params['url']['to'];
-		
-		$day = "";
-		if(isset($this->params['url']['day']))
-			$day = $this->params['url']['day'];
 			
 		//get data
-		if($from != '' && $to != '')
+		if($from != '')
 		{
 			$airports_used = $this->Disambiguate->GetAirportsUsed();
 			
 			$airports_from = $this->Disambiguate->GetAirports($from, $airports_used);
 			
-			$airports_to = $this->Disambiguate->GetAirports($to, $airports_used);
+			if ($to != '') {
+				$airports_to = $this->Disambiguate->GetAirports($to, $airports_used);
+			} else {
+				$airports_to = array(array('Enum'=>array('code'=>'')));
+			}
 			
 			if(count($airports_from) == 1 && count($airports_to) == 1)
 			{
-				$url = '/airports?from='.$airports_from[0]['Enum']['code'].'&to='.$airports_to[0]['Enum']['code'].'&day='.$day;
+				if ($to == '') {
+					$url = '/airports/'.$airports_from[0]['Enum']['code'];
+				} else {
+					$url = '/routes/'.$airports_from[0]['Enum']['code'].'/'.$airports_to[0]['Enum']['code'];
+				}
 				$this->flash('Loading...', $url, 0);
 			}
 			else
@@ -58,7 +61,7 @@ class DisambiguateController extends AppController {
 	
 	function flights()
 	{
-		$this->Log =& ClassRegistry::init('Log');
+		$this->Ontime =& ClassRegistry::init('Ontime');
 		
 		//get params
 		$airline = "";
@@ -69,56 +72,44 @@ class DisambiguateController extends AppController {
 		if(isset($this->params['url']['flight_num']))
 			$flight_num = $this->params['url']['flight_num'];
 		
-		$day = "";
-		if(isset($this->params['url']['day']))
-			$day = $this->params['url']['day'];
-		
-		$from = "";
-		if(isset($this->params['url']['from']))
-			$from = $this->params['url']['from'];
-		
-		$to = "";
-		if(isset($this->params['url']['to']))
-			$to = $this->params['url']['to'];
-			
 		//get data
 		if($airline != '' && $flight_num != '')
 		{
-			$conditions = array(
-				'Log.UniqueCarrier' => $airline,
-				'Log.FlightNum' => $flight_num
-			);
-			
-			if($from != '' && $to != '')
-			{
-				$conditions['Log.Origin'] = $from;
-				$conditions['Log.Dest'] = $to;
-			}
-			
-			$flights = $this->Log->find('all',
-				array(
-					'conditions' => $conditions,
-					'group' => array(
-						'Log.Origin',
-						'Log.Dest'
-					)
-				)
-			);
-			
-			if(count($flights) == 1)
-			{
-				$url = '/flights?airline='.$airline.'&flight_num='.$flight_num.'&day='.$day.'&from='.$from.'&to='.$to;
-				
+			if (isset($this->params['url']['from_to'])) {
+				$from_to = split("_", $this->params['url']['from_to']);
+				$url = '/flights/'.$airline.'/'.$flight_num.'/'.$from_to[0].'/'.$from_to[1];
 				$this->flash('Loading...', $url, 0);
-			}
-			else
-			{
-				$this->set('Flights', $flights);
-				$this->set('Airline', $airline);
-				$this->set('FlightNum', $flight_num);
-				$this->set('Day', $day);
-				$this->set('From', $from);
-				$this->set('To', $to);
+			} else {
+				$conditions = array(
+					'carrier' => $airline,
+					'flightnum' => $flight_num,
+					'dayofweek' => '0',
+					'hour' => '',
+					'holiday' => '',
+					'condition' => 'all'
+				);
+				
+				$flights = $this->Ontime->find('all',
+					array(
+						'conditions' => $conditions,
+						'group' => array(
+							'origin',
+							'dest'
+						)
+					)
+				);
+				
+				if(count($flights) == 1)
+				{
+					$url = '/flights/'.$airline.'/'.$flight_num;
+					$this->flash('Loading...', $url, 0);
+				}
+				else
+				{
+					$this->set('Flights', $flights);
+					$this->set('Airline', $airline);
+					$this->set('FlightNum', $flight_num);
+				}
 			}
 		}
 		elseif($airline != '')

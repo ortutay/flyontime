@@ -28,13 +28,16 @@
 						<a href="/statistics/airports/scheduleddepartures">Number of Scheduled Departures</a>
 						<br /><br />
 						
-						<a href="/statistics/airports/percentontimedepartures">Percent On-Time Departures</a>
+						<a href="/statistics/airports/percentontimedepartures">Percent On-Time by Origin</a>
 						<br /><br />
 				
-						<a href="/statistics/airports/percentcancelleddepartures">Percent Cancelled Departures</a>
+						<a href="/statistics/airports/percentcancelleddepartures">Percent Cancelled/Diverted by Origin</a>
 						<br /><br />
 				
-						<a href="/statistics/airports/averagedeparturedelay">Average Minutes Departing Late</a>
+						<a href="/statistics/airports/averagedeparturedelay">Median Delay by Origin</a>
+						<br /><br />
+				
+						<a href="/statistics/airports/unluckydeparturedelay">Worst Delay by Origin</a>
 						<br /><br />
 					</td>
 					<td width="75px"></td>
@@ -42,13 +45,16 @@
 						<a href="/statistics/airports/scheduledarrivals">Number of Scheduled Arrivals</a>
 						<br /><br />
 						
-						<a href="/statistics/airports/percentontimearrivals">Percent On-Time Arrivals</a>
+						<a href="/statistics/airports/percentontimearrivals">Percent On-Time by Destination</a>
 						<br /><br />
 						
-						<a href="/statistics/airports/percentcancelledarrivals">Percent Cancelled Arrivals</a>
+						<a href="/statistics/airports/percentcancelledarrivals">Percent Cancelled/Diverted by Destination</a>
 						<br /><br />
 						
-						<a href="/statistics/airports/averagearrivaldelay">Average Minutes Arriving Late</a>
+						<a href="/statistics/airports/averagearrivaldelay">Median Delay by Destination</a>
+						<br /><br />
+
+						<a href="/statistics/airports/unluckyarrivaldelay">Worst Delay by Destination</a>
 						<br /><br />
 					</td>
 				</tr>
@@ -66,19 +72,19 @@
 				<tr>
 					<td width="50px"></td>
 					<td>
+						<a href="/statistics/airlines/scheduledflights">Number of Scheduled Flights</a>
+						<br /><br />
+						
 						<a href="/statistics/airlines/percentontime">Percent On-Time</a>
 						<br /><br />
 						
-						<a href="/statistics/airlines/percentcancelled">Percent Cancelled</a>
+						<a href="/statistics/airlines/percentcancelled">Percent Cancelled/Diverted</a>
 						<br /><br />
 						
-						<a href="/statistics/airlines/percentdiverted">Percent Diverted</a>
+						<a href="/statistics/airlines/averagearrivaldelay">Median Delay</a>
 						<br /><br />
 						
-						<a href="/statistics/airlines/averagearrivaldelay">Average Minutes Arriving Late</a>
-						<br /><br />
-						
-						<a href="/statistics/airlines/scheduledflights">Number of Scheduled Flights</a>
+						<a href="/statistics/airlines/unluckyarrivaldelay">Worst Delay</a>
 						<br /><br />
 						
 						<a href="/airlines">Details</a>
