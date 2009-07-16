@@ -11,20 +11,6 @@
 				<div class="header">
 					Statistics - <?php echo $Name; ?>
 				</div>
-				<div style="color: #777777;">
-					Data from 
-					<?php
-					$i = 0;
-					$num = count($Months);
-					foreach($Months as $month => $foo)
-					{
-						echo $month;
-						
-						if($i < ($num - 1))
-							echo ', ';
-					}
-					?>
-				</div>
 				<br />
 
 			</td>
@@ -50,7 +36,7 @@
 		  $i = 0;
 		  foreach($Airports as $airport)
 		  {
-			$airport_code = $airport['Log'][$AirportValue];
+			$airport_code = $airport['Ontime'][$AirportValue];
 			$airport_name = $AirportNames[$airport_code];
 			
 			$airport_name = preg_replace("/[^a-zA-Z0-9\s\.,:\-\_\/]/", "", $airport_name);
@@ -61,7 +47,7 @@
 		
 		  data.setValue(<?php echo $i; ?>, 0, <?php echo $Geocodes[$airport_code]['Lat']; ?>);
 		  data.setValue(<?php echo $i; ?>, 1, <?php echo $Geocodes[$airport_code]['Lng']; ?>);
-		  data.setValue(<?php echo $i; ?>, 2, <?php echo $airport[0][$DataValue]; ?>);
+		  data.setValue(<?php echo $i; ?>, 2, <?php echo $airport['Ontime'][$DataValue]; ?>);
 		  data.setValue(<?php echo $i; ?>, 3, '<?php echo $airport_name; ?>');
 		  
 		  <?php

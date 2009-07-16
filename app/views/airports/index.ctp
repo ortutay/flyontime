@@ -1,6 +1,27 @@
 <?php
 
-$this->pageTitle = 'FlyOnTime.us: Airports';
+$HolidayNames = array(
+		'memorial-1' => 'Day Before Memorial Day',
+		'memorial' => 'Memorial Day',
+		'memorial+1' => 'Day After Memorial Day',
+		'labor' => 'Labor Day',
+		'thanksgiving-1' => 'Wednesday Before Thanksgiving Day',
+		'thanksgiving' => 'Thanksgiving Day',
+		'thanksgiving+1' => 'Friday After Thanksgiving Day',
+		'thanksgiving+2' => 'Saturday After Thanksgiving Day',
+		'thanksgiving+3' => 'Sunday After Thanksgiving Day',
+		'christmas-1' => 'Day Before Christmas Day',
+		'christmas' => 'Christmas Day',
+		'christmas+1' => 'Day After Christmas Day',
+		);
+
+if ($Carrier != '') {
+	$this->pageTitle = 'FlyOnTime.us: ' . $CarrierName . ' Flight ' . $FlightNum . ' (' . $From . ' to ' . $To . ')';
+} else if ($To != '') {
+	$this->pageTitle = 'FlyOnTime.us: ' . $From . ' to ' . $To;
+} else {
+	$this->pageTitle = 'FlyOnTime.us: Flights From ' . $From;
+}
 
 function GetDayName($day)
 {
@@ -38,52 +59,128 @@ function GetDayName($day)
 	return '';
 }
 
-$day_str = '';
-if($Day != '')
-	$day_str = ' on <b>'.GetDayName($Day).'</b>';
+function GetTimeName($hour)
+{
+	if ($hour < 12) {
+		if ($hour == 0) { $hour = 12; }
+		return round($hour) . " am";
+	} else {
+		$hour = $hour - 12;
+		if ($hour == 0) { $hour = 12; }
+		return $hour . " pm";
+	}
+}
+
+
+function DelayText($delay, $relative_to='', $colorize=1)
+{
+	$delay_style = '';
+	$delay_str = '';
+	if ($relative_to == '') {
+		if($delay < 0) {
+			$delay_str = abs($delay).' min. early';
+			$delay_style = 'color: green;';
+		} else if ($delay > 0) {
+			$delay_str = $delay.' min. late';
+			$delay_style = 'color: red;';
+		} else {
+			$delay_str = 'on time';
+			$delay_style = 'color: black;';
+		}
+	} else {
+		$delay -= $relative_to;
+		if($delay < 0) {
+			$delay_str = abs($delay).' min. earlier';
+			$delay_style = 'color: green;';
+		} else if ($delay > 0) {
+			$delay_str = $delay.' min. later';
+			$delay_style = 'color: red;';
+		} else {
+			$delay_str = 'no change';
+			$delay_style = 'color: black;';
+		}
+	}
+	if (!$colorize) { $delay_style = ''; }
+	?> <span style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div> <?php
+}
+
+function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
+	if ($data['Ontime']['count'] >= $mincount) {
+	?>
+	<tr style="<?php if ($subhead) { echo "font-size: 80%; color: #944"; } ?>">
+		<td style="<?php if ($subhead) { echo "padding-left: 1em"; } ?>"><?php echo $label?> <?php if ($subhead) { ?><span style='font-size: 75%; color: #C88'>(<?php echo round($data['Ontime']['count']/$alldata['Ontime']['count']*100)?>% of flights)</span><?php }?></td>
+		<td><?php DelayText($data['Ontime']['delay_median'], '', 0) ?></td>
+		<td><?php DelayText($data['Ontime']['delay_85thpctile'], '', 0) ?></td>
+		<td><?php echo round($data['Ontime']['pct_cancel']*100) ?>% </td>
+	</tr>
+	<?php }
+}
+
 
 ?>
 
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
-  google.load("visualization", "1", {packages:["barchart"]});
+  google.load("visualization", "1", {packages:["barchart","piechart"]});
   google.setOnLoadCallback(drawChart);
   function drawChart() {
+	  
+	<?php if ($Summary['Ontime']['count'] > 0) { ?>
+
+	var data_outcome = new google.visualization.DataTable();	  
+	data_outcome.addColumn('string', 'Flight Outcome');
+	data_outcome.addColumn('number', '% of Flights');
+	data_outcome.addRows(4);
+	data_outcome.setValue(0, 0, 'On Time');
+	data_outcome.setValue(1, 0, '5-20 min. Delay');
+	data_outcome.setValue(2, 0, '>20 min. Delay');
+	data_outcome.setValue(3, 0, 'Cancelled/Diverted');
+	data_outcome.setValue(0, 1, <?php echo $Summary['Ontime']['pct_ontime']*100; ?>);
+	data_outcome.setValue(1, 1, <?php echo (1-$Summary['Ontime']['pct_ontime']-$Summary['Ontime']['pct_20mindelay']-$Summary['Ontime']['pct_cancel'])*100; ?>);
+	data_outcome.setValue(2, 1, <?php echo $Summary['Ontime']['pct_20mindelay']*100; ?>);
+	data_outcome.setValue(3, 1, <?php echo $Summary['Ontime']['pct_cancel']*100; ?>);
+	var chart_outcome = new google.visualization.PieChart(document.getElementById('chart_div_outcome'));
+	chart_outcome.draw(data_outcome, {width: 220, height: 240, is3D: true, legend: 'bottom', legendFontSize: 11});
+	
+	<?php
+	if ($To != '' && $Carrier == '') {
+	?>
+	
     //AIRLINE FROM
 	var data_airline_from = new google.visualization.DataTable();
 	data_airline_from.addColumn('string', 'Airline');
 	data_airline_from.addColumn('number', 'Percent On-Time Arrival');
-	data_airline_from.addRows(<?php echo count($AirlinesFrom); ?>);
+	data_airline_from.addRows(<?php echo count($BestAirlines); ?>);
 	
 	<?php
 	$i = 0;
-	foreach($AirlinesFrom as $airline)
+	foreach($BestAirlines as $airline)
 	{
 	?>
-	
-	data_airline_from.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Log']['Carrier']]; ?>');
-	data_airline_from.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['PercentOnTime']; ?>);
+	data_airline_from.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Ontime']['carrier']]; ?>');
+	data_airline_from.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['carrier_ontime']/$airline[0]['carrier_count']*100; ?>);
 
 	<?php
 	$i++;
 	}
 	?>
-
+	
 	var chart_airline_from = new google.visualization.BarChart(document.getElementById('chart_div_airline_from'));
 	chart_airline_from.draw(data_airline_from, {width: 325, height: 400, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, min: 0, max: 100});
 	
-	//DAY FROM
-	<?php
-	if($Day == '')
-	{
+
+	<?php	
+	}
+	}
 	?>
-	
+
+	//DAY FROM
 	var data_day_from = new google.visualization.DataTable();
 	data_day_from.addColumn('string', 'Day');
-	data_day_from.addColumn('number', 'Arrived On-Time');
-	data_day_from.addColumn('number', 'Arrived Late');
-	data_day_from.addColumn('number', 'Cancelled');
-	data_day_from.addColumn('number', 'Diverted');
+	data_day_from.addColumn('number', 'On Time');
+	data_day_from.addColumn('number', '5-20 min. Delay');
+	data_day_from.addColumn('number', '>20 min. Delay');
+	data_day_from.addColumn('number', 'Cancelled/Diverted');
 	data_day_from.addRows(<?php echo count($DaysFrom); ?>);
 	
 	<?php
@@ -91,12 +188,12 @@ if($Day != '')
 	foreach($DaysFrom as $day)
 	{
 	?>
-	
-	data_day_from.setValue(<?php echo $i; ?>, 0, '<?php echo GetDayName($day['Log']['DayOfWeek']); ?>');
-	data_day_from.setValue(<?php echo $i; ?>, 1, <?php echo ($day[0]['NumScheduled'] - $day[0]['NumDelayed'] - $day[0]['NumCancelled'] - $day[0]['NumDiverted']); ?>);
-	data_day_from.setValue(<?php echo $i; ?>, 2, <?php echo $day[0]['NumDelayed']; ?>);
-	data_day_from.setValue(<?php echo $i; ?>, 3, <?php echo $day[0]['NumCancelled']; ?>);
-	data_day_from.setValue(<?php echo $i; ?>, 4, <?php echo $day[0]['NumDiverted']; ?>);
+
+	data_day_from.setValue(<?php echo $i; ?>, 0, '<?php echo GetDayName($day['Ontime']['dayofweek']); ?>');
+	data_day_from.setValue(<?php echo $i; ?>, 1, <?php echo $day['Ontime']['pct_ontime']*100; ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 2, <?php echo (1-$day['Ontime']['pct_ontime']-$day['Ontime']['pct_20mindelay']-$day['Ontime']['pct_cancel'])*100; ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 3, <?php echo $day['Ontime']['pct_20mindelay']*100; ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 4, <?php echo $day['Ontime']['pct_cancel']*100; ?>);
 
 	<?php
 	$i++;
@@ -104,19 +201,15 @@ if($Day != '')
 	?>
 
 	var chart_day_from = new google.visualization.BarChart(document.getElementById('chart_div_day_from'));
-	chart_day_from.draw(data_day_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Day of Week', min: 0});
-	
-	<?php
-	}
-	?>
-	
+	chart_day_from.draw(data_day_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: '% of Flights', title: 'Day of Week', min: 0});
+
 	//TIME FROM
 	var data_time_from = new google.visualization.DataTable();
 	data_time_from.addColumn('string', 'Time');
-	data_time_from.addColumn('number', 'Arrived On-Time');
-	data_time_from.addColumn('number', 'Arrived Late');
-	data_time_from.addColumn('number', 'Cancelled');
-	data_time_from.addColumn('number', 'Diverted');
+	data_time_from.addColumn('number', 'On Time');
+	data_time_from.addColumn('number', '5-20 min. Delay');
+	data_time_from.addColumn('number', '>20 min. Delay');
+	data_time_from.addColumn('number', 'Cancelled/Diverted');
 	data_time_from.addRows(<?php echo count($TimesFrom); ?>);
 	
 	<?php
@@ -125,11 +218,11 @@ if($Day != '')
 	{
 	?>
 	
-	data_time_from.setValue(<?php echo $i; ?>, 0, '<?php echo $time['Log']['DepTimeBlk']; ?>');
-	data_time_from.setValue(<?php echo $i; ?>, 1, <?php echo ($time[0]['NumScheduled'] - $time[0]['NumDelayed'] - $time[0]['NumCancelled'] - $time[0]['NumDiverted']); ?>);
-	data_time_from.setValue(<?php echo $i; ?>, 2, <?php echo $time[0]['NumDelayed']; ?>);
-	data_time_from.setValue(<?php echo $i; ?>, 3, <?php echo $time[0]['NumCancelled']; ?>);
-	data_time_from.setValue(<?php echo $i; ?>, 4, <?php echo $time[0]['NumDiverted']; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 0, '<?php echo GetTimeName($time['Ontime']['hour']); ?>');
+	data_time_from.setValue(<?php echo $i; ?>, 1, <?php echo $time['Ontime']['pct_ontime']*100; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 2, <?php echo (1-$time['Ontime']['pct_ontime']-$time['Ontime']['pct_20mindelay']-$time['Ontime']['pct_cancel'])*100; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 3, <?php echo $time['Ontime']['pct_20mindelay']*100; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 4, <?php echo $time['Ontime']['pct_cancel']*100; ?>);
 
 	<?php
 	$i++;
@@ -138,20 +231,7 @@ if($Day != '')
 
 	var chart_time_from = new google.visualization.BarChart(document.getElementById('chart_div_time_from'));
 	
-	<?php
-	if($Day == '')
-	{
-	?>
-	chart_time_from.draw(data_time_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Time of Day (24-hour format)', min: 0});
-	<?php
-	}
-	else
-	{
-	?>
-	chart_time_from.draw(data_time_from, {width: 800, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Number of Flights', title: 'Time of Day (24-hour format)', min: 0});
-	<?php
-	}
-	?>
+	chart_time_from.draw(data_time_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: '% of Flights', title: 'Time of Day', min: 0, max: 100});
   }
   
   function swap_search()
@@ -187,23 +267,6 @@ if($Day != '')
 				<td>
 					<input name="to" type="text" style="width: 125px;" value="<?php echo $To; ?>" />
 				</td>
-				<td width="15px"></td>
-				<td>
-					<div>Day:</div>
-				</td>
-				<td width="5px"></td>
-				<td>
-					<select name="day">
-						<option value=""></option>
-						<option value="1" <?php if($Day==1) echo 'selected'; ?>>Monday</option>
-						<option value="2" <?php if($Day==2) echo 'selected'; ?>>Tuesday</option>
-						<option value="3" <?php if($Day==3) echo 'selected'; ?>>Wednesday</option>
-						<option value="4" <?php if($Day==4) echo 'selected'; ?>>Thursday</option>
-						<option value="5" <?php if($Day==5) echo 'selected'; ?>>Friday</option>
-						<option value="6" <?php if($Day==6) echo 'selected'; ?>>Saturday</option>
-						<option value="7" <?php if($Day==7) echo 'selected'; ?>>Sunday</option>
-					</select>
-				</td>
 				<td width="25px"></td>
 				<td>
 					<input type="submit" value="Search >>" />
@@ -218,41 +281,101 @@ if($Day != '')
 </tr>
 </table>
 
-<br /><br />
-
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr>
 	<td align="center">
 	
-		<table border=0 cellpadding=0 cellspacing=0 width="800px">
+		<table border=0 cellpadding=0 cellspacing=0 width="800px" style="margin-top: 1.5em">
 		<tr>
 			<td align="left">
-
-				<div class="header">
-					Most On-Time Flights and Airlines
-				</div>
-				<div style="color: #777777;">
-					Data from 
-					<?php
-					$i = 0;
-					$num = count($Months);
-					foreach($Months as $month => $foo)
-					{
-						echo $month;
-						
-						if($i < ($num - 1))
-							echo ', ';
+				<h1 style="margin: 0px"><?php
+					if ($Carrier != '') {
+						echo "<div>" . $CarrierName . ' Flight ' . $FlightNum . '</div>';
+						echo "<div>" . $From . ' to ' . $To . '</div>';
+					} else {
+						echo "<div>" . $FromCity . ' (' . $From . ')</div>';
+						if ($To != '') {
+							echo "<div>to " . $ToCity . ' (' . $To . ')</div>';
+						}
 					}
-					?>
-				</div>
-				<br />
+				?>
+				</h1>
 				
-				<div>
-					<u>From <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b> to <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b><?php echo $day_str; ?>:</u>
+				<?php if ($Summary['Ontime']['count'] > 0) { ?>
+				
+				<div class="info" style="margin-bottom: 2em;">
+					Based on <?php echo $Summary['Ontime']['count'] ?> flights from <?php echo $Summary['Ontime']['firstdate'] ?> to <?php echo $Summary['Ontime']['lastdate'] ?>
+				</div>
+	
+				<div class="header">
+					Flight Delay Summary
 				</div>
 				
-				<br />
+				<table>
+				<tr valign="top"><td>
+				<table border=0 cellpadding=4 cellspacing=1>
+				<tr>	
+					<td/>
+					<th style="padding-right: 1em">Average<div style='font-size: 75%; color: #666'>(median)</div></th>
+					<th style="padding-right: 1em">Prepare For<div style='font-size: 75%; color: #666'>(85<sup>th</sup> pctile)</div></th>
+					<th>Cancelled<div style='font-size: 75%; color: #666'>or diverted</div></th>
+				</tr>
 
+				<?php
+				if ($SummaryGoodWeather["Ontime"]["count"] + $SummaryBadWeather["Ontime"]["count"] < 20) {
+					FlightCondition('', $Summary, 1, 0, $Summary);
+				}
+				FlightCondition('In Good Weather...', $SummaryGoodWeather, 10, 0, $Summary);
+				FlightCondition('In Bad Weather...', $SummaryBadWeather, 10, 0, $Summary);
+				FlightCondition('In Fog...', $SummaryFog, 20, 1, $Summary);
+				FlightCondition('In Rain...', $SummaryRain, 20, 1, $Summary);
+				FlightCondition('In Snow...', $SummarySnow, 20, 1, $Summary);
+				FlightCondition('In Hail...', $SummaryHail, 20, 1, $Summary);
+				FlightCondition('In Thunder...', $SummaryThunder, 20, 1, $Summary);
+				FlightCondition('Tornado Spotted...', $SummaryTornado, 10, 1, $Summary);
+				?>
+				</table>
+				
+				<?php
+				if ($WeatherInfo['Weather']['station'] != '') {
+					$curobs = simplexml_load_file('http://www.weather.gov/xml/current_obs/' . $WeatherInfo['Weather']['station']  . '.xml');
+					
+					echo "<p>";
+					echo "<img src=\"" . $curobs->icon_url_base . $curobs->icon_url_name . "\" style=\"float: left; margin: 4px 1em 1em 0px\" border='1'/>";
+					echo "Current weather is ";
+					echo $curobs->temperature_string;
+					echo " and ";
+					echo $curobs->weather;
+					echo ", ";
+					echo $curobs->relative_humidity;
+					echo "% humidity, and ";
+					echo $curobs->visibility_mi;
+					echo " miles visibility <span style='font-size: 70%; color: #555'>at <a href=\"";
+					echo 'http://www.weather.gov/xml/current_obs/' . $WeatherInfo['Weather']['station']  . '.xml';
+					echo "\">";
+					echo $WeatherInfo['Weather']['station_descr'];
+					echo "</a> as of ";
+					echo $curobs->observation_time_rfc822;
+					echo "</span>.</p>";
+					
+				}
+				?>
+				</td>
+				<td style="padding-left: 2em">
+					<div id="chart_div_outcome"/>
+				</td>
+				</tr>
+				</table>
+				
+				<br />
+				
+				<?php if ($To != '' && $Carrier == '') { ?>
+				<div class="header">
+					Most On-Time Flights &amp; Airlines
+				</div>
+
+				<br/>
+				
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 				<tr valign="top">
 					<td align="left">
@@ -261,43 +384,21 @@ if($Day != '')
 						<tr>
 							<td><div><b>Flight</b></div></td>
 							<td><div><b>Averge Arrival</b></div></td>
-							<td><div><b>Num Flights</b></div></td>
 						</tr>
 						
 						<?php
 						$i = 0;
-						foreach($FlightsFrom as $flight)
+						foreach($BestFlights as $flight)
 						{
 							$style = '';
-							
-							$delay = round($flight[0]['AvgArrDelay'], 1);
-							
-							$delay_style = '';
-							$delay_str = '';
-							if($delay < 0)
-							{
-								$delay_str = abs($delay).' min. early';
-								$delay_style = 'color: green;';
-							}
-							elseif($delay > 0)
-							{
-								$delay_str = $delay.' min. late';
-								$delay_style = 'color: red;';
-							}
-							else
-							{
-								$delay_str = 'on time';
-								$delay_style = 'color: black;';
-							}
-							
 							if(($i % 2) == 0)
 								$style = 'background-color: #DDDDDD;';
 						?>
 						
 						<tr style="<?php echo $style; ?>">
-							<td><a href="/flights?airline=<?php echo $flight['Log']['UniqueCarrier']; ?>&flight_num=<?php echo $flight['Log']['FlightNum']; ?>&from=<?php echo $From; ?>&to=<?php echo $To; ?>&day=<?php echo $Day; ?>"><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']].' '.$flight['Log']['FlightNum']; ?></a></td>
-							<td><div style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div></td>
-							<td><div><?php echo $flight[0]['NumScheduled']; ?></div></td>
+							<td><a href="/flights/<?php echo $flight['Ontime']['carrier']; ?>/<?php echo $flight['Ontime']['flightnum']; ?>/<?php echo $From; ?>/<?php echo $To; ?>"><?php echo $AirlineNames[$flight['Ontime']['carrier']].' '.$flight['Ontime']['flightnum']; ?></a>
+							<span style='font-size: 75%; color: #666'>(<?php echo $flight['Ontime']['count']; ?> flights)</span></td>
+							<td><?php DelayText($flight['Ontime']['delay_median']) ?></td>
 						</tr>
 						
 						<?php
@@ -315,52 +416,25 @@ if($Day != '')
 				
 					</td>
 				</tr>
-				</table>
+				</table>	
+				<?php } ?>
 				
-				<br /><br />
+				<?php if ($Carrier != '' && $FlightComparison != '') { ?>
+					<div class="header">Comparison to Other Flights Between <?php echo $From ?> and <?php echo $To ?></div>
+					<p>This flight's average arrival delay is <?php echo $FlightComparison ?> of <a href="/routes/<?php echo $From ?>/<?php echo $To ?>">other flights between these airports</a>.</p>
+				<?php } ?>
 				
-				<div class="header">
-					<?php
-					if($Day == '')
-					{
-					?>
-					Best Days and Times to Fly
-					<?php
-					}
-					else
-					{
-					?>
-					Best Times to Fly
-					<?php
-					}
-					?>
-				</div>
-				<div style="color: #777777;">
-					Data from 
-					<?php
-					$i = 0;
-					$num = count($Months);
-					foreach($Months as $month => $foo)
-					{
-						echo $month;
-						
-						if($i < ($num - 1))
-							echo ', ';
-					}
-					?>
-				</div>
-				<br />
+				<br/>
+			
+				<?php } else { ?>
+					
+				<p>There are no records for flights between these airports. Instead see <a href="/airports/<?php echo $From ?>">all flights departing from <?php echo $From ?></a>.</p>
+					
+				<?php } ?>
 				
-				<div>
-					<u>From <b><?php echo $FromCity; ?> (<?php echo $From; ?>)</b> to <b><?php echo $ToCity; ?> (<?php echo $To; ?>)</b><?php echo $day_str; ?>:</u>
-				</div>
+				<div class="header">Best Days and Times to Fly from <?php echo $From ?></div>
+				<div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div>
 				
-				<br />
-				
-				<?php
-				if($Day == '')
-				{
-				?>
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 				<tr>
 					
@@ -372,16 +446,59 @@ if($Day != '')
 					</td>
 				</tr>
 				</table>
-				<?php
-				}
-				else
-				{
-				?>
-				<div id='chart_div_time_from'></div>
-				<?php
-				}
-				?>
 
+				<div class="header" style="margin-top: 1em">
+					Holiday Delays at <?php echo $From ?>
+				</div>
+				<div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div>
+				<br/>
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
+				<tr valign="top">
+					<td align="left">
+					
+						<table border=0 cellpadding=5 cellspacing=1>
+						<tr>
+							<td><div><b>Holiday</b></div></td>
+							<td><div><b>Averge Arrival</b></div></td>
+							<td><div><b>Prepare For</b></div></td>
+							<td><div><b>Cancelled</b></div></td>
+						</tr>
+						
+						<tr style="font-style: italic">
+							<td>Most Days</td>
+							<td><?php DelayText($Summary['Ontime']['delay_median'])?></td>
+							<td><?php DelayText($Summary['Ontime']['delay_85thpctile'])?></td>
+							<td><?php echo round($Summary['Ontime']['pct_cancel']*100)?>%</td>
+						</tr>
+						
+						<?php
+						$i=1;
+						foreach($Holidays as $flight)
+						{
+							if ($flight['Ontime']['count'] == 0) { continue; }
+							$i++;
+							$style = '';
+							if(($i % 2) == 0)
+								$style = 'background-color: #DDDDDD;';
+						?>
+						
+						<tr style="<?php echo $style; ?>">
+							<td><?php echo $HolidayNames[$flight['Ontime']['holiday']] ?>
+							<span style='font-size: 75%; color: #666'>(<?php echo $flight['Ontime']['count']; ?> flights)</span></td>
+							<td><?php DelayText($flight['Ontime']['delay_median'])?></td>
+							<td><?php DelayText($flight['Ontime']['delay_85thpctile'])?></td>
+							<td><?php echo round($flight['Ontime']['pct_cancel']*100)?>%</td>
+						</tr>
+						<?php
+						}
+						?>
+						
+						
+						</table>
+				
+					</td>
+				</tr>
+				</table>				
 			</td>
 		</tr>
 		</table>

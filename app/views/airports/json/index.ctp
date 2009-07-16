@@ -3,7 +3,6 @@
 $obj = array(
 	'routes' => array(
 		array(
-			'months' => array(),
 			'from' => array(
 				'code' => '',
 				'city' => ''

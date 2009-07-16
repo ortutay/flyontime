@@ -9,7 +9,7 @@
 			<td align="left">
 
 				<div class="header">
-					Disambiguate Airports
+					Choose Airports
 				</div>
 				
 				<br />

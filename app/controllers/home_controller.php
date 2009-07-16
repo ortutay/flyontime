@@ -18,15 +18,15 @@ class HomeController extends AppController {
 		$this->layout = 'blank';
 		
 		$this->Enum =& ClassRegistry::init('Enum');
-		$this->Log =& ClassRegistry::init('Log');
+		$this->Ontime =& ClassRegistry::init('Ontime');
 		
-		$airlines_used = $this->Log->find('all',
+		$airlines_used = $this->Ontime->find('all',
 			array(
 				'fields' => array(
-					'Log.UniqueCarrier'
+					'carrier'
 				),
 				'group' => array(
-					'Log.UniqueCarrier'
+					'carrier'
 				)
 			)
 		);
@@ -35,7 +35,7 @@ class HomeController extends AppController {
 		
 		foreach($airlines_used as $airline)
 		{
-			$airlines_used_arr[] = $airline['Log']['UniqueCarrier'];
+			$airlines_used_arr[] = $airline['Ontime']['carrier'];
 		}
 		
 		$airlines = $this->Enum->find('all',

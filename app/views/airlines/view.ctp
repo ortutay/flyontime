@@ -22,17 +22,17 @@
 	data.addColumn('string', 'Flight Outcome');
 	data.addColumn('number', 'Number of Flights');
 	data.addRows(4);
-	data.setValue(0, 0, 'Arrived On-Time');
-	data.setValue(0, 1, <?php echo ($Stats['NumScheduled'] - $Stats['NumCancelled'] - $Stats['NumDiverted'] - $Stats['NumDelayed']); ?>);
-	data.setValue(1, 0, 'Arrived Late');
-	data.setValue(1, 1, <?php echo $Stats['NumDelayed']; ?>);
-	data.setValue(2, 0, 'Cancelled');
-	data.setValue(2, 1, <?php echo $Stats['NumCancelled']; ?>);
-	data.setValue(3, 0, 'Diverted');
-	data.setValue(3, 1, <?php echo $Stats['NumDiverted']; ?>);
+	data.setValue(0, 0, 'On-Time');
+	data.setValue(0, 1, <?php echo $Stats['pct_ontime']; ?>);
+	data.setValue(1, 0, '5-20 Min. Delay');
+	data.setValue(1, 1, <?php echo (1.0 - $Stats['pct_ontime'] - $Stats['pct_cancel'] - $Stats['pct_20mindelay']); ?>);
+	data.setValue(2, 0, '>20 Min. Delay');
+	data.setValue(2, 1, <?php echo $Stats['pct_20mindelay']; ?>);
+	data.setValue(3, 0, 'Cancelled/Diverted');
+	data.setValue(3, 1, <?php echo $Stats['pct_cancel']; ?>);
 
 	var chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
-	chart.draw(data, {width: 400, height: 240, is3D: true});
+	chart.draw(data, {width: 400, height: 100, is3D: true});
   }
   
   function drawBarChart() {
@@ -47,12 +47,12 @@
 	$i = 0;
 	foreach($Routes as $route)
 	{
-	if(abs($route[0]['NumScheduled']) > $max_abs_data_value)
-		$max_abs_data_value = abs($route[0]['NumScheduled']);
+	if(abs($route[0]['count']) > $max_abs_data_value)
+		$max_abs_data_value = abs($route[0]['count']);
 	?>
 	
-	data.setValue(<?php echo $i; ?>, 0, '<?php echo $route['Log']['OriginCityName'].' ('.$route['Log']['Origin'].') - '.$route['Log']['DestCityName'].' ('.$route['Log']['Dest'].')'; ?>');
-	data.setValue(<?php echo $i; ?>, 1, <?php echo $route[0]['NumScheduled']; ?>);
+	data.setValue(<?php echo $i; ?>, 0, '<?php echo $route['Ontime']['origin'].' ('.$route['Ontime']['origin'].') - '.$route['Ontime']['dest'].' ('.$route['Ontime']['dest'].')'; ?>');
+	data.setValue(<?php echo $i; ?>, 1, <?php echo $route[0]['count']; ?>);
 	
 	<?php
 	$i++;
@@ -73,12 +73,15 @@
     
 	foreach($Routes as $route)
 	{
-	$line_thickness = round((abs($route[0]['NumScheduled'])/$max_abs_data_value)*$max_line_thickness);
+	$line_thickness = round((abs($route[0]['count'])/$max_abs_data_value)*$max_line_thickness);
 	if($line_thickness < 1)
 		$line_thickness = 1;
+	if (!isset( $Geocodes[$route['Ontime']['origin']]['Lng'])) { continue; }
+	if (!isset( $Geocodes[$route['Ontime']['dest']]['Lng'])) { continue; }
 	?>
     
-	map.addOverlay( new google.maps.Polyline([new google.maps.LatLng(<?php echo $Geocodes[$route['Log']['Origin']]['Lat']; ?>, <?php echo $Geocodes[$route['Log']['Origin']]['Lng']; ?>), new google.maps.LatLng(<?php echo $Geocodes[$route['Log']['Dest']]['Lat']; ?>, <?php echo $Geocodes[$route['Log']['Dest']]['Lng']; ?>)], "#ff0000", <?php echo $line_thickness; ?>) );
+    var polyOptions = {geodesic:true, clickable:false};
+	map.addOverlay( new google.maps.Polyline([new google.maps.LatLng(<?php echo $Geocodes[$route['Ontime']['origin']]['Lat']; ?>, <?php echo $Geocodes[$route['Ontime']['origin']]['Lng']; ?>), new google.maps.LatLng(<?php echo $Geocodes[$route['Ontime']['dest']]['Lat']; ?>, <?php echo $Geocodes[$route['Ontime']['dest']]['Lng']; ?>)], "#ff0000", <?php echo $line_thickness; ?>, .75, polyOptions) );
 	
 	<?php
 	}
@@ -97,19 +100,8 @@
 				<div class="header">
 					<?php echo $FullName; ?>
 				</div>
-				<div style="color: #777777;">
-					Data from 
-					<?php
-					$i = 0;
-					$num = count($Months);
-					foreach($Months as $month => $foo)
-					{
-						echo $month;
-						
-						if($i < ($num - 1))
-							echo ', ';
-					}
-					?>
+				<div style="color: #777777; margin-bottom: 1em;">
+					Based on records from <?php echo $Stats['firstdate'] ?> to <?php echo $Stats['lastdate'] ?>
 				</div>
 				<br />
 				
@@ -118,9 +110,9 @@
 					<td align="left">
 						
 						<div>
-							Total Flights Scheduled: <?php echo $Stats['NumScheduled']; ?>
+							Total Flights Scheduled: <?php echo $Stats['count']; ?>
 							<br /><br />
-							Average Minutes Arriving Late: <?php echo round($Stats['TotalArrivalDelay']/($Stats['NumScheduled'] - $Stats['NumCancelled'] - $Stats['NumDiverted']), 1); ?>
+							Average Delay: <?php echo $Stats['delay_median'] ?>
 						</div>
 						
 					</td>

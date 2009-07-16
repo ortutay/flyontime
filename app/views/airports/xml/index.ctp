@@ -1,34 +1,50 @@
-<routes>
+<arrival_delays>
 	<route>
-		<months>
-			<?php
-			foreach($Months as $month => $foo)
-			{
-			?>
-			<month><?php echo $month; ?></month>
-			<?php
-			}
-			?>
-		</months>
 		<from>
 			<code><?php echo $From; ?></code>
 			<city><?php echo $FromCity; ?></city>
 		</from>
+		<?php if ($To != '') { ?>
 		<to>
 			<code><?php echo $To; ?></code>
 			<city><?php echo $ToCity; ?></city>
 		</to>
-		<day><?php echo $Day; ?></day>
+		<?php } ?>
+		<?php if ($Carrier != '') { ?>
+		<carrier>
+			<unique_carrier><?php echo $Carrier; ?></unique_carrier>
+			<name><?php echo $CarrierName; ?></name>
+		</carrier>
+		<flight_number><?php echo $FlightNum; ?></flight_number>
+		<?php } ?>
+		<summary>
+			<count><?php echo $Summary['Ontime']['count']; ?></count>
+			<on_time><?php echo $Summary['Ontime']['pct_ontime']*100; ?></on_time>
+			<short_delay><?php echo (1 - $Summary['Ontime']['pct_ontime'] - $Summary['Ontime']['pct_20mindelay'] - $Summary['Ontime']['pct_cancel'])*100; ?></short_delay>
+			<long_delay><?php echo $Summary['Ontime']['pct_20mindelay']*100; ?></long_delay>
+			<cancelled><?php echo $Summary['Ontime']['pct_cancel']*100; ?></cancelled>
+			<percentile_15><?php echo $Summary['Ontime']['delay_15thpctile']; ?></percentile_15>
+			<percentile_50><?php echo $Summary['Ontime']['delay_median']; ?></percentile_50>
+			<percentile_85><?php echo $Summary['Ontime']['delay_85thpctile']; ?></percentile_85>
+		</summary>
+		<?php if ($To != '') { ?>
 		<flights>
 			<?php
-			foreach($FlightsFrom as $flight)
+			foreach($BestFlights as $flight)
 			{
 			?>
 			<flight>
-				<unique_carrier><?php echo $flight['Log']['UniqueCarrier']; ?></unique_carrier>
-				<airline_short_name><?php echo $AirlineNames[$flight['Log']['UniqueCarrier']]; ?></airline_short_name>
-				<flight_num><?php echo $flight['Log']['FlightNum']; ?></flight_num>
-				<average_arrival_delay><?php echo $flight[0]['AvgArrDelay']; ?></average_arrival_delay>
+				<unique_carrier><?php echo $flight['Ontime']['carrier']; ?></unique_carrier>
+				<airline_short_name><?php echo $AirlineNames[$flight['Ontime']['carrier']]; ?></airline_short_name>
+				<flight_num><?php echo $flight['Ontime']['flightnum']; ?></flight_num>
+				<count><?php echo $flight['Ontime']['count']; ?></count>
+				<on_time><?php echo $flight['Ontime']['pct_ontime']*100; ?></on_time>
+				<short_delay><?php echo (1 - $flight['Ontime']['pct_ontime'] - $flight['Ontime']['pct_20mindelay'] - $flight['Ontime']['pct_cancel'])*100; ?></short_delay>
+				<long_delay><?php echo $flight['Ontime']['pct_20mindelay']*100; ?></long_delay>
+				<cancelled><?php echo $flight['Ontime']['pct_cancel']*100; ?></cancelled>
+				<percentile_15><?php echo $flight['Ontime']['delay_15thpctile']; ?></percentile_15>
+				<percentile_50><?php echo $flight['Ontime']['delay_median']; ?></percentile_50>
+				<percentile_85><?php echo $flight['Ontime']['delay_85thpctile']; ?></percentile_85>
 			</flight>
 			<?php
 			}
@@ -36,30 +52,36 @@
 		</flights>
 		<airlines>
 			<?php
-			foreach($AirlinesFrom as $airline)
+			foreach($BestAirlines as $flight)
 			{
 			?>
 			<airline>
-				<unique_carrier><?php echo $airline['Log']['UniqueCarrier']; ?></unique_carrier>
-				<airline_short_name><?php echo $AirlineNames[$airline['Log']['UniqueCarrier']]; ?></airline_short_name>
-				<percent_on_time><?php echo $airline[0]['PercentOnTime']; ?></percent_on_time>
+				<unique_carrier><?php echo $flight['Ontime']['carrier']; ?></unique_carrier>
+				<airline_short_name><?php echo $AirlineNames[$flight['Ontime']['carrier']]; ?></airline_short_name>
+				<count><?php echo $flight[0]['carrier_count']; ?></count>
+				<on_time><?php echo $flight[0]['carrier_ontime']/$flight[0]['carrier_count']*100; ?></on_time>
 			</airline>
 			<?php
 			}
 			?>
 		</airlines>
+		<?php } ?>
+		<?php if ($To == '') { ?>
 		<days>
 			<?php
 			foreach($DaysFrom as $day)
 			{
 			?>
 			<day>
-				<index><?php echo $day['Log']['DayOfWeek']; ?></index>
-				<scheduled><?php echo $day[0]['NumScheduled']; ?></scheduled>
-				<on_time><?php echo ($day[0]['NumScheduled'] - $day[0]['NumDelayed'] - $day[0]['NumCancelled'] - $day[0]['NumDiverted']); ?></on_time>
-				<late><?php echo $day[0]['NumDelayed']; ?></late>
-				<cancelled><?php echo $day[0]['NumCancelled']; ?></cancelled>
-				<diverted><?php echo $day[0]['NumDiverted']; ?></diverted>
+				<index><?php echo $day['Ontime']['dayofweek']; ?></index>
+				<count><?php echo $day['Ontime']['count']; ?></count>
+				<on_time><?php echo $day['Ontime']['pct_ontime']*100; ?></on_time>
+				<short_delay><?php echo (1 - $day['Ontime']['pct_ontime'] - $day['Ontime']['pct_20mindelay'] - $day['Ontime']['pct_cancel'])*100; ?></short_delay>
+				<long_delay><?php echo $day['Ontime']['pct_20mindelay']*100; ?></long_delay>
+				<cancelled><?php echo $day['Ontime']['pct_cancel']*100; ?></cancelled>
+				<percentile_15><?php echo $day['Ontime']['delay_15thpctile']; ?></percentile_15>
+				<percentile_50><?php echo $day['Ontime']['delay_median']; ?></percentile_50>
+				<percentile_85><?php echo $day['Ontime']['delay_85thpctile']; ?></percentile_85>
 			</day>
 			<?php
 			}
@@ -67,20 +89,24 @@
 		</days>
 		<times>
 			<?php
-			foreach($TimesFrom as $time)
+			foreach($TimesFrom as $day)
 			{
 			?>
 			<time>
-				<block><?php echo $time['Log']['DepTimeBlk']; ?></block>
-				<scheduled><?php echo $time[0]['NumScheduled']; ?></scheduled>
-				<on_time><?php echo ($time[0]['NumScheduled'] - $time[0]['NumDelayed'] - $time[0]['NumCancelled'] - $time[0]['NumDiverted']); ?></on_time>
-				<late><?php echo $time[0]['NumDelayed']; ?></late>
-				<cancelled><?php echo $time[0]['NumCancelled']; ?></cancelled>
-				<diverted><?php echo $time[0]['NumDiverted']; ?></diverted>
+				<hour><?php echo $day['Ontime']['hour']; ?></hour>
+				<count><?php echo $day['Ontime']['count']; ?></count>
+				<on_time><?php echo $day['Ontime']['pct_ontime']*100; ?></on_time>
+				<short_delay><?php echo (1 - $day['Ontime']['pct_ontime'] - $day['Ontime']['pct_20mindelay'] - $day['Ontime']['pct_cancel'])*100; ?></short_delay>
+				<long_delay><?php echo $day['Ontime']['pct_20mindelay']*100; ?></long_delay>
+				<cancelled><?php echo $day['Ontime']['pct_cancel']*100; ?></cancelled>
+				<percentile_15><?php echo $day['Ontime']['delay_15thpctile']; ?></percentile_15>
+				<percentile_50><?php echo $day['Ontime']['delay_median']; ?></percentile_50>
+				<percentile_85><?php echo $day['Ontime']['delay_85thpctile']; ?></percentile_85>
 			</time>
 			<?php
 			}
 			?>
 		</times>
+		<?php } ?>
 	</route>
-</routes>
+</arrival_delays>

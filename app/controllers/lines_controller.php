@@ -29,7 +29,6 @@ class LinesController extends AppController {
 	
 	function security($Mode = '')
 	{
-		$this->Log =& ClassRegistry::init('Log');
 		$this->Enum =& ClassRegistry::init('Enum');
 		
 		//detect mobile phone

@@ -6,15 +6,15 @@ class AirlinesController extends AppController {
 	function index()
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
-		$this->Log =& ClassRegistry::init('Log');
+		$this->Ontime =& ClassRegistry::init('Ontime');
 		
-		$airlines_used = $this->Log->find('all',
+		$airlines_used = $this->Ontime->find('all',
 			array(
 				'fields' => array(
-					'Log.UniqueCarrier'
+					'carrier'
 				),
 				'group' => array(
-					'Log.UniqueCarrier'
+					'carrier'
 				)
 			)
 		);
@@ -23,7 +23,7 @@ class AirlinesController extends AppController {
 		
 		foreach($airlines_used as $airline)
 		{
-			$airlines_used_arr[] = $airline['Log']['UniqueCarrier'];
+			$airlines_used_arr[] = $airline['Ontime']['carrier'];
 		}
 		
 		$airlines = $this->Enum->find('all',
@@ -43,7 +43,7 @@ class AirlinesController extends AppController {
 	
 	function view($UniqueCarrier = '')
 	{
-		$this->Log =& ClassRegistry::init('Log');
+		$this->Ontime =& ClassRegistry::init('Ontime');
 		$this->Enum =& ClassRegistry::init('Enum');
 		
 		if($UniqueCarrier == '')
@@ -58,53 +58,54 @@ class AirlinesController extends AppController {
 			)
 		);
 		
-		$airline_stats = $this->Log->find('all',
+		$airline_stats = $this->Ontime->find('all',
 			array(
-				'fields' => array(
-					'COUNT(UniqueCarrier) as NumScheduled',
-					'SUM(Cancelled) as NumCancelled',
-					'SUM(Diverted) as NumDiverted',
-					'SUM(ArrDel15) as NumDelayed',
-					'SUM(ArrDelay) as TotalArrivalDelay'
-				),
+				'fields' => array('firstdate', 'lastdate', 'count', 'pct_cancel', 'pct_ontime', 'pct_20mindelay', 'delay_median'),
 				'conditions' => array(
-					'Log.UniqueCarrier' => $UniqueCarrier
+					'origin' => '',
+					'dest' => '',
+					'carrier' => $UniqueCarrier,
+					'flightnum' => '0',
+					'dayofweek' => '0',
+					'hour' => '',
+					'holiday' => '',
+					'condition' => 'all')
 				)
-			)
 		);
 		
-		$routes = $this->Log->find('all',
+		$routes = $this->Ontime->find('all',
 			array(
 				'fields' => array(
-					'Origin',
-					'OriginCityName',
-					'Dest',
-					'DestCityName',
-					'Month',
-					'Year',
-					'COUNT(UniqueCarrier) as NumScheduled'
+					'origin',
+					'dest',
+					'sum(count) as count',
 				),
 				'conditions' => array(
-					'Log.UniqueCarrier' => $UniqueCarrier
+					'origin != ""',
+					'dest != ""',
+					'carrier' => $UniqueCarrier,
+					'flightnum != 0',
+					'dayofweek' => '0',
+					'hour' => '',
+					'holiday' => '',
+					'condition' => 'all'
 				),
 				'group' => array(
-					'Origin',
-					'Dest'
+					'origin',
+					'dest'
 				),
 				'order' => array(
-					'NumScheduled DESC'
+					'sum(count) DESC'
 				),
 				'limit' => 150
 			)
 		);
 		
-		$months = $this->GetMonths($routes);
-		$geocodes = $this->GetAirportGeocodes($routes, array('Origin', 'Dest'));
+		$geocodes = $this->GetAirportGeocodes($routes, array('origin', 'dest'));
 		
 		$this->set('FullName', $airline_enum['Enum']['description']);
-		$this->set('Stats', $airline_stats[0][0]);
+		$this->set('Stats', $airline_stats[0]['Ontime']);
 		$this->set('Routes', $routes);
-		$this->set('Months', $months);
 		$this->set('Geocodes', $geocodes);
 	}
 	
@@ -118,7 +119,7 @@ class AirlinesController extends AppController {
 			{
 				foreach($airports as $airport)
 				{
-					$airport_codes[] = $airport['Log'][$av];
+					$airport_codes[] = $airport['Ontime'][$av];
 				}
 			}
 		}
@@ -126,7 +127,7 @@ class AirlinesController extends AppController {
 		{
 			foreach($airports as $airport)
 			{
-				$airport_codes[] = $airport['Log'][$AirportValue];
+				$airport_codes[] = $airport['Ontime'][$AirportValue];
 			}
 		}
 		
@@ -153,20 +154,6 @@ class AirlinesController extends AppController {
 		}
 		
 		return $geocodes;
-	}
-	
-	private function GetMonths($flights)
-	{
-		$months = array();
-			
-		foreach($flights as $flight)
-		{
-			$date = $flight['Log']['Month'].'/1/'.$flight['Log']['Year'];
-			$date_str = date('F, Y', strtotime($date));
-			$months[$date_str] = '';
-		}
-		
-		return $months;
 	}
 
 }

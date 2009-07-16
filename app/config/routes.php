@@ -42,6 +42,25 @@
 		array('controller' => 'lines', 'action' => 'security_mobile', '')
 	);
 	
+	Router::connect(
+		'/airports/:from',
+		array('controller' => 'airports', 'action' => 'index')
+	);
+	
+	Router::connect(
+		'/routes/:from/:to',
+		array('controller' => 'airports', 'action' => 'index')
+	);
+
+	Router::connect(
+		'/flights/:carrier/:flightnum',
+		array('controller' => 'airports', 'action' => 'index')
+	);
+	Router::connect(
+		'/flights/:carrier/:flightnum/:from/:to',
+		array('controller' => 'airports', 'action' => 'index')
+	);
+
 	//AIRLINES
 	Router::connect(
 		'/airlines/:UniqueCarrier',

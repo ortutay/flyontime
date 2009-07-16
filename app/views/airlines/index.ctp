@@ -23,7 +23,7 @@
 			<td align="left">
 				<div>
 					<?php
-					for($i = 0; $i < floor(count($Airlines)/2); $i++)
+					for($i = 0; $i < ceil(count($Airlines)/2); $i++)
 					{
 					$airline = $Airlines[$i];
 					?>
@@ -40,7 +40,7 @@
 			<td align="left">
 				<div>
 					<?php
-					for($i = floor(count($Airlines)/2); $i < count($Airlines); $i++)
+					for($i = ceil(count($Airlines)/2); $i < count($Airlines); $i++)
 					{
 					$airline = $Airlines[$i];
 					?>
