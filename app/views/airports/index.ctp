@@ -309,7 +309,6 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				
 				<?php
 				// FAA airport delay data. Has general airport delays but not flight-specific delays.
-				$curaptdelays = simplexml_load_file('http://www.fly.faa.gov/flyfaa/xmlAirportStatus.jsp');
 				foreach ($curaptdelays->Delay_type as $delaytype) {
 					if (isset($delaytype->Airport_Closure_List)) {
 						foreach ($delaytype->Airport_Closure_List->Airport as $airport) {
@@ -382,8 +381,6 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				
 				<?php
 				if ($WeatherInfo['Weather']['station'] != '') {
-					$curobs = simplexml_load_file('http://www.weather.gov/xml/current_obs/' . $WeatherInfo['Weather']['station']  . '.xml');
-					
 					echo "<p>";
 					echo "<img src=\"" . $curobs->icon_url_base . $curobs->icon_url_name . "\" style=\"float: left; margin: 4px 1em 1em 0px\" border='1'/>";
 					echo "Current weather is ";
