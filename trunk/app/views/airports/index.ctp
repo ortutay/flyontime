@@ -190,10 +190,10 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 	?>
 
 	data_day_from.setValue(<?php echo $i; ?>, 0, '<?php echo GetDayName($day['Ontime']['dayofweek']); ?>');
-	data_day_from.setValue(<?php echo $i; ?>, 1, <?php echo $day['Ontime']['pct_ontime']*100; ?>);
-	data_day_from.setValue(<?php echo $i; ?>, 2, <?php echo (1-$day['Ontime']['pct_ontime']-$day['Ontime']['pct_20mindelay']-$day['Ontime']['pct_cancel'])*100; ?>);
-	data_day_from.setValue(<?php echo $i; ?>, 3, <?php echo $day['Ontime']['pct_20mindelay']*100; ?>);
-	data_day_from.setValue(<?php echo $i; ?>, 4, <?php echo $day['Ontime']['pct_cancel']*100; ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 1, <?php echo round($day['Ontime']['pct_ontime']*100); ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 2, <?php echo 100-round($day['Ontime']['pct_ontime']*100)-round($day['Ontime']['pct_20mindelay']*100)-round($day['Ontime']['pct_cancel']*100); ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 3, <?php echo round($day['Ontime']['pct_20mindelay']*100); ?>);
+	data_day_from.setValue(<?php echo $i; ?>, 4, <?php echo round($day['Ontime']['pct_cancel']*100); ?>);
 
 	<?php
 	$i++;
@@ -201,7 +201,7 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 	?>
 
 	var chart_day_from = new google.visualization.BarChart(document.getElementById('chart_div_day_from'));
-	chart_day_from.draw(data_day_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: '% of Flights', title: 'Day of Week', min: 0});
+	chart_day_from.draw(data_day_from, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: '% of Flights', title: 'Day of Week', min: 0, max: 100});
 
 	//TIME FROM
 	var data_time_from = new google.visualization.DataTable();
@@ -219,10 +219,10 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 	?>
 	
 	data_time_from.setValue(<?php echo $i; ?>, 0, '<?php echo GetTimeName($time['Ontime']['hour']); ?>');
-	data_time_from.setValue(<?php echo $i; ?>, 1, <?php echo $time['Ontime']['pct_ontime']*100; ?>);
-	data_time_from.setValue(<?php echo $i; ?>, 2, <?php echo (1-$time['Ontime']['pct_ontime']-$time['Ontime']['pct_20mindelay']-$time['Ontime']['pct_cancel'])*100; ?>);
-	data_time_from.setValue(<?php echo $i; ?>, 3, <?php echo $time['Ontime']['pct_20mindelay']*100; ?>);
-	data_time_from.setValue(<?php echo $i; ?>, 4, <?php echo $time['Ontime']['pct_cancel']*100; ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 1, <?php echo round($time['Ontime']['pct_ontime']*100); ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 2, <?php echo 100-round($time['Ontime']['pct_ontime']*100)-round($time['Ontime']['pct_20mindelay']*100)-round($time['Ontime']['pct_cancel']*100); ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 3, <?php echo round($time['Ontime']['pct_20mindelay']*100); ?>);
+	data_time_from.setValue(<?php echo $i; ?>, 4, <?php echo round($time['Ontime']['pct_cancel']*100); ?>);
 
 	<?php
 	$i++;
