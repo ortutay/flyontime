@@ -302,11 +302,55 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				</h1>
 				
 				<?php if ($Summary['Ontime']['count'] > 0) { ?>
-				
 				<div class="info" style="margin-bottom: 2em;">
 					Based on <?php echo $Summary['Ontime']['count'] ?> flights from <?php echo $Summary['Ontime']['firstdate'] ?> to <?php echo $Summary['Ontime']['lastdate'] ?>
 				</div>
+				<?php } ?>
+				
+				<?php
+				// FAA airport delay data. Has general airport delays but not flight-specific delays.
+				$curaptdelays = simplexml_load_file('http://www.fly.faa.gov/flyfaa/xmlAirportStatus.jsp');
+				foreach ($curaptdelays->Delay_type as $delaytype) {
+					if (isset($delaytype->Airport_Closure_List)) {
+						foreach ($delaytype->Airport_Closure_List->Airport as $airport) {
+							if ($airport->ARPT == $From) {
+								echo "<p class=\"currentdelay\">The FAA reports that " . $airport->ARPT . " is currently closed due to " . $airport->Reason . "! It is scheduled to reopen at " . $airport->Reopen . " (since " . $airport->Start . ")</p>";
+							}
+						}
+					}
+					if (isset($delaytype->Ground_Stop_List)) {
+						foreach ($delaytype->Ground_Stop_List->Program as $program) {
+							if ($program->ARPT == $From || $program->ARPT == $To) {
+								echo "<p class=\"currentdelay\">The FAA reports that " . $program->ARPT . " has currently stopped ground traffic due to " . $program->Reason . " but is expected to resume flights at " . $program->End_Time . ".</p>";
+							}
+						}
+					}
+					if (isset($delaytype->Ground_Delay_List)) {
+						foreach ($delaytype->Ground_Delay_List->Ground_Delay as $grnddelay) {
+							if ($grnddelay->ARPT == $From || $grnddelay->ARPT == $To) {
+								echo "<p class=\"currentdelay\">The FAA reports that " . $grnddelay->ARPT . " is currently having ground delays around " . $grnddelay->Avg . " due to " . $grnddelay->Reason . ".</p>";
+							}
+						}
+					}
+					if (isset($delaytype->Arrival_Departure_Delay_List)) {
+						foreach ($delaytype->Arrival_Departure_Delay_List->Delay as $delay) {
+							$arpt = $delay->ARPT;
+							foreach ($delay->Arrival_Departure as $ad) {
+								if (($arpt == $From && $ad["Type"] == "Departure") || ($arpt == $To && $ad["Type"] == "Arrival")) {
+									if ($delay->Arrival_Departure->Trend == "Decreasing") {
+										$trend = "but the delay is improving";
+									} else if ($delay->Arrival_Departure->Trend == "Increasing") {
+										$trend = "and is getting worse";
+									}
+									echo "<p class=\"currentdelay\">The FAA reports that " . $delay->ARPT . " is currently having departure delays of " . $delay->Arrival_Departure->Min . " to " . $delay->Arrival_Departure->Max . " due to " . $delay->Reason . " " . $trend . ".</p>";
+								}
+							}
+						}
+					}
+				}
+				?>
 	
+				<?php if ($Summary['Ontime']['count'] > 0) { ?>
 				<div class="header">
 					Flight Delay Summary
 				</div>
