@@ -71,3 +71,11 @@ select.big
 	border: 1px solid black;
 	font-size: 20px;
 }
+
+.currentdelay {
+	margin: 1em 0px 1em 0px;
+	border: 1px dashed red;
+	padding: .5em;
+	color: red;
+}
+

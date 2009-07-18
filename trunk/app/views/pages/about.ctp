@@ -40,7 +40,8 @@
 					
 					<p>Data sources:</p>
 					<ul>
-					<li><a href="http://www.data.gov/details/123">Airline On-Time Performance</a> from the Bureau of Transportation Statistics</li>
+					<li>Historical <a href="http://www.data.gov/details/123">Airline On-Time Performance</a> from the Bureau of Transportation Statistics</li>
+					<li>Current <a href="http://www.fly.faa.gov/flyfaa/usmap.jsp">Airport Conditions</a> from the Federal Aviation Administration</li>
 					<li><a href="http://www7.ncdc.noaa.gov/CDO/cdoselect.cmd?datasetabbv=GSOD">Historical Weather Reports</a> from the National Oceanic and Atmospheric Administration</li>
 					<li><a href="http://www.nws.noaa.gov/">Current Weather Conditions</a> from the National Weather Service (NOAA)</li>
 					</ul>
