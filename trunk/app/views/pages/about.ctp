@@ -53,6 +53,7 @@
 					<br /><br />
 					
 					<ul>
+						<li><a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye" target="_blank">WashingtonPost.com</a> - 7/21/2009</li>
 						<li><a href="http://www.youtube.com/watch?v=9HZ-BESVVck" target="_blank">White House YouTube Channel</a> (at time 22:08) - 7/1/2009</li>
 						<li><a href="http://www.politico.com/news/stories/0609/24118.html" target="_blank">Politico.com</a> - 6/24/2009</li>
 					</ul>

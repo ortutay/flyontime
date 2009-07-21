@@ -62,6 +62,12 @@
 	);
 	
 	Router::connect(
+		'/m/lines/security/cancel/:airport',
+		array('controller' => 'lines', 'action' => 'security_mobile_cancel'),
+		array('airport' => '([A-Z]{3})')
+	);
+	
+	Router::connect(
 		'/m/lines/security/out/:airport',
 		array('controller' => 'lines', 'action' => 'security_mobile_out'),
 		array('airport' => '([A-Z]{3})')
