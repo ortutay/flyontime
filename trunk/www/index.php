@@ -42,7 +42,7 @@
  */
 	if (!defined('ROOT')) {
 		//define('ROOT', dirname(dirname(dirname(__FILE__))));
-		define('ROOT', '/home/tauberer/flyontime');
+		define('ROOT', DS.'alpha');
 	}
 /**
  * The actual directory name for the "app".
@@ -58,7 +58,7 @@
  */
 	if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 		//define('CAKE_CORE_INCLUDE_PATH', ROOT);
-		define('CAKE_CORE_INCLUDE_PATH', '/home/tauberer/flyontime/cake_1_2');
+		define('CAKE_CORE_INCLUDE_PATH', DS.'cake_1_2');
 	}
 
 /**
