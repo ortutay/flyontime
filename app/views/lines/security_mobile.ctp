@@ -1,250 +1,121 @@
-<?php $this->pageTitle = 'FlyOnTime.us'; 
+<?php $this->pageTitle = 'FlyOnTime.us'; ?>
 
-$title_msg = '';
-$button_msg = '';
-$form_action = '';
-$form_onsubmit = '';
-
-if($Mode == '')
-{
-	$title_msg = 'Find the current security line wait times:';
-	$button_msg = 'Search >>';
-	$form_action = '/m/lines/security';
-	$form_onsubmit = '';
-}
-elseif($Mode == 'in')
-{
-	$title_msg = 'Entering an airport security line?  Tell us where:';
-	$button_msg = 'Entering Line >>';
-	$form_action = '/m/lines/security/in';
-	$form_onsubmit = 'setTime()';
-}
-elseif($Mode == 'out')
-{
-	if($Diff == 0)
-	{
-		$title_msg = 'Be sure to click below when you leave the line:';
-		$button_msg = 'Leaving Line >>';
-		$form_action = '/m/lines/security/out';
-		$form_onsubmit = 'clearInterval()';
-	}
-	elseif($Diff > 0)
-	{
-		$title_msg = 'You were in line for:';
-		$button_msg = '';
-		$form_action = '';
-		$form_onsubmit = '';
-	}
-}
-
-?>
-
-<script type="text/javascript">
-	function setTime()
-	{
-		var _date = new Date();
-		var form_in = document.getElementById('form_in');
-		form_in.value = _date.getTime();
-		
-		return true;
-	}
-	
-</script>
-
-<div style="font-size: 14pt;">Fly<div style="color: #FF0000; display: inline; font-size: 14pt;">OnTime</div>.us</div>
+<div class="header">Airport Security</div>
 
 <hr />
+<div class="subheader">Enter Security Line</div>
+<hr />
 
-<br />
+<form method="GET" action="/m/disambiguate/airports">
 
-<?php
-if($Mode == '')
-{
-?>
-<div>
-	<a href="/m/lines/security/in">I'm entering a security line now</a>
-</div>
+	<input name="basepath" type="hidden" value="/m/lines/security/in/" />
+	<input name="noflash" type="hidden" value="1" />
 
-<br />
-<?php
-}
-?>
-
-	
-<div>
-	<b><?php echo $title_msg; ?></b>
-</div>
-
-<br />
-
-<form method="GET" action="<?php echo $form_action; ?>" onsubmit="<?php echo $form_onsubmit; ?>">
-
-	<?php
-	if($Mode == '' || $Mode == 'in')
-	{
-	?>
-	
-	<input name="in" type="hidden" value="" id="form_in" />
-	
-	<?php
-		if(count($Airports) == 0)
-		{
-	?>
-	
-	<hr />
-	
-	<?php
-		}
-		elseif(count($Airports) == 1)
-		{
-			if(isset($Delays))
-			{
-				foreach($Delays as $delay)
-				{
-	?>
-	
-	<hr />
-	<table border=0 cellpadding=5 cellspacing=0 width="100%">
+	<table border=0 cellpadding=3 cellspacing=0 width="100%">
 	<tr>
 		<td width="5px"></td>
-		<td align="left"><div><?php echo $delay['Line']['intimeblk30']; ?></div></td>
-		<td align="right"><div><b><?php echo round($delay[0]['AvgDiff']/60, 1); ?> min.</b></div></td>
-		<td width="5px"></td>
-	</tr>
-	</table>
-	
-	<?php
-				}
-	?>
-	
-	<hr />
-	
-	<?php
-			}
-		}
-		else
-		{
-			foreach($Airports as $airport)
-			{
-	?>
-	<hr />
-	<table border=0 cellpadding=5 cellspacing=0 width="100%">
-	<tr valign="middle">
-		<td align="left"><input type="radio" name="airport" value="<?php echo $airport['Enum']['code']; ?>" /></td>
-		<td align="left"><div><?php echo $airport['Enum']['description']; ?> (<?php echo $airport['Enum']['code']; ?>)</div></td>
-	</tr>
-	</table>
-	<?php
-			}
-	?>
-	
-	<hr />
-
-	<?php
-		}
-	?>
-	
-	<table border=0 cellpadding=10 cellspacing=0>
-	<tr>
 		<td align="left">
-			<div>Airport:</div></div>
+			<div>Airport Code:</div></div>
 		</td>
-		<td>
-			<input name="airport" type="text" class="big" style="width: 100px;" value="<?php echo $Airport; ?>" />
+		<td align="right">
+			<input name="from" type="text" class="big" style="width: 100px;" value="" />
 		</td>
-	</tr>
-	<tr>
-		<td colspan=2>
-			<div style="color: #666666; display: inline;">(e.g. "ORD", "LAX", etc.)</div>
-		</td>
+		<td width="5px"></td>
 	</tr>
 	</table>
-	
 	<hr />
 	
-	<?php
-	}
-	elseif($Mode == 'out')
-	{
-	?>
-	<input name="airport" type="hidden" value="<?php echo $Airport; ?>" />
+	<input type="submit" style="font-size: 18pt;" value="Entering Line Now >>" />
+
+</form>
+<br /><br />
+
+<hr />
+<div class="subheader">Search</div>
+<hr />
+
+<form method="GET" action="/m/disambiguate/airports">
+
+	<input name="basepath" type="hidden" value="/m/lines/security/" />
+	<input name="noflash" type="hidden" value="1" />
 	
-	<?php
-		if(isset($Diff) && $Diff > 0)
-		{
-	?>
-	
+	<table border=0 cellpadding=3 cellspacing=0 width="100%">
+	<tr>
+		<td width="5px"></td>
+		<td align="left">
+			<div>Airport Code:</div></div>
+		</td>
+		<td align="right">
+			<input name="from" type="text" class="big" style="width: 100px;" value="" />
+		</td>
+		<td width="5px"></td>
+	</tr>
+	</table>
 	<hr />
 	
-	<div style="font-size: 24pt;">
-		<?php echo round($Diff/60,1); ?> minutes
-	</div>
-	
+	<table border=0 cellpadding=3 cellspacing=0 width="100%">
+	<tr>
+		<td width="5px"></td>
+		<td align="left">
+			<div>Day:</div></div>
+		</td>
+		<td align="right">
+			<select name="day" class="big">
+				<option value=""></option>
+				<option value="1">Monday</option>
+				<option value="2">Tuesday</option>
+				<option value="3">Wednesday</option>
+				<option value="4">Thursday</option>
+				<option value="5">Friday</option>
+				<option value="6">Saturday</option>
+				<option value="7">Sunday</option>
+			</select>
+		</td>
+		<td width="5px"></td>
+	</tr>
+	</table>
 	<hr />
 	
-	<div>Thank you!</div>
-	<?php
-		}
-		else
-		{
-	?>
-	
-	<hr />
-	<div id="timer" style="font-size: 24pt;">Loading...</div>
-	
-	<script type="text/javascript">
-		var in_js = <?php echo $In_js; ?>;
-		
-		var timer_div = document.getElementById('timer');
-		setInterval("updateTime()", 1000);
-		
-		function updateTime()
-		{
-			var _date = new Date();
-			var diff = _date.getTime() - in_js;
-			var diff_sec = Math.floor(diff / 1000);
-			
-			var sec = diff_sec % 60;
-			sec = sec.toString();
-			if(sec.length == 1)
-				sec = '0'+sec;
-			
-			var min = (Math.floor(diff_sec / 60)) % 60;
-			min = min.toString();
-			if(min.length == 1)
-				min = '0'+min;
-				
-			var hour = Math.floor(diff_sec / 3600);
-			hour = hour.toString();
-			if(hour.length == 1)
-				hour = '0'+hour;
-			
-			if(Math.floor(diff_sec / 3600) > 0)
-				timer_div.innerHTML = hour + ':' + min + ':' + sec;
-			else
-				timer_div.innerHTML = min + ':' + sec;
-		}
-		
-	</script>
+	<table border=0 cellpadding=3 cellspacing=0 width="100%">
+	<tr>
+		<td width="5px"></td>
+		<td align="left">
+			<div>Time:</div></div>
+		</td>
+		<td align="right">
+			<select name="time" class="big">
+				<option value=""></option>
+				<option value="0">00:00 - 00:59</option>
+				<option value="1">01:00 - 01:59</option>
+				<option value="2">02:00 - 02:59</option>
+				<option value="3">03:00 - 03:59</option>
+				<option value="4">04:00 - 04:59</option>
+				<option value="5">05:00 - 05:59</option>
+				<option value="6">06:00 - 06:59</option>
+				<option value="7">07:00 - 07:59</option>
+				<option value="8">08:00 - 08:59</option>
+				<option value="9">09:00 - 09:59</option>
+				<option value="10">10:00 - 10:59</option>
+				<option value="11">11:00 - 11:59</option>
+				<option value="12">12:00 - 12:59</option>
+				<option value="13">13:00 - 13:59</option>
+				<option value="14">14:00 - 14:59</option>
+				<option value="15">15:00 - 15:59</option>
+				<option value="16">16:00 - 16:59</option>
+				<option value="17">17:00 - 17:59</option>
+				<option value="18">18:00 - 18:59</option>
+				<option value="19">19:00 - 19:59</option>
+				<option value="20">20:00 - 20:59</option>
+				<option value="21">21:00 - 21:59</option>
+				<option value="22">22:00 - 22:59</option>
+				<option value="23">23:00 - 23:59</option>
+			</select>
+		</td>
+		<td width="5px"></td>
+	</tr>
+	</table>
 	<hr />
 	
-	<?php
-		}
-	?>
-	
-	<br />
-	
-	<?php
-	}
-	?>
-	
-	<?php
-	if($button_msg != '')
-	{
-	?>
-	<input type="submit" style="font-size: 18pt;" value="<?php echo $button_msg; ?>" />
-	<?php
-	}
-	?>
-	
+	<input type="submit" style="font-size: 18pt;" value="Search >>" />
+
 </form>

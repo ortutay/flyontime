@@ -1,7 +1,7 @@
 <?php
 class LinesController extends AppController {
 	var $name = 'Lines';
-	var $components = array('Cookie', 'Disambiguate');
+	var $components = array('Cookie', 'Mobile');
 	
 	var $cookie_expires = 86400; // 1 days
 	
@@ -15,180 +15,284 @@ class LinesController extends AppController {
 		$this->Cookie->key = Configure::read('Security.salt');
 	}
 	
+	//================================
+	//Mobile Entry Points
+	//================================
+	
+	//entry point for /m/lines/security
+	function security_mobile()
+	{
+		$this->layout = 'mobile';
+		
+		if($this->IsInLine())
+		{
+			$airport = $this->Cookie->read('airport');
+			
+			if($airport != '')
+			{
+				$this->redirect('/m/lines/security/wait/'.$airport);
+			}
+			else
+			{
+				$this->ResetCookies();
+			}
+		}
+	}
+	
+	//entry point for /m/lines/security/:airport
+	function security_mobile_search($airport)
+	{
+		$this->layout = 'mobile';
+		
+		if($this->IsInLine())
+		{
+			$this->redirect('/m/lines/security/wait/'.$airport);
+		}
+		else
+		{
+			$this->security_search($airport);
+		}
+	}
+	
+	//entry point for /m/lines/security/in/:airport
+	function security_mobile_in($airport)
+	{
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$this->layout = 'mobile';
+		
+		if($this->IsInLine())
+		{
+			$this->redirect('/m/lines/security/wait/'.$airport);
+		}
+		
+		//look up airport
+		$airport_name = $this->GetAirportName($airport);
+		$timezone = $this->GetAirportTimeZone($airport);
+		
+		if($airport_name == '' || $timezone == '')
+		{
+			$this->redirect('/m/lines/security');
+		}
+		
+		//set timezone
+		$timezone_old = date_default_timezone_get();
+		date_default_timezone_set($timezone);
+		
+		//user is entering line now
+		$userhash = $this->CreateUserHash();
+		$recid = $this->CreateNewLineEntry($userhash, $airport, $timezone);
+		
+		//set cookies
+		$this->Cookie->write('in', 'in', false, $this->cookie_expires);
+		$this->Cookie->write('airport', $airport, false, $this->cookie_expires);
+		$this->Cookie->write('userhash', $userhash, false, $this->cookie_expires);
+		$this->Cookie->write('recid', $recid, false, $this->cookie_expires);
+		
+		//set view vars
+		$this->set('Airport', $airport);
+		
+		//restore timezone
+		date_default_timezone_set($timezone_old);
+	}
+	
+	//entry point for /m/lines/security/wait/:airport
+	function security_mobile_wait($airport)
+	{
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$this->layout = 'mobile';
+		
+		//get params
+		$in_js = '';
+		if(isset($this->params['url']['in_js']))
+		{
+			$in_js = $this->params['url']['in_js'];
+			$this->Cookie->write('in_js', $in_js, false, $this->cookie_expires);
+		}
+		elseif($this->Cookie->read('in_js') != null)
+		{
+			$in_js = $this->Cookie->read('in_js');
+		}
+		
+		//check if already entered line
+		if(!$this->IsInLine())
+		{
+			$this->redirect('/m/lines/security');
+		}
+		
+		$line = $this->GetLineFromCookie();
+		
+		if(count($line) != 1 || $airport == '' || $airport != $line['Line']['airportcode'] || $line['Line']['timezone'] == '')
+		{
+			$this->ResetCookies();
+			$this->redirect('/m/lines/security');
+		}
+		
+		//set time zone
+		$timezone = $line['Line']['timezone'];
+		$timezone_old = date_default_timezone_get();
+		date_default_timezone_set($timezone);
+		
+		//set view vars
+		$this->set('Airport', $line['Line']['airportcode']);
+		$this->set('In_js', $in_js);
+		
+		//restore timezone
+		date_default_timezone_set($timezone_old);
+	}
+	
+	//entry point for /m/lines/security/out/:airport
+	function security_mobile_out($airport)
+	{
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$this->layout = 'mobile';
+		
+		//check if already entered line
+		if(!$this->IsInLine())
+		{
+			$this->redirect('/m/lines/security');
+		}
+		
+		$line = $this->GetLineFromCookie();
+		
+		if(count($line) != 1 || $airport == '' || $airport != $line['Line']['airportcode'] || $line['Line']['timezone'] == '')
+		{
+			$this->ResetCookies();
+			$this->redirect('/m/lines/security');
+		}
+		
+		//set time zone
+		$timezone = $line['Line']['timezone'];
+		$timezone_old = date_default_timezone_get();
+		date_default_timezone_set($timezone);
+		
+		//exit line now
+		$line = $this->ExitLine($line);
+		$this->ResetCookies();
+		
+		//set view vars
+		$this->set('Airport', $line['Line']['airportcode']);
+		$this->set('Diff', $line['Line']['diff']);
+		
+		//restore timezone
+		date_default_timezone_set($timezone_old);
+	}
+	
+	//================================
+	//Normal Entry Points
+	//================================
+	
+	//entry point for /m/lines
 	function index()
 	{
 		
 	}
 	
-	function security_mobile($Mode = '')
+	//entry point for /lines/security
+	function security()
 	{
-		$this->layout = 'mobile';
-		
-		$this->security($Mode);
-	}
-	
-	function security($Mode = '')
-	{
-		$this->Enum =& ClassRegistry::init('Enum');
-		
 		//detect mobile phone
 		if(
-			(
-				!(stripos($_SERVER['HTTP_USER_AGENT'], 'iphone') === FALSE) ||		//is iphone or
-				!(stripos($_SERVER['HTTP_USER_AGENT'], 'blackberry') === FALSE)		//is blackberry
-			) &&
-			stripos($this->params['url']['url'], 'm/lines/security') === FALSE //is not /m
+			$this->Mobile->IsMobileDevice() &&
+			stripos($this->params['url']['url'], 'm/lines/security') === FALSE //is not already in /m/lines/security
 		)
-		{
-			$this->redirect('/m/lines/security/'.$Mode);
-		}
+			$this->redirect('/m/lines/security/');
+	}
+	
+	//entry point for /lines/security/:airport
+	function security_search($airport)
+	{
+		//detect mobile phone
+		if(
+			$this->Mobile->IsMobileDevice() &&
+			stripos($this->params['url']['url'], 'm/lines/security') === FALSE //is not already in /m/lines/security
+		)
+			$this->redirect('/m/lines/security/');
+		
+		$this->Enum =& ClassRegistry::init('Enum');
 		
 		//get params
-		$airport = '';
-		if(isset($this->params['url']['airport']))
-			$airport = $this->params['url']['airport'];
-			
-		$in_js = '';
-		if(isset($this->params['url']['in']))
-			$in_js = $this->params['url']['in'];
+		$day = '';
+		if(isset($this->params['url']['day']))
+			$day = $this->params['url']['day'];
 		
-		//continue getting data
-		if($Mode == '')
-		{
-			$airports_list = array();
-			$delays = array();
-			
-			//check if already entered line
-			if($this->IsInLine())
-			{
-				$this->redirect('/m/lines/security/out');
-			}
-			
-			$airports_used = $this->Disambiguate->GetAirportsUsed();
-			
-			$airports_list = $this->Disambiguate->GetAirports($airport, $airports_used);
-
-			if(count($airports_list) == 1)
-			{
-				$airport = $airports_list[0]['Enum']['code'];
-				
-				$delays = $this->GetSecurityDelays($airport);
-			}
-			
-			//set view vars
-			$this->set('Mode', $Mode);
-			$this->set('Airport', $airport);
-			$this->set('Airports', $airports_list);
-			$this->set('Delays', $delays);
-		}
-		elseif($Mode == 'in')
-		{
-			//check if already entered line
-			if($this->IsInLine())
-			{
-				$this->redirect('/m/lines/security/out');
-			}
-			
-			//user did not enter line -- look up airport if one is specified
-			$airports_list = array();
-			
-			if($airport != '')
-			{
-				$airports_used = $this->Disambiguate->GetAirportsUsed();
-			
-				$airports_list = $this->Disambiguate->GetAirports($airport, $airports_used);
-
-				if(count($airports_list) == 1)
-				{
-					$airport_name = $airports_list[0]['Enum']['description'];
-					$userhash = $this->CreateUserHash();
-					$airport = $airports_list[0]['Enum']['code'];
-					$recid = $this->CreateNewLineEntry($userhash, $airport);
-					
-					$this->Cookie->write('in', 'in', true, $this->cookie_expires);
-					$this->Cookie->write('airport', $airport, true, $this->cookie_expires);
-					$this->Cookie->write('airport_name', $airport_name, true, $this->cookie_expires);
-					$this->Cookie->write('userhash', $userhash, true, $this->cookie_expires);
-					$this->Cookie->write('recid', $recid, true, $this->cookie_expires);
-					$this->Cookie->write('in_js', $in_js, true, $this->cookie_expires);
-					
-					$this->redirect('/m/lines/security/out');
-				}
-			}
-			
-			//set view vars
-			$this->set('Mode', $Mode);
-			$this->set('Airport', $airport);
-			$this->set('Airports', $airports_list);
-		}
-		elseif($Mode == 'out')
-		{
-			//check if already entered line
-			if(!$this->IsInLine())
-			{
-				$this->redirect('/m/lines/security');
-			}
-			
-			$line = $this->GetLineFromCookie();
-			
-			if(count($line) != 1)
-			{
-				$this->ResetCookies();
-				$this->redirect('/m/lines/security');
-			}
-			
-			if($airport != '' && $airport == $line['Line']['airportcode'])
-			{
-				$line = $this->ExitLine($line);
-				$this->ResetCookies();
-			}
-			
-			//set view vars
-			$this->set('Mode', $Mode);
-			$this->set('Airport', $line['Line']['airportcode']);
-			$this->set('Diff', $line['Line']['diff']);
-			$this->set('In_js', $this->Cookie->read('in_js'));
-		}
+		$time = '';
+		if(isset($this->params['url']['time']))
+			$time = $this->params['url']['time'];
+		
+		
+		$this->set('Airport', $airport);
+		$this->set('Day', $day);
+		$this->set('Time', $time);
+		
+		//set timezone
+		$timezone = $this->GetAirportTimeZone($airport);
+		$timezone_old = date_default_timezone_get();
+		if($timezone != '')
+			date_default_timezone_set($timezone);
+		
+		//Get Airport Name/City
+		$city = $this->GetAirportName($airport);
+		$this->set('City', $city);
+		
+		//Get Real-Time Delay
+		$realtime = $this->GetRealTimeDelay($airport);
+		$this->set('Realtime', $realtime);
+		
+		//Get average over days
+		$days = $this->GetDays($airport, $day, $time);
+		$this->set('Days', $days);
+		
+		//Get average over times
+		$times = $this->GetTimes($airport, $day, $time);
+		$this->set('Times', $times);
+		
+		//restore timezone
+		date_default_timezone_set($timezone_old);
 	}
+	
+	//================================
+	//Helper Functions
+	//================================
 	
 	private function IsInLine()
 	{
 		return (
 			$this->Cookie->read('in') != null &&
 			$this->Cookie->read('airport') != null &&
-			$this->Cookie->read('airport_name') != null &&
 			$this->Cookie->read('userhash') != null &&
-			$this->Cookie->read('recid') != null &&
-			$this->Cookie->read('in_js') != null
+			$this->Cookie->read('recid') != null
 		);
 	}
 	
-	private function GetLineFromCookie()
+	private function GetAirportTimeZone($code)
 	{
-		if($this->Cookie->read('recid') > 0 && $this->Cookie->read('userhash') != '' && $this->Cookie->read('airport') != '')
-		{
-			$line = $this->Line->findById($this->Cookie->read('recid'));
-			
-			if(
-				$this->Cookie->read('userhash') == $line['Line']['userhash'] &&
-				$this->Cookie->read('airport') == $line['Line']['airportcode']
+		$result = $this->Enum->find('first',
+			array(
+				'conditions' => array(
+					'Enum.category' => 'AIRPORTS_TIMEZONE',
+					'Enum.code' => $code
+				)
 			)
-			{
-				return $line;
-			}
-		}
+		);
 		
-		return array();
+		return $result['Enum']['description'];
 	}
 	
-	private function ResetCookies()
+	private function GetAirportName($code)
 	{
-		$this->Cookie->del('in');
-		$this->Cookie->del('airport');
-		$this->Cookie->del('airport_name');
-		$this->Cookie->del('userhash');
-		$this->Cookie->del('recid');
-		$this->Cookie->del('in_js');
+		$result = $this->Enum->find('first',
+			array(
+				'conditions' => array(
+					'Enum.category' => 'AIRPORTS',
+					'Enum.code' => $code
+				)
+			)
+		);
+		
+		return $result['Enum']['description'];
 	}
 	
 	private function CreateUserHash($username = '')
@@ -205,14 +309,8 @@ class LinesController extends AppController {
 		return base64_encode(crypt($cleartext, $salt));
 	}
 	
-	private function CreateNewLineEntry($userhash, $airport)
+	private function CreateNewLineEntry($userhash, $airport, $timezone)
 	{
-		//set timezone
-		$timezone = $this->GetAirportTimeZone($airport);
-		$timezone_old = date_default_timezone_get();
-		if($timezone != '')
-			date_default_timezone_set($timezone);
-		
 		$this->Line->deleteAll(
 			array(
 				'Line.linetype' => 'security',
@@ -249,11 +347,186 @@ class LinesController extends AppController {
 				)
 			)
 		);
-		
-		//restore timezone
-		date_default_timezone_set($timezone_old);
-		
+
 		return $this->Line->id;
+	}
+	
+	private function GetLineFromCookie()
+	{
+		if($this->Cookie->read('recid') > 0 && $this->Cookie->read('userhash') != '' && $this->Cookie->read('airport') != '')
+		{
+			$line = $this->Line->findById($this->Cookie->read('recid'));
+			
+			if(
+				$this->Cookie->read('userhash') == $line['Line']['userhash'] &&
+				$this->Cookie->read('airport') == $line['Line']['airportcode']
+			)
+			{
+				return $line;
+			}
+		}
+		
+		return array();
+	}
+	
+	private function ResetCookies()
+	{
+		$this->Cookie->del('in');
+		$this->Cookie->del('airport');
+		$this->Cookie->del('airport_name');
+		$this->Cookie->del('userhash');
+		$this->Cookie->del('recid');
+		$this->Cookie->del('in_js');
+	}
+	
+	private function ExitLine($line)
+	{
+		$now = time();
+		
+		$line['Line']['out'] = date('Y-m-d H:i:s', $now);
+		
+		$line['Line']['diff'] = $now - strtotime($line['Line']['in']);
+		
+		$this->Line->save($line);
+		
+		return $line;
+	}
+	
+	private function GetRealTimeDelay($airport)
+	{
+		$now = time();
+		
+		$start = $now - (30*60); //30 minutes before now
+		
+		//full search
+		$delay = $this->Line->find('all',
+			array(
+				'fields' => array(
+					'AVG(Line.diff) as AvgDiff',
+					'STD(Line.diff) as StdDiff',
+					'COUNT(Line.diff) as NumEntries'
+				),
+				'conditions' => array(
+					'Line.linetype' => 'security',
+					'Line.airportcode' => $airport,
+					'Line.in >=' => date('Y-m-d H:i:s', $start)
+				)
+			)
+		);
+
+		return $delay;
+	}
+	
+	private function GetDays($airport, $day, $time)
+	{
+		$conditions = array(
+			'Line.airportcode' => $airport
+		);
+		
+		if($day != '')
+		{
+			$conditions['Line.indayofweek'] = $day;
+		}
+		
+		if($time != '')
+		{
+			$blks = array();
+			
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, -1);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 0);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 1);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 2);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 3);
+			
+			$conditions['Line.intimeblk60'] = $blks;
+		}
+		
+		$days = $this->Line->find('all',
+			array(
+				'fields' => array(
+					'Line.indayofweek',
+					'AVG(Line.diff) as AvgDiff'
+				),
+				'conditions' => $conditions,
+				'group' => array(
+					'Line.indayofweek'
+				),
+				'order' => array(
+					'Line.indayofweek ASC'
+				)
+			)
+		);
+		
+		return $days;
+	}
+	
+	private function GetTimes($airport, $day, $time)
+	{
+		$conditions = array(
+			'Line.airportcode' => $airport
+		);
+		
+		if($day != '')
+		{
+			$conditions['Line.indayofweek'] = $day;
+		}
+		
+		if($time != '')
+		{
+			$blks = array();
+			
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, -1);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 0);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 1);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 2);
+			$blks[] = $this->GetTimeBlk60FromIntTime($time, 3);
+			
+			$conditions['Line.intimeblk60'] = $blks;
+		}
+		
+		$times = $this->Line->find('all',
+			array(
+				'fields' => array(
+					'Line.intimeblk60',
+					'AVG(Line.diff) as AvgDiff'
+				),
+				'conditions' => $conditions,
+				'group' => array(
+					'Line.intimeblk60'
+				),
+				'order' => array(
+					'Line.intimeblk60 ASC'
+				)
+			)
+		);
+		
+		return $times;
+	}
+	
+	private function GetTimeBlk60FromIntTime($time, $change = 0)
+	{
+		$change = ($change % 24);
+		
+		$start = $time + $change;
+		$end = $start + 1;
+		
+		if($start < 0)
+			$start += 24;
+		
+		$start = ($start % 24);
+		
+		if($end < 0)
+			$end += 24;
+		
+		$end = ($end % 24);
+		
+		if($start < 10)
+			$start = '0'.$start;
+		
+		if($end < 10)
+			$end = '0'.$end;
+		
+		return $start.'00-'.$end.'00';
 	}
 	
 	private function GetTimeBlk($now, $div)
@@ -268,201 +541,6 @@ class LinesController extends AppController {
 		$hour2 = date('H', $now+(60*$div));
 		
 		return $hour1.$min1.'-'.$hour2.$min2;
-	}
-	
-	private function ExitLine($line)
-	{
-		//set timezone
-		$timezone = $line['Line']['timezone'];
-		$timezone_old = date_default_timezone_get();
-		if($timezone != '')
-			date_default_timezone_set($timezone);
-		
-		$now = time();
-		
-		$line['Line']['out'] = date('Y-m-d H:i:s', $now);
-		
-		$line['Line']['diff'] = $now - strtotime($line['Line']['in']);
-		
-		$this->Line->save($line);
-		
-		//restore timezone
-		date_default_timezone_set($timezone_old);
-		
-		return $line;
-	}
-	
-	private function GetAirportTimeZone($code)
-	{
-		$result = $this->Enum->find('first',
-			array(
-				'conditions' => array(
-					'Enum.category' => 'AIRPORTS_TIMEZONE',
-					'Enum.code' => $code
-				)
-			)
-		);
-		
-		return $result['Enum']['description'];
-	}
-	
-	private function GetSecurityDelays($airport)
-	{
-		//set timezone
-		$timezone = $this->GetAirportTimeZone($airport);
-		$timezone_old = date_default_timezone_get();
-		if($timezone != '')
-			date_default_timezone_set($timezone);
-		
-		$now = time();
-		
-		$start = $now - (30*60); //30 minutes before now
-		$end = $now + (120*60);  //2 hours after now
-
-		$years = array();
-		$years[] = date('Y', $start);
-		$years[] = date('Y', $end);
-		
-		$months = array();
-		$months[] = date('n', $start);
-		$months[] = date('n', $end);
-		
-		$daysofweek = array();
-		$daysofweek[] = date('N', $start);
-		$daysofweek[] = date('N', $end);
-		
-		//full search
-		$delays = $this->Line->find('all',
-			array(
-				'fields' => array(
-					'Line.intimeblk30',
-					'AVG(Line.diff) as AvgDiff',
-					'COUNT(Line.diff) as NumEntries'
-				),
-				'conditions' => array(
-					'Line.linetype' => 'security',
-					'Line.airportcode' => $airport,
-					'Line.inyear' => $years,
-					'Line.inmonth' => $months,
-					'Line.indayofweek' => $daysofweek,
-					'Line.in >=' => date('Y-m-d H:i:s', $start), 
-					'Line.in <=' => date('Y-m-d H:i:s', $end),
-				),
-				'group' => array(
-					'Line.intimeblk30'
-				),
-				'order' => array(
-					'Line.intimeblk30 ASC'
-				)
-			)
-		);
-		
-		//full search minus in
-		if(count($delays) == 0)
-		{
-			$delays = $this->Line->find('all',
-				array(
-					'fields' => array(
-						'Line.intimeblk30',
-						'AVG(Line.diff) as AvgDiff',
-						'COUNT(Line.diff) as NumEntries'
-					),
-					'conditions' => array(
-						'Line.linetype' => 'security',
-						'Line.airportcode' => $airport,
-						'Line.inyear' => $years,
-						'Line.inmonth' => $months,
-						'Line.indayofweek' => $daysofweek
-					),
-					'group' => array(
-						'Line.intimeblk30'
-					),
-					'order' => array(
-						'Line.intimeblk30 ASC'
-					)
-				)
-			);
-		}
-		
-		//full search minus in, dayofweek
-		if(count($delays) == 0)
-		{
-			$delays = $this->Line->find('all',
-				array(
-					'fields' => array(
-						'Line.intimeblk30',
-						'AVG(Line.diff) as AvgDiff',
-						'COUNT(Line.diff) as NumEntries'
-					),
-					'conditions' => array(
-						'Line.linetype' => 'security',
-						'Line.airportcode' => $airport,
-						'Line.inyear' => $years,
-						'Line.inmonth' => $months
-					),
-					'group' => array(
-						'Line.intimeblk30'
-					),
-					'order' => array(
-						'Line.intimeblk30 ASC'
-					)
-				)
-			);
-		}
-		
-		//full search minus in, dayofweek, month
-		if(count($delays) == 0)
-		{
-			$delays = $this->Line->find('all',
-				array(
-					'fields' => array(
-						'Line.intimeblk30',
-						'AVG(Line.diff) as AvgDiff',
-						'COUNT(Line.diff) as NumEntries'
-					),
-					'conditions' => array(
-						'Line.linetype' => 'security',
-						'Line.airportcode' => $airport,
-						'Line.inyear' => $years
-					),
-					'group' => array(
-						'Line.intimeblk30'
-					),
-					'order' => array(
-						'Line.intimeblk30 ASC'
-					)
-				)
-			);
-		}
-		
-		//full search minus in, dayofweek, month, year
-		if(count($delays) == 0)
-		{
-			$delays = $this->Line->find('all',
-				array(
-					'fields' => array(
-						'Line.intimeblk30',
-						'AVG(Line.diff) as AvgDiff',
-						'COUNT(Line.diff) as NumEntries'
-					),
-					'conditions' => array(
-						'Line.linetype' => 'security',
-						'Line.airportcode' => $airport
-					),
-					'group' => array(
-						'Line.intimeblk30'
-					),
-					'order' => array(
-						'Line.intimeblk30 ASC'
-					)
-				)
-			);
-		}
-		
-		//restore timezone
-		date_default_timezone_set($timezone_old);
-		
-		return $delays;
 	}
 }
 ?>

@@ -27,31 +27,59 @@
  * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 	
-	//Turn out extension parsing
+	//Turn on extension parsing
 	Router::parseExtensions('json', 'xml');
 	
-	//MOBILE - /m
+	
+	//MOBILE SECURITY - /m/disambiguate/airports
 	Router::connect(
-		'/m/lines/security/:Mode',
-		array('controller' => 'lines', 'action' => 'security_mobile'),
-		array('Mode' => '(in|out)')
+		'/m/disambiguate/airports',
+		array('controller' => 'disambiguate', 'action' => 'airports_mobile')
 	);
 	
+	//MOBILE SECURITY - /m/lines/security/*
 	Router::connect(
 		'/m/lines/security',
-		array('controller' => 'lines', 'action' => 'security_mobile', '')
+		array('controller' => 'lines', 'action' => 'security_mobile')
 	);
 	
+	Router::connect(
+		'/m/lines/security/:airport',
+		array('controller' => 'lines', 'action' => 'security_mobile_search'),
+		array('airport' => '([A-Z]{3})')
+	);
+	
+	Router::connect(
+		'/m/lines/security/in/:airport',
+		array('controller' => 'lines', 'action' => 'security_mobile_in'),
+		array('airport' => '([A-Z]{3})')
+	);
+	
+	Router::connect(
+		'/m/lines/security/wait/:airport',
+		array('controller' => 'lines', 'action' => 'security_mobile_wait'),
+		array('airport' => '([A-Z]{3})')
+	);
+	
+	Router::connect(
+		'/m/lines/security/out/:airport',
+		array('controller' => 'lines', 'action' => 'security_mobile_out'),
+		array('airport' => '([A-Z]{3})')
+	);
+	
+	//AIRPORTS
 	Router::connect(
 		'/airports/:from',
 		array('controller' => 'airports', 'action' => 'index')
 	);
 	
+	//ROUTES
 	Router::connect(
 		'/routes/:from/:to',
 		array('controller' => 'airports', 'action' => 'index')
 	);
-
+	
+	//FLIGHTS
 	Router::connect(
 		'/flights/:carrier/:flightnum',
 		array('controller' => 'airports', 'action' => 'index')
@@ -66,6 +94,13 @@
 		'/airlines/:UniqueCarrier',
 		array('controller' => 'airlines', 'action' => 'view'),
 		array('UniqueCarrier' => '(.*)')
+	);
+	
+	//LINES
+	Router::connect(
+		'/lines/security/:airport',
+		array('controller' => 'lines', 'action' => 'security_search'),
+		array('airport' => '([A-Z]{3})')
 	);
 	
 	//PAGES
