@@ -42,7 +42,7 @@
  */
 	if (!defined('ROOT')) {
 		//define('ROOT', dirname(dirname(dirname(__FILE__))));
-		define('ROOT', DS.'alpha');
+		define('ROOT', DS.'flyontime');
 	}
 /**
  * The actual directory name for the "app".
