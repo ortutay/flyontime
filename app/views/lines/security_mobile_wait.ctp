@@ -6,6 +6,16 @@
 		var url = '/m/lines/security/out/' + '<?php echo $Airport; ?>'
 		window.location = url;
 	}
+	
+	function cancelLine()
+	{
+		var yes = confirm('Are you sure you want to cancel this timer?');
+		if(yes)
+		{
+			var url = '/m/lines/security/cancel/' + '<?php echo $Airport; ?>'
+			window.location = url;
+		}
+	}
 </script>
 
 <div class="header">Airport Security</div>
@@ -61,4 +71,8 @@
 <br />
 
 <input type="button" style="font-size: 18pt;" value="Leaving Line Now >>" onclick="exitLine();" />
+
+<br /><br />
+
+<input type="button" style="font-size: 18pt;" value="Cancel Timer" onclick="cancelLine();" />
 

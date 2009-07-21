@@ -3,7 +3,8 @@ class LinesController extends AppController {
 	var $name = 'Lines';
 	var $components = array('Cookie', 'Mobile');
 	
-	var $cookie_expires = 86400; // 1 days
+	var $cookie_expires = 2592000; // 30 days
+	var $cookie_encrypted = false;
 	
 	function beforeFilter()
 	{
@@ -58,6 +59,7 @@ class LinesController extends AppController {
 	function security_mobile_in($airport)
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
+		$this->Counter =& ClassRegistry::init('Counter');
 		
 		$this->layout = 'mobile';
 		
@@ -79,18 +81,28 @@ class LinesController extends AppController {
 		$timezone_old = date_default_timezone_get();
 		date_default_timezone_set($timezone);
 		
-		//user is entering line now
+		$inline = false;
 		$userhash = $this->CreateUserHash();
-		$recid = $this->CreateNewLineEntry($userhash, $airport, $timezone);
+		$now = time();
 		
-		//set cookies
-		$this->Cookie->write('in', 'in', false, $this->cookie_expires);
-		$this->Cookie->write('airport', $airport, false, $this->cookie_expires);
-		$this->Cookie->write('userhash', $userhash, false, $this->cookie_expires);
-		$this->Cookie->write('recid', $recid, false, $this->cookie_expires);
+		//check that user has not reached limit
+		if($this->IDCanSubmit($userhash, 1, $now, $now - 3600)) // user cannot submit more than once per hour
+		{
+			//user is entering line now
+			$recid = $this->CreateNewLineEntry($userhash, $airport, $timezone);
+		
+			//set cookies
+			$this->Cookie->write('in', 'in', $this->cookie_encrypted, $this->cookie_expires);
+			$this->Cookie->write('airport', $airport, $this->cookie_encrypted, $this->cookie_expires);
+			$this->Cookie->write('userhash', $userhash, $this->cookie_encrypted, $this->cookie_expires);
+			$this->Cookie->write('recid', $recid, $this->cookie_encrypted, $this->cookie_expires);
+			
+			$inline = true;
+		}
 		
 		//set view vars
 		$this->set('Airport', $airport);
+		$this->set('Inline', $inline);
 		
 		//restore timezone
 		date_default_timezone_set($timezone_old);
@@ -105,10 +117,10 @@ class LinesController extends AppController {
 		
 		//get params
 		$in_js = '';
-		if(isset($this->params['url']['in_js']))
+		if(isset($this->params['url']['in_js']) && $this->Cookie->read('in_js') == null)
 		{
 			$in_js = $this->params['url']['in_js'];
-			$this->Cookie->write('in_js', $in_js, false, $this->cookie_expires);
+			$this->Cookie->write('in_js', $in_js, $this->cookie_encrypted, $this->cookie_expires);
 		}
 		elseif($this->Cookie->read('in_js') != null)
 		{
@@ -142,10 +154,37 @@ class LinesController extends AppController {
 		date_default_timezone_set($timezone_old);
 	}
 	
+	//entry point for /m/lines/security/cancel/:airport
+	function security_mobile_cancel($airport)
+	{
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$this->layout = 'mobile';
+		
+		//check if already entered line
+		if(!$this->IsInLine())
+		{
+			$this->redirect('/m/lines/security');
+		}
+		
+		$line = $this->GetLineFromCookie();
+		
+		if(count($line) != 1 || $airport == '' || $airport != $line['Line']['airportcode'] || $line['Line']['timezone'] == '')
+		{
+			$this->ResetCookies();
+			$this->redirect('/m/lines/security');
+		}
+		
+		//cancel line now
+		$this->CancelLine($line);
+		$this->ResetCookies();
+	}
+	
 	//entry point for /m/lines/security/out/:airport
 	function security_mobile_out($airport)
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
+		$this->Counter =& ClassRegistry::init('Counter');
 		
 		$this->layout = 'mobile';
 		
@@ -299,14 +338,22 @@ class LinesController extends AppController {
 	{
 		$salt = Configure::read('Security.salt');
 		
-		$cleartext = $username;
-		
-		if($cleartext == '')
+		if($username == '')
 		{
-			$cleartext = rand().'-'.time();	
+			if($this->Cookie->read('userhash') != null and $this->Cookie->read('userhash') != '')
+			{
+				return $this->Cookie->read('userhash');
+			}
+			else
+			{
+				$username = rand().'-'.time();
+				return base64_encode(crypt($username, $salt));
+			}
 		}
-		
-		return base64_encode(crypt($cleartext, $salt));
+		else
+		{
+			return base64_encode(crypt($username, $salt));
+		}
 	}
 	
 	private function CreateNewLineEntry($userhash, $airport, $timezone)
@@ -373,9 +420,6 @@ class LinesController extends AppController {
 	{
 		$this->Cookie->del('in');
 		$this->Cookie->del('airport');
-		$this->Cookie->del('airport_name');
-		$this->Cookie->del('userhash');
-		$this->Cookie->del('recid');
 		$this->Cookie->del('in_js');
 	}
 	
@@ -389,7 +433,15 @@ class LinesController extends AppController {
 		
 		$this->Line->save($line);
 		
+		$this->UpdateCount($line['Line']['userhash'], $now);
+		
 		return $line;
+	}
+	
+	private function CancelLine($line)
+	{
+		if($line['Line']['id'] > 0)
+			$this->Line->del($line['Line']['id']);
 	}
 	
 	private function GetRealTimeDelay($airport)
@@ -541,6 +593,71 @@ class LinesController extends AppController {
 		$hour2 = date('H', $now+(60*$div));
 		
 		return $hour1.$min1.'-'.$hour2.$min2;
+	}
+	
+	private function IDCanSubmit($id, $limit, $now, $since)
+	{
+		$counter = $this->Counter->findById($id);
+		
+		if($counter == null)
+		{
+			$this->Counter->create();
+			$counter = array(
+				'Counter' => array(
+					'id' => $id,
+					'countsincereset' => 0,
+					'resetdate' => $now,
+					'lastdate' => $now
+				)
+			);
+			
+			$this->Counter->save($counter);
+			
+			return true;
+		}
+		
+		if($since > $counter['Counter']['resetdate'])
+		{
+			$since > $counter['Counter']['resetdate'] = $now;
+			$counter['Counter']['lastdate'] = $now;
+			$counter['Counter']['countsincereset'] = 0;
+			
+			$this->Counter->save($counter);
+			
+			return true;
+		}
+		
+		if($counter['Counter']['countsincereset'] >= $limit)
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private function UpdateCount($id, $now)
+	{
+		$counter = $this->Counter->findById($id);
+		
+		if($counter == null)
+		{
+			$this->Counter->create();
+			$counter = array(
+				'Counter' => array(
+					'id' => $id,
+					'countsincereset' => 1,
+					'resetdate' => $now,
+					'lastdate' => $now
+				)
+			);
+		}
+		else
+		{
+			$counter['Counter']['countsincereset']++;
+			$counter['Counter']['lastdate'] = $now;
+		}
+		
+		$this->Counter->save($counter);
 	}
 }
 ?>
