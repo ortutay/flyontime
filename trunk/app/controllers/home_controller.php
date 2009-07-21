@@ -2,14 +2,12 @@
 class HomeController extends AppController {
 	var $name = 'Home';
 	var $uses = array();
+	var $components = array('Mobile');
 	
 	function index() {
 		
 		//detect mobile phone
-		if(
-			!(stripos($_SERVER['HTTP_USER_AGENT'], 'iphone') === FALSE) ||		//is iphone or
-			!(stripos($_SERVER['HTTP_USER_AGENT'], 'blackberry') === FALSE)		//is blackberry
-		)
+		if($this->Mobile->IsMobileDevice())
 			$this->redirect('/m/lines/security/');
 			
 		//continue as normal

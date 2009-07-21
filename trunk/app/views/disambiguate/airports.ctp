@@ -15,17 +15,18 @@
 				<br />
 				
 				<form method="GET" action="/disambiguate/airports">
-				
-					<?php
-					if(isset($Day))
-					{
-					?>
 					
+					<?php if(isset($Basepath)) { ?>
+					<input type="hidden" name="basepath" value="<?php echo $Basepath; ?>" />
+					<?php } ?>
+					
+					<?php if(isset($Day)) { ?>
 					<input type="hidden" name="day" value="<?php echo $Day; ?>" />
+					<?php } ?>
 					
-					<?php
-					}
-					?>
+					<?php if(isset($Time)) { ?>
+					<input type="hidden" name="time" value="<?php echo $Time; ?>" />
+					<?php } ?>
 				
 					<?php
 					if(!isset($AirportsFrom) || count($AirportsFrom) == 0)

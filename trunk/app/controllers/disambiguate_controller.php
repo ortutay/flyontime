@@ -9,19 +9,43 @@ class DisambiguateController extends AppController {
 		$this->redirect('/');
 	}
 	
+	//entry point for /m/disambiguate/airports
+	function airports_mobile()
+	{
+		$this->layout = 'mobile';
+		
+		$this->airports();
+	}
+	
 	function airports()
 	{
 		$this->Enum =& ClassRegistry::init('Enum');
 
 		//get params
-		$from = "";
+		$basepath = '';
+		if(isset($this->params['url']['basepath']))
+			$basepath = $this->params['url']['basepath'];
+		
+		$from = '';
 		if(isset($this->params['url']['from']))
 			$from = $this->params['url']['from'];
 		
-		$to = "";
+		$to = '';
 		if(isset($this->params['url']['to']))
 			$to = $this->params['url']['to'];
+		
+		$day = '';
+		if(isset($this->params['url']['day']))
+			$day = $this->params['url']['day'];
+		
+		$time = '';
+		if(isset($this->params['url']['time']))
+			$time = $this->params['url']['time'];
 			
+		$noflash = '';
+		if(isset($this->params['url']['noflash']))
+			$noflash = $this->params['url']['noflash'];
+		
 		//get data
 		if($from != '')
 		{
@@ -37,12 +61,34 @@ class DisambiguateController extends AppController {
 			
 			if(count($airports_from) == 1 && count($airports_to) == 1)
 			{
-				if ($to == '') {
-					$url = '/airports/'.$airports_from[0]['Enum']['code'];
-				} else {
-					$url = '/routes/'.$airports_from[0]['Enum']['code'].'/'.$airports_to[0]['Enum']['code'];
+				if ($to == '')
+				{
+					if($basepath == '')
+						$url = '/airports/'.$airports_from[0]['Enum']['code'];
+					else
+						$url = $basepath.$airports_from[0]['Enum']['code'];
 				}
-				$this->flash('Loading...', $url, 0);
+				else
+				{
+					if($basepath == '')
+						$url = '/routes/'.$airports_from[0]['Enum']['code'].'/'.$airports_to[0]['Enum']['code'];
+					else
+						$url = $basepath.$airports_from[0]['Enum']['code'].'/'.$airports_to[0]['Enum']['code'];
+				}
+				
+				if($day != '' || $time != '')
+					$url .= '?';
+				
+				if($day != '')
+					$url .= 'day='.$day.'&';
+					
+				if($time != '')
+					$url .= 'time='.$time;
+				
+				if($noflash == '1')
+					$this->redirect($url);
+				else
+					$this->flash('Loading...', $url, 0);
 			}
 			else
 			{
@@ -51,6 +97,8 @@ class DisambiguateController extends AppController {
 				$this->set('From', $from);
 				$this->set('To', $to);
 				$this->set('Day', $day);
+				$this->set('Time', $time);
+				$this->set('Basepath', $basepath);
 			}
 		}
 		else
