@@ -1,7 +1,11 @@
 <?php
 
 	abstract class DataObject
-	{	
+	{
+		public static $eINTAUTOINC = 1;
+		public static $eGUID = 2;
+		public static $eCUSTOM = 3;
+		
 		public $_conn;
 		
 		function __construct()
@@ -11,6 +15,11 @@
 	
 		abstract public function GetTableName();
 		abstract public function GetPrimaryKeyName();
+		
+		public function GetPrimaryKeyType()
+		{
+			return self::$eINTAUTOINC;
+		}
 		
 		public function LockTable()
 		{
@@ -24,12 +33,12 @@
 		
 		public function Insert($data_values)
 		{
-			return $this->_conn->Insert($this->GetTableName(), $data_values, $this->GetPrimaryKeyName());
+			return $this->_conn->Insert($this->GetTableName(), $data_values, $this->GetPrimaryKeyName(), $this->GetPrimaryKeyType());
 		}
 		
 		public function Update($data_values, $primaryKeyValue)
 		{
-			return $this->_conn->Update($this->GetTableName(), $data_values, $this->GetPrimaryKeyName(), $primaryKeyValue);
+			return $this->_conn->Update($this->GetTableName(), $data_values, $this->GetPrimaryKeyName(), $primaryKeyValue, $this->GetPrimaryKeyType());
 		}
 		
 		public function UpdateWhere($data_values, $where, $length = 0)
@@ -59,6 +68,11 @@
 		
 		public function LoadByPrimaryKey($primaryKeyValue)
 		{
+			if($this->GetPrimaryKeyType() == self::$eCUSTOM)
+			{
+				return $this->Load(($this->GetTableName()).".".($this->GetPrimaryKeyName())."='".$primaryKeyValue."'");
+			}
+			
 			return $this->Load(($this->GetTableName()).".".($this->GetPrimaryKeyName())."=".$primaryKeyValue);
 		}
 		
