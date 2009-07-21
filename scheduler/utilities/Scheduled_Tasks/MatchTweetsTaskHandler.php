@@ -171,41 +171,107 @@
 		
 		private function CreateEntry($airport, $in_time, $out_time, $username)
 		{
-			//set time zone
-			$timezone = $this->GetAirportTimeZone($airport);
-			if($timezone != "")
+			$userhash = $this->CreateUserHash($username);
+			
+			if($this->IDCanSubmit($userhash, 1, $out_time, $out_time - (60*60*2) ))  // user cannot submit more than once every two hours
 			{
-				$timezone_old = date_default_timezone_get();
-				date_default_timezone_set($timezone);
-				
-				$line = new Line();
-				
-				$line->SetValue("userhash", $this->CreateUserHash($username));
-				$line->SetValue("linetype", "security");
-				$line->SetValue("airportcode", $airport);
-				$line->SetValue("airlinecode", "");
-				$line->SetValue("in", date('Y-m-d H:i:s', $in_time));
-				$line->SetValue("out", date('Y-m-d H:i:s', $out_time));
-				$line->SetValue("diff", ($out_time - $in_time));
-				$line->SetValue("inyear", date("Y", $in_time));
-				$line->SetValue("inmonth", date("n", $in_time));
-				$line->SetValue("indayofmonth", date("j", $in_time));
-				$line->SetValue("indayofweek", date("N", $in_time));
-				$line->SetValue("intimeblk15", $this->GetTimeBlk($in_time, 15));
-				$line->SetValue("intimeblk30", $this->GetTimeBlk($in_time, 30));
-				$line->SetValue("intimeblk60", $this->GetTimeBlk($in_time, 60));
-				$line->SetValue("source", "twitter");
-				$line->SetValue("useragent", "");
-				$line->SetValue("timezone", $timezone);
-				
-				$line->Save();
-				
-				//restore time zone
-				date_default_timezone_set($timezone_old);
+				//set time zone
+				$timezone = $this->GetAirportTimeZone($airport);
+				if($timezone != "")
+				{
+					$timezone_old = date_default_timezone_get();
+					date_default_timezone_set($timezone);
+					
+					$line = new Line();
+					
+					$line->SetValue("userhash", $userhash);
+					$line->SetValue("linetype", "security");
+					$line->SetValue("airportcode", $airport);
+					$line->SetValue("airlinecode", "");
+					$line->SetValue("in", date('Y-m-d H:i:s', $in_time));
+					$line->SetValue("out", date('Y-m-d H:i:s', $out_time));
+					$line->SetValue("diff", ($out_time - $in_time));
+					$line->SetValue("inyear", date("Y", $in_time));
+					$line->SetValue("inmonth", date("n", $in_time));
+					$line->SetValue("indayofmonth", date("j", $in_time));
+					$line->SetValue("indayofweek", date("N", $in_time));
+					$line->SetValue("intimeblk15", $this->GetTimeBlk($in_time, 15));
+					$line->SetValue("intimeblk30", $this->GetTimeBlk($in_time, 30));
+					$line->SetValue("intimeblk60", $this->GetTimeBlk($in_time, 60));
+					$line->SetValue("source", "twitter");
+					$line->SetValue("useragent", "");
+					$line->SetValue("timezone", $timezone);
+					
+					$line->Save();
+					
+					//restore time zone
+					date_default_timezone_set($timezone_old);
+					
+					$this->UpdateCount($userhash, $out_time);
+				}
 			}
 		}
 		
+		private function IDCanSubmit($id, $limit, $now, $since)
+		{
+			$counter = new Counter();
+			
+			if(!$counter->LoadByPrimaryKey($id))
+			{
+				$counter = new Counter();
+				
+				$counter->SetValue("id", $id);
+				$counter->SetValue("countsincereset", 0);
+				$counter->SetValue("resetdate", $now);
+				$counter->SetValue("lastdate", $now);
+				
+				$counter->Save();
+				
+				return true;
+			}
+			
+			if($since > $counter->GetValue("resetdate"))
+			{
+				$counter->SetValue("countsincereset", 0);
+				$counter->SetValue("resetdate", $now);
+				$counter->SetValue("lastdate", $now);
+				
+				$counter->Save();
+				
+				return true;
+			}
+			
+			if($counter->GetValue("countsincereset") >= $limit)
+			{
+				return false;
+			}
+			
+			return true;
+		}
 		
+		private function UpdateCount($id, $now)
+		{
+			$counter = new Counter();
+			
+			if(!$counter->LoadByPrimaryKey($id))
+			{
+				$counter = new Counter();
+				
+				$counter->SetValue("id", $id);
+				$counter->SetValue("countsincereset", 1);
+				$counter->SetValue("resetdate", $now);
+				$counter->SetValue("lastdate", $now);
+			}
+			else
+			{
+				$countsincereset = $counter->GetValue("countsincereset");
+				$counter->SetValue("countsincereset", $countsincereset + 1);
+				$counter->SetValue("lastdate", $now);
+			}
+			
+			$counter->Save();
+		}
+
 		
 	}
 	

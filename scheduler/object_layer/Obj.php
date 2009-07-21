@@ -41,6 +41,18 @@
 		{
 			$this->InitFromRowArray($rows[0]);
 			
+			switch ($this->_DataObj->GetPrimaryKeyType())
+			{
+				case DataObject::$eCUSTOM:
+					
+					if($this->GetPrimaryKey() != "")
+					{
+						return true;
+					}
+					
+					break;
+			}
+			
 			if($this->GetPrimaryKey() > 0)
 			{
 				return true;
@@ -127,6 +139,18 @@
 		
 		Public Function LoadByPrimaryKey($primaryKey)
 		{
+			switch ($this->_DataObj->GetPrimaryKeyType())
+			{
+				case DataObject::$eCUSTOM:
+					
+					if($primaryKey != "")
+					{
+						return $this->InitFromRowsArray($this->_DataObj->LoadByPrimaryKey($primaryKey));
+					}
+					
+					break;
+			}
+			
 			if($primaryKey > 0)
 			{
 				return $this->InitFromRowsArray($this->_DataObj->LoadByPrimaryKey($primaryKey));

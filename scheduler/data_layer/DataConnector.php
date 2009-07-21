@@ -24,7 +24,7 @@
 			return mysql_query($sql);
 		}
 		
-		public function Insert($table, $data_values, $primaryKeyName)
+		public function Insert($table, $data_values, $primaryKeyName, $primaryKeyType)
 		{
 			$sql = "";
 			$isFirst = true;
@@ -36,7 +36,7 @@
 			{
 				if($name != "" && !is_numeric($name))
 				{
-					if($name != $primaryKeyName)
+					if($name != $primaryKeyName || $primaryKeyType == DataObject::$eCUSTOM)
 					{
 						if(!$isFirst)
 						{
@@ -62,7 +62,7 @@
 			return 0;
 		}
 		
-		public function Update($table, $data_values, $primaryKeyName, $primaryKeyValue)
+		public function Update($table, $data_values, $primaryKeyName, $primaryKeyValue, $primaryKeyType)
 		{
 			$sql = "";
 			$isFirst = true;
@@ -73,7 +73,7 @@
 			{
 				if($name != "" && !is_numeric($name))
 				{
-					if($name != $primaryKeyName)
+					if($name != $primaryKeyName || $primaryKeyType == DataObject::$eCUSTOM)
 					{
 						if(!$isFirst)
 						{
@@ -89,7 +89,10 @@
 				}
 			}
 			
-			$sql = $sql." WHERE `".$primaryKeyName."`=".$primaryKeyValue;
+			if($primaryKeyType == DataObject::$eCUSTOM)
+				$sql = $sql." WHERE `".$primaryKeyName."`='".$primaryKeyValue."'";
+			else
+				$sql = $sql." WHERE `".$primaryKeyName."`=".$primaryKeyValue;
 			
 			return mysql_query($sql);
 		}

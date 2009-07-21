@@ -14,6 +14,7 @@
 	include "data_layer/Tweets_DL.php";
 	include "data_layer/Lines_DL.php";
 	include "data_layer/Enums_DL.php";
+	include "data_layer/Counters_DL.php";
 	
 	//core objects
 	include "object_layer/DataItem.php";
@@ -32,6 +33,8 @@
 	include "object_layer/LineCollection.php";
 	include "object_layer/Enum.php";
 	include "object_layer/EnumCollection.php";
+	include "object_layer/Counter.php";
+	include "object_layer/CounterCollection.php";
 	
 	//xml objs
 	include "object_layer/XML/XMLObj.php";
