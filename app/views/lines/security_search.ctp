@@ -38,6 +38,25 @@ function GetDayName($day)
 	return '';
 }
 
+function GetTimeName($hour)
+{
+	if ($hour < 12) {
+		if ($hour == 0) { $hour = 12; }
+		return round($hour) . " am";
+	} else {
+		$hour = $hour - 12;
+		if ($hour == 0) { $hour = 12; }
+		return $hour . " pm";
+	}
+}
+
+function FormatTimeBlk($blk)
+{
+	$arr = explode('-', $blk);
+	
+	return GetTimeName(substr($arr[0], 0, 2)).' - '.GetTimeName(substr($arr[1], 0, 2));
+}
+
 ?>
 
 
@@ -85,7 +104,7 @@ function GetDayName($day)
 	{
 	?>
 	
-	data_time.setValue(<?php echo $i; ?>, 0, '<?php echo $time['Line']['intimeblk60']; ?>');
+	data_time.setValue(<?php echo $i; ?>, 0, '<?php echo FormatTimeBlk($time['Line']['intimeblk60']); ?>');
 	data_time.setValue(<?php echo $i; ?>, 1, <?php echo round($time[0]['AvgDiff']/60, 1); ?>);
 
 	<?php
@@ -99,22 +118,22 @@ function GetDayName($day)
   }
 </script>
 
-<table border=0 cellpadding=0 cellspacing=0 width="100%">
+<table border=0 cellpadding=0 cellspacing=0 width="100%" style="border-bottom: 1px solid black; padding: 5px">
 <tr>
 	<td align="left">
 
 		<form method="GET" action="/disambiguate/airports" name="search">
 		
-			<input name="basepath" type="hidden" value="/lines/security/" />
+		<input name="basepath" type="hidden" value="/lines/security/" />
 			
-			<table border=0 cellpadding=0 cellspacing=0>
+		<table border=0 cellpadding=0 cellspacing=0 style="font-size: 9pt">
 			<tr>
 				<td>
 					<div>Airport:</div>
 				</td>
 				<td width="5px"></td>
 				<td>
-					<input name="from" type="text" style="width: 125px;" value="<?php echo $Airport; ?>" />
+					<input name="from" type="text" style="width: 125px; font-size: 9pt" value="<?php echo $Airport; ?>" />
 				</td>
 				<td width="25px"></td>
 				<td>
@@ -122,7 +141,7 @@ function GetDayName($day)
 				</td>
 				<td width="5px"></td>
 				<td>
-					<select name="day">
+					<select name="day" style="font-size: 9pt;">
 						<option value=""></option>
 						<option value="1" <?php if($Day==1) echo 'selected'; ?>>Monday</option>
 						<option value="2" <?php if($Day==2) echo 'selected'; ?>>Tuesday</option>
@@ -132,6 +151,7 @@ function GetDayName($day)
 						<option value="6" <?php if($Day==6) echo 'selected'; ?>>Saturday</option>
 						<option value="7" <?php if($Day==7) echo 'selected'; ?>>Sunday</option>
 					</select>
+					<span style="font-style: italic; color: #777">(optional)</span>
 				</td>
 				<td width="25px"></td>
 				<td>
@@ -139,7 +159,7 @@ function GetDayName($day)
 				</td>
 				<td width="5px"></td>
 				<td>
-					<select name="time">
+					<select name="time" style="font-size: 9pt;">
 						<option value=""></option>
 						<option value="0" <?php if($Time=="0") echo 'selected'; ?>>00:00 - 00:59</option>
 						<option value="1" <?php if($Time==1) echo 'selected'; ?>>01:00 - 01:59</option>
@@ -166,10 +186,11 @@ function GetDayName($day)
 						<option value="22" <?php if($Time==22) echo 'selected'; ?>>22:00 - 22:59</option>
 						<option value="23" <?php if($Time==23) echo 'selected'; ?>>23:00 - 23:59</option>
 					</select>
+					<span style="font-style: italic; color: #777">(optional)</span>
 				</td>
 				<td width="25px"></td>
 				<td>
-					<input type="submit" value="Search >>" />
+					<input type="submit" value="Search >>" style="font-size: 9pt"/>
 				</td>
 				
 			</tr>

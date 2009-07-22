@@ -1,4 +1,27 @@
-<?php $this->pageTitle = 'FlyOnTime.us'; ?>
+<?php
+
+$this->pageTitle = 'FlyOnTime.us';
+
+function GetTimeName($hour)
+{
+	if ($hour < 12) {
+		if ($hour == 0) { $hour = 12; }
+		return round($hour) . " am";
+	} else {
+		$hour = $hour - 12;
+		if ($hour == 0) { $hour = 12; }
+		return $hour . " pm";
+	}
+}
+
+function FormatTimeBlk($blk)
+{
+	$arr = explode('-', $blk);
+	
+	return GetTimeName(substr($arr[0], 0, 2)).' - '.GetTimeName(substr($arr[1], 0, 2));
+}
+
+?>
 
 <div class="header">Airport Security</div>
 
@@ -29,10 +52,10 @@
 <tr>
 	<td width="5px"></td>
 	<td align="left">
-		<div><?php echo $time['Line']['intimeblk60']; ?></div>
+		<div><?php echo FormatTimeBlk($time['Line']['intimeblk60']); ?></div>
 	</td>
 	<td align="right">
-		<div><?php echo round($time[0]['AvgDiff']/60, 1); ?> min.</div>
+		<div><b><?php echo round($time[0]['AvgDiff']/60, 1); ?> min.</b></div>
 	</td>
 	<td width="5px"></td>
 </tr>
