@@ -440,6 +440,43 @@ function NiceDate($date)
 				</table>
 				
 				<br />
+
+				<?php if ($To == '') { ?>
+				<div class="header">
+					Top Destinations from <?php echo $From ?>
+				</div>
+				<table border=0 cellpadding=0 cellspacing=0 width="100%" style="margin-top: 1em">
+				<tr valign="top">
+					<td align="left">
+						<table border=0 cellpadding=5 cellspacing=1>
+						<tr>
+							<td><div><b><?php echo $From ?> to ...</b></div></td>
+							<td><div><b>Averge Arrival</b></div></td>
+						</tr>
+						<?php
+						$i = 0;
+						foreach($BestDestinations as $flight)
+						{
+							$style = '';
+							if(($i % 2) == 0)
+								$style = 'background-color: #DDDDDD;';
+						?>
+						<tr style="<?php echo $style; ?>">
+							<td><a href="/routes/<?php echo $From ?>/<?php echo $flight['Ontime']['dest']; ?>"><?php echo $flight['Ontime']['dest'] ?></a>
+							<span style='font-size: 75%; color: #666'>(<?php echo $flight['Ontime']['count']; ?> flights)</span></td>
+							<td><?php DelayText($flight['Ontime']['delay_median']) ?></td>
+						</tr>
+						<?php
+							$i++;
+						}
+						?>
+						</table>
+					</td>
+					<td align="right">
+					</td>
+				</tr>
+				</table>	
+				<?php } ?>
 				
 				<?php if ($To != '' && $Carrier == '') { ?>
 				<div class="header">
@@ -496,14 +533,14 @@ function NiceDate($date)
 					<p>This flight's average arrival delay is <?php echo $FlightComparison ?> of <a href="/routes/<?php echo $From ?>/<?php echo $To ?>">other flights between these airports</a>.</p>
 				<?php } ?>
 				
-				<br/>
-			
 				<?php } else { ?>
 					
 				<p>There are no records for flights between these airports. Instead see <a href="/airports/<?php echo $From ?>">all flights departing from <?php echo $From ?></a>.</p>
 					
 				<?php } ?>
 				
+				<br/>
+			
 				<div class="header">Best Days and Times to Fly from <?php echo $From ?></div>
 				<?php if ($To != '') { ?> <div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div> <?php } ?>
 				

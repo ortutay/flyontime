@@ -76,7 +76,10 @@ class AirportsController extends AppController {
 		$this->set('SummaryThunder', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_thunder_yes'));
 		$this->set('SummaryTornado', $this->GetSummary($from, $to, $carrier, $flightnum, 'origin_tornado_yes'));
 
-		if ($to != '') {
+		if ($to == '') {
+			$best_dests = $this->GetBestDestinations($from);
+			$this->set('BestDestinations', $best_dests);
+		} else {
 			$best_flights = $this->GetBestFlights($from, $to);
 			$this->set('BestFlights', $best_flights);
 			
@@ -133,6 +136,21 @@ class AirportsController extends AppController {
 		);
 	}
 	
+	private function GetBestDestinations($from)
+	{
+		return $this->Ontime->find('all',
+			array(
+				'fields' => array('dest', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+				
+				'conditions' => array('origin' => $from, 'dest != ""', 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', 'carrier' => '', flightnum => 0),
+				
+				'order' => array('count DESC'),
+				
+				'limit' => 10,
+			)
+		);
+	}
+
 	private function GetBestFlights($from, $to)
 	{
 		return $this->Ontime->find('all',
