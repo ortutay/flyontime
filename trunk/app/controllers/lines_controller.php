@@ -86,7 +86,7 @@ class LinesController extends AppController {
 		$now = time();
 		
 		//check that user has not reached limit
-		if($this->IDCanSubmit($userhash, 1, $now, $now - 3600)) // user cannot submit more than once per hour
+		if($this->IDCanSubmit($userhash, 1, $now, $now - (2*60*60) )) // user cannot submit more than once in 2 hours
 		{
 			//user is entering line now
 			$recid = $this->CreateNewLineEntry($userhash, $airport, $timezone);
@@ -618,7 +618,7 @@ class LinesController extends AppController {
 		
 		if($since > $counter['Counter']['resetdate'])
 		{
-			$since > $counter['Counter']['resetdate'] = $now;
+			$counter['Counter']['resetdate'] = $now;
 			$counter['Counter']['lastdate'] = $now;
 			$counter['Counter']['countsincereset'] = 0;
 			
