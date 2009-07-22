@@ -472,7 +472,8 @@ class LinesController extends AppController {
 	private function GetDays($airport, $day, $time)
 	{
 		$conditions = array(
-			'Line.airportcode' => $airport
+			'Line.airportcode' => $airport,
+			'Line.out !=' => '0000-00-00 00:00:00'
 		);
 		
 		if($day != '')
@@ -515,7 +516,8 @@ class LinesController extends AppController {
 	private function GetTimes($airport, $day, $time)
 	{
 		$conditions = array(
-			'Line.airportcode' => $airport
+			'Line.airportcode' => $airport,
+			'Line.out !=' => '0000-00-00 00:00:00'
 		);
 		
 		if($day != '')
