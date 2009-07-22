@@ -79,6 +79,7 @@ class AirlinesController extends AppController {
 					'origin',
 					'dest',
 					'sum(count) as count',
+					'avg(pct_ontime) as pct_ontime',
 				),
 				'conditions' => array(
 					'origin != ""',
@@ -97,7 +98,7 @@ class AirlinesController extends AppController {
 				'order' => array(
 					'sum(count) DESC'
 				),
-				'limit' => 150
+				'limit' => 25
 			)
 		);
 		

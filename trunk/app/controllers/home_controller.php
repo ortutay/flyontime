@@ -17,6 +17,32 @@ class HomeController extends AppController {
 		
 		$this->Enum =& ClassRegistry::init('Enum');
 		$this->Ontime =& ClassRegistry::init('Ontime');
+
+		if (($top_routes = Cache::read('home_top_routes')) === false) {
+		$top_routes = $this->Ontime->find('all',
+			array(
+				'fields' => array(
+					'origin',
+					'dest',
+					'count',
+					'pct_ontime',
+					'delay_median',
+					'delay_85thpctile',
+				),
+				'conditions' => array(
+					'origin != ""',
+					'dest != ""',
+					'carrier' => '', 'flightnum' => 0, 'dayofweek' => 0, 'hour' => '', 'holiday' => '', 'condition' => 'all'
+				),
+				'order' => array(
+					'count DESC'
+				),
+				'limit' => 15
+			)
+		);
+		Cache::write('home_top_routes', $top_routes);
+		}
+		$this->set('TopRoutes', $top_routes);
 		
 		$airlines_used = $this->Ontime->find('all',
 			array(

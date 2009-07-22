@@ -76,39 +76,36 @@ function DelayText($delay, $relative_to='', $colorize=1)
 {
 	$delay_style = '';
 	$delay_str = '';
-	if ($relative_to == '') {
-		if($delay < 0) {
-			$delay_str = abs($delay).' min. early';
-			$delay_style = 'color: green;';
-		} else if ($delay > 0) {
-			$delay_str = $delay.' min. late';
-			$delay_style = 'color: red;';
-		} else {
-			$delay_str = 'on time';
-			$delay_style = 'color: black;';
-		}
-	} else {
+	$delay_unit = 'min.';
+	
+	if ($relative_to != '') {
 		$delay -= $relative_to;
-		if($delay < 0) {
-			$delay_str = abs($delay).' min. earlier';
-			$delay_style = 'color: green;';
-		} else if ($delay > 0) {
-			$delay_str = $delay.' min. later';
-			$delay_style = 'color: red;';
-		} else {
-			$delay_str = 'no change';
-			$delay_style = 'color: black;';
-		}
+	}
+	
+	if (abs($delay) >= 120) {
+		$delay = round($delay / 60, 1);
+		$delay_unit = 'hrs.';
+	}
+	
+	if($delay < 0) {
+		$delay_str = abs($delay).' '.$delay_unit.' early';
+		$delay_style = 'color: green;';
+	} else if ($delay > 0) {
+		$delay_str = abs($delay).' '.$delay_unit.' late';
+		$delay_style = 'color: red;';
+	} else {
+		$delay_str = 'on time';
+		$delay_style = 'color: black;';
 	}
 	if (!$colorize) { $delay_style = ''; }
-	?> <span style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></div> <?php
+	?> <span style="<?php echo $delay_style; ?>"><?php echo $delay_str; ?></span> <?php
 }
 
 function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 	if ($data['Ontime']['count'] >= $mincount) {
 	?>
 	<tr style="<?php if ($subhead) { echo "font-size: 80%; color: #944"; } ?>">
-		<td style="<?php if ($subhead) { echo "padding-left: 1em"; } ?>"><?php echo $label?> <?php if ($subhead) { ?><span style='font-size: 75%; color: #C88'>(<?php echo round($data['Ontime']['count']/$alldata['Ontime']['count']*100)?>% of flights)</span><?php }?></td>
+		<td style="<?php if ($subhead) { echo "padding-left: 1em"; } ?>"><?php echo $label?> <?php if ($subhead) { ?><span style='font-size: 75%; color: #C88'>(<?php echo round($data['Ontime']['count']/$alldata['Ontime']['count']*100)?>%)</span><?php }?></td>
 		<td><?php DelayText($data['Ontime']['delay_median'], '', 0) ?></td>
 		<td><?php DelayText($data['Ontime']['delay_85thpctile'], '', 0) ?></td>
 		<td><?php echo round($data['Ontime']['pct_cancel']*100) ?>% </td>
@@ -116,6 +113,10 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 	<?php }
 }
 
+function NiceDate($date)
+{
+	return substr($date, 5, 2) . '/' . substr($date, 8, 2) . '/' . substr($date, 0, 4);
+}
 
 ?>
 
@@ -135,12 +136,12 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 	data_outcome.setValue(1, 0, '5-20 min. Delay');
 	data_outcome.setValue(2, 0, '>20 min. Delay');
 	data_outcome.setValue(3, 0, 'Cancelled/Diverted');
-	data_outcome.setValue(0, 1, <?php echo $Summary['Ontime']['pct_ontime']*100; ?>);
-	data_outcome.setValue(1, 1, <?php echo (1-$Summary['Ontime']['pct_ontime']-$Summary['Ontime']['pct_20mindelay']-$Summary['Ontime']['pct_cancel'])*100; ?>);
-	data_outcome.setValue(2, 1, <?php echo $Summary['Ontime']['pct_20mindelay']*100; ?>);
-	data_outcome.setValue(3, 1, <?php echo $Summary['Ontime']['pct_cancel']*100; ?>);
+	data_outcome.setValue(0, 1, <?php echo round($Summary['Ontime']['pct_ontime']*$Summary['Ontime']['count']); ?>);
+	data_outcome.setValue(1, 1, <?php echo round((1-$Summary['Ontime']['pct_ontime']-$Summary['Ontime']['pct_20mindelay']-$Summary['Ontime']['pct_cancel'])*$Summary['Ontime']['count']); ?>);
+	data_outcome.setValue(2, 1, <?php echo round($Summary['Ontime']['pct_20mindelay']*$Summary['Ontime']['count']); ?>);
+	data_outcome.setValue(3, 1, <?php echo round($Summary['Ontime']['pct_cancel']*$Summary['Ontime']['count']); ?>);
 	var chart_outcome = new google.visualization.PieChart(document.getElementById('chart_div_outcome'));
-	chart_outcome.draw(data_outcome, {width: 220, height: 240, is3D: true, legend: 'bottom', legendFontSize: 11});
+	chart_outcome.draw(data_outcome, {width: 220, height: 200, is3D: true, legend: 'none', legendFontSize: 11});
 	
 	<?php
 	if ($To != '' && $Carrier == '') {
@@ -242,20 +243,20 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
   }
 </script>
 
-<table border=0 cellpadding=0 cellspacing=0 width="100%">
+<table border=0 cellpadding=0 cellspacing=0 width="100%" style="border-bottom: 1px solid black; padding: 5px">
 <tr>
 	<td align="left">
 
 		<form method="GET" action="/disambiguate/airports" name="search">
 			
-			<table border=0 cellpadding=0 cellspacing=0>
+		<table border=0 cellpadding=0 cellspacing=0 style="font-size: 9pt">
 			<tr>
 				<td>
-					<div>From:</div>
+					<div>Flights From:</div>
 				</td>
 				<td width="5px"></td>
 				<td>
-					<input name="from" type="text" style="width: 125px;" value="<?php echo $From; ?>" />
+					<input name="from" type="text" style="width: 125px; font-size: 9pt" value="<?php echo $From; ?>" />
 				</td>
 				<td width="10px"></td>
 				<td><a href="javascript: swap_search();"><img border=0 src="/img/swap.png" /></a></td>
@@ -265,11 +266,12 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				</td>
 				<td width="5px"></td>
 				<td>
-					<input name="to" type="text" style="width: 125px;" value="<?php echo $To; ?>" />
+					<input name="to" type="text" style="width: 125px; font-size: 9pt" value="<?php echo $To; ?>" />
+					<span style="font-style: italic; color: #777">(optional)</span>
 				</td>
 				<td width="25px"></td>
 				<td>
-					<input type="submit" value="Search >>" />
+					<input type="submit" value="Search >>" style="font-size: 9pt"/>
 				</td>
 				
 			</tr>
@@ -301,33 +303,28 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				?>
 				</h1>
 				
-				<?php if ($Summary['Ontime']['count'] > 0) { ?>
-				<div class="info" style="margin-bottom: 2em;">
-					Based on <?php echo $Summary['Ontime']['count'] ?> flights from <?php echo $Summary['Ontime']['firstdate'] ?> to <?php echo $Summary['Ontime']['lastdate'] ?>
-				</div>
-				<?php } ?>
-				
 				<?php
 				// FAA airport delay data. Has general airport delays but not flight-specific delays.
+				$faa_warnings = "";
 				foreach ($curaptdelays->Delay_type as $delaytype) {
 					if (isset($delaytype->Airport_Closure_List)) {
 						foreach ($delaytype->Airport_Closure_List->Airport as $airport) {
 							if ($airport->ARPT == $From) {
-								echo "<p class=\"currentdelay\">The FAA reports that " . $airport->ARPT . " is currently closed due to " . $airport->Reason . "! It is scheduled to reopen at " . $airport->Reopen . " (since " . $airport->Start . ")</p>";
+								$faa_warnings .= $airport->ARPT . " is currently closed due to " . $airport->Reason . "! It is scheduled to reopen at " . $airport->Reopen . " (since " . $airport->Start . ") ";
 							}
 						}
 					}
 					if (isset($delaytype->Ground_Stop_List)) {
 						foreach ($delaytype->Ground_Stop_List->Program as $program) {
 							if ($program->ARPT == $From || $program->ARPT == $To) {
-								echo "<p class=\"currentdelay\">The FAA reports that " . $program->ARPT . " has currently stopped ground traffic due to " . $program->Reason . " but is expected to resume flights at " . $program->End_Time . ".</p>";
+								$faa_warnings .= $program->ARPT . " has stopped ground traffic due to " . $program->Reason . " but is expected to resume flights at " . $program->End_Time . " ";
 							}
 						}
 					}
 					if (isset($delaytype->Ground_Delay_List)) {
 						foreach ($delaytype->Ground_Delay_List->Ground_Delay as $grnddelay) {
 							if ($grnddelay->ARPT == $From || $grnddelay->ARPT == $To) {
-								echo "<p class=\"currentdelay\">The FAA reports that " . $grnddelay->ARPT . " is currently having ground delays around " . $grnddelay->Avg . " due to " . $grnddelay->Reason . ".</p>";
+								$faa_warnings .= $grnddelay->ARPT . " is currently having ground delays around " . $grnddelay->Avg . " due to " . $grnddelay->Reason . ". ";
 							}
 						}
 					}
@@ -341,33 +338,63 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 									} else if ($delay->Arrival_Departure->Trend == "Increasing") {
 										$trend = "and is getting worse";
 									}
-									echo "<p class=\"currentdelay\">The FAA reports that " . $delay->ARPT . " is currently having departure delays of " . $delay->Arrival_Departure->Min . " to " . $delay->Arrival_Departure->Max . " due to " . $delay->Reason . " " . $trend . ".</p>";
+									$faa_warnings .= $delay->ARPT . " is currently having departure delays of " . $delay->Arrival_Departure->Min . " to " . $delay->Arrival_Departure->Max . " due to " . $delay->Reason . " " . $trend . ". ";
 								}
 							}
 						}
 					}
 				}
+				if ($faa_warnings != "") {
+					echo "<p class=\"currentdelay\">" . $faa_warnings . " (Source: <a href='http://www.fly.faa.gov/flyfaa/usmap.jsp'>FAA</a>)</p>";
+				}
 				?>
 	
 				<?php if ($Summary['Ontime']['count'] > 0) { ?>
-				<div class="header">
+				<div class="header" style="margin-top: 2em; margin-bottom: 1em">
 					Flight Delay Summary
 				</div>
 				
 				<table>
-				<tr valign="top"><td>
+				<tr valign="top">
+				
+				<td style="padding-right: 1em; border-right: 1px solid #aaa" width="230">
+					<div class="info" style="text-align: center">
+						Based on <?php echo $Summary['Ontime']['count'] ?> flights from <?php echo NiceDate($Summary['Ontime']['firstdate']) ?> to <?php echo NiceDate($Summary['Ontime']['lastdate']) ?>
+					</div>
+					<div id="chart_div_outcome"></div>
+					
+					<table style="font-size: 90%; margin-top: .5em; margin-left: 1em">
+					<tr>
+						<td><?php echo round($Summary["Ontime"]["pct_ontime"]*100) ?>%</td>
+						<th style="color: #66F; padding-left: .25em">On Time</th>
+					</tr>
+					<tr>
+						<td><?php echo round((1-$Summary["Ontime"]["pct_ontime"]-$Summary["Ontime"]["pct_20mindelay"]-$Summary["Ontime"]["pct_cancel"])*100) ?>%</td>
+						<th style="color: #F66; padding-left: .25em">5-20 min. Delay</th>
+					</tr>
+					<tr>
+						<td><?php echo round($Summary["Ontime"]["pct_20mindelay"]*100) ?>%</td>
+						<th style="color: #B80; padding-left: .25em">&gt;20 min. Delay</th>
+					</tr>
+					<tr>
+						<td><?php echo round($Summary["Ontime"]["pct_cancel"]*100) ?>%</td>
+						<th style="color: #070; padding-left: .25em">Cancelled/Diverted</th>
+					</tr>
+					</table>
+					
+				</td>
+				
+				<td style="padding-left: 1em">
+				<?php if ($SummaryGoodWeather["Ontime"]["count"] >= 10 && $SummaryBadWeather["Ontime"]["count"] >= 10) { ?>
 				<table border=0 cellpadding=4 cellspacing=1>
 				<tr>	
 					<td/>
-					<th style="padding-right: 1em">Average<div style='font-size: 75%; color: #666'>(median)</div></th>
-					<th style="padding-right: 1em">Prepare For<div style='font-size: 75%; color: #666'>(85<sup>th</sup> pctile)</div></th>
-					<th>Cancelled<div style='font-size: 75%; color: #666'>or diverted</div></th>
+					<th style="padding-right: 1em">Average<div style='font-size: 70%; color: #666; font-weight: normal'>(median)</div></th>
+					<th style="padding-right: 1em">Be Prepared For<div style='font-size: 70%; color: #666; font-weight: normal'>(85<sup>th</sup> percentile)</div></th>
+					<th>Cancelled<div style='font-size: 70%; color: #666; font-weight: normal'>or diverted</div></th>
 				</tr>
 
 				<?php
-				if ($SummaryGoodWeather["Ontime"]["count"] + $SummaryBadWeather["Ontime"]["count"] < 20) {
-					FlightCondition('', $Summary, 1, 0, $Summary);
-				}
 				FlightCondition('In Good Weather...', $SummaryGoodWeather, 10, 0, $Summary);
 				FlightCondition('In Bad Weather...', $SummaryBadWeather, 10, 0, $Summary);
 				FlightCondition('In Fog...', $SummaryFog, 20, 1, $Summary);
@@ -378,6 +405,10 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				FlightCondition('Tornado Spotted...', $SummaryTornado, 10, 1, $Summary);
 				?>
 				</table>
+
+				<p class="info" style="margin-bottom: 2em;">&ldquo;Be Prepared For&rdquo;
+				gives the longest delay you can reasonably expect to occur.
+				Only the unluckiest 15 percent of flights experience longer delays.</p>
 				
 				<?php
 				if ($WeatherInfo['Weather']['station'] != '') {
@@ -400,10 +431,10 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 					echo "</span>.</p>";
 					
 				}
+				} else {
+					echo "<p>Detailed flight statistics based on historical weather data is not available for this airport or flight path.</p>";
+				}
 				?>
-				</td>
-				<td style="padding-left: 2em">
-					<div id="chart_div_outcome"/>
 				</td>
 				</tr>
 				</table>
@@ -474,7 +505,7 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				<?php } ?>
 				
 				<div class="header">Best Days and Times to Fly from <?php echo $From ?></div>
-				<div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div>
+				<?php if ($To != '') { ?> <div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div> <?php } ?>
 				
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 				<tr>
@@ -491,7 +522,7 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 				<div class="header" style="margin-top: 1em">
 					Holiday Delays at <?php echo $From ?>
 				</div>
-				<div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div>
+				<?php if ($To != '') { ?> <div class="info" style="margin-bottom: 1em;">Based on all flights originating at <?php echo $FromCity ?>.</div> <?php } ?>
 				<br/>
 				<table border=0 cellpadding=0 cellspacing=0 width="100%">
 				<tr valign="top">
@@ -501,7 +532,7 @@ function FlightCondition($label, $data, $mincount, $subhead, $alldata) {
 						<tr>
 							<td><div><b>Holiday</b></div></td>
 							<td><div><b>Averge Arrival</b></div></td>
-							<td><div><b>Prepare For</b></div></td>
+							<td><div><b>Be Prepared For</b></div></td>
 							<td><div><b>Cancelled</b></div></td>
 						</tr>
 						

@@ -10,41 +10,25 @@
 
 <body>
 
-	<table border=0 cellpadding=0 cellspacing=0 width="100%">
-	<tr valign="top">
-		<td align="center">
+		   <div style="background-color: black; color: white; font-family: Verdana; font-weight: bold; padding: 5px 1em 5px 5px" class="menubar">
 			<table border=0 cellpadding=0 cellspacing=0 width="100%">
 			<tr>
 				<td>
-					<div style="border-bottom: solid yellow; width: 100%; text-align: left;">
-						<table border=0 cellpadding=5 cellspacing=0 width="100%">
-						<tr>
-							<td align="left">
-								<div>
-									<a href="/about">About</a>
-									&nbsp;&nbsp;&nbsp;&nbsp;
-									<a href="/statistics">Statistics</a>
-									&nbsp;&nbsp;&nbsp;&nbsp;
-									<a href="/developers">Developers</a>
-								</div>
-							</td>
-							<td align="right">
-								<a href="/">
-									<div style="font-size: 12pt;">Fly<div style="color: #FF0000; display: inline; font-size: 12pt;">OnTime</div>.us</div>
-								</a>
-							</td>
-						</tr>
-						</table>
-					</div>
-					
+					<a href="/"><span style="font-family: Trebuchet MS, Geneva, Helvetica, Tahoma, Arial; font-weight: bold">Fly<span style="color: #FF3333">OnTime</span>.us</span></a>
 				</td>
-			</tr>
+				<td style="text-align: right; ">
+					<a href="/about">About</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="/statistics">Statistics</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="/developers">Source/Data/API</a>
 			</table>
-			
+			</div>
+		
 			<table border=0 cellpadding=0 cellspacing=0 width="100%">
 			<tr valign="top">
 				<td align="left">
-					<div style="margin: 20px;">
+					<div>
 						
 						<?php echo $content_for_layout; ?>
 						
@@ -53,13 +37,10 @@
 			</tr>
 			</table>
 			
-			<a href="/terms" style="font-size: 10pt;">Terms of Use</a>
+			<div style="margin-top: 2em; background-color: black; text-align: center; color: white; font-family: Verdana; font-weight: bold; padding: 3px; font-size: 80%" class="menubar">
+				<a href="/terms">Terms of Use</a>
+			</div>
 			
-		</td>
-	</tr>
-	</table>
-	
-	<br />
 
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

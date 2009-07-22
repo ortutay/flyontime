@@ -11,12 +11,12 @@
 				
 					<h1>Airport Security Lines</h1>
 					
-					<b><u>Search</u></b>
-					<br /><br />
+					<p style="margin: 2em 0em 2em 0em; font-style: italic">This part of FlyOnTime is in development as fliers send in their
+					security experiences.</p>
 					
-					You can search <b>real-time</b> and historical wait times in the security lines at major U.S. airports.
-					<br /><br />
+					<div class="header">Search</div>
 					
+					<p>You can search <b>real-time</b> and historical wait times in the security lines at major U.S. airports.</p>
 					
 					<table border=0 cellpadding=0 cellspacing=0 width="100%">
 					<tr>
@@ -116,11 +116,9 @@
 					<br />
 
 					
-					<b><u>Contribute</u></b>
-					<br /><br />
+					<div class="header">Contribute</div>
 					
-					We gather all of our airport security line statistics from <b>YOU</b>, the users of this site.  We depend on our users to tell us when and where they are entering and leaving an airport security line.  You can contribute one of two ways:
-					<br />
+					<p>We gather all of our airport security line statistics from <b>YOU</b>, the users of this site.  We depend on our users to tell us when and where they are entering and leaving an airport security line.  You can contribute one of two ways:</p>
 					
 					<table border=0 cellpadding=10 cellspacing=0>
 					<tr valign="top">
