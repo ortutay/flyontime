@@ -96,7 +96,6 @@ class DisambiguateController extends AppController {
 				$this->set('AirportsTo', $airports_to);
 				$this->set('From', $from);
 				$this->set('To', $to);
-				$this->set('Day', $day);
 				$this->set('Time', $time);
 				$this->set('Basepath', $basepath);
 			}
