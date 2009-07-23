@@ -25,7 +25,7 @@ def percentiles(data) :
 
 # Load airport weather CSV file into a hashtable.
 Weather = { }
-with open('../data/airport_weather.csv') as f :
+with open('data/airport_weather.csv') as f :
 	data = csv.DictReader(f)
 	for line in data :
 		if not line["airport"] in Weather :
@@ -40,7 +40,7 @@ obs_cols = ["all", "origin_any", "origin_fog", "origin_rain", "origin_snow", "or
 # Initialize the output file. The first set of column headers
 # must match the fields stored in the filenames as created by
 # splitdata.py.
-writer = csv.writer(open('../data/ontime.csv', 'w'), delimiter=',', quotechar='"')
+writer = csv.writer(open('data/ontime.csv', 'w'), delimiter=',', quotechar='"')
 writer.writerow(
 	  ['origin', 'dest', 'carrier', 'flightnum', 'dayofweek', 'hour', 'holiday',
 	   'firstdate', 'lastdate',
