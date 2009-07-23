@@ -38,14 +38,19 @@ and put them in a "data/ontime/meta" directory.
 Run
 ---
 
-First extract out the relevant weather information by airport:
+First match up the airport codes with weather station codes:
+
+	python weather_stations.py
+
+This writes out data/airport_weather_stations.csv. But, it's not
+perfect and it is incomplete. We've added some hand corrections.
+
+Then extract out the weather observation data by airport:
 
 	python get_airport_weather.py
 
-This writes ../data/airport_weather.csv and ../data/weather.csv.
-The latter contains the found mappings from weather station codes
-to airport codes, which is imperfect and incomplete. Clearly for
-US airports only.
+This writes data/airport_weather.csv wihich has the weather data
+sorted by airport and date.
 
 Then split up the on-time data into segments:
 
@@ -56,7 +61,7 @@ of the data in thousands of files. If you re-run it, you have to
 remove the data/tmp directory first. It takes around an hour to
 process a year's worth of FAA data.
 
-Then run a data analysis which dumps a CSV file ../data/ontime.csv
+Then run a data analysis which dumps a CSV file data/ontime.csv
 with records for each data slice of interest.
 	
 	python analysis.py
