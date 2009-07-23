@@ -23,6 +23,8 @@ class LinesController extends AppController {
 	//entry point for /m/lines/security
 	function security_mobile()
 	{
+		$this->Mobile->ClearNoMobileCookie();
+		
 		$this->layout = 'mobile';
 		
 		if($this->IsInLine())
@@ -43,6 +45,8 @@ class LinesController extends AppController {
 	//entry point for /m/lines/security/:airport
 	function security_mobile_search($airport)
 	{
+		$this->Mobile->ClearNoMobileCookie();
+		
 		$this->layout = 'mobile';
 		
 		if($this->IsInLine())
@@ -58,6 +62,8 @@ class LinesController extends AppController {
 	//entry point for /m/lines/security/in/:airport
 	function security_mobile_in($airport)
 	{
+		$this->Mobile->ClearNoMobileCookie();
+		
 		$this->Enum =& ClassRegistry::init('Enum');
 		$this->Counter =& ClassRegistry::init('Counter');
 		
@@ -111,6 +117,8 @@ class LinesController extends AppController {
 	//entry point for /m/lines/security/wait/:airport
 	function security_mobile_wait($airport)
 	{
+		$this->Mobile->ClearNoMobileCookie();
+		
 		$this->Enum =& ClassRegistry::init('Enum');
 		
 		$this->layout = 'mobile';
@@ -157,6 +165,8 @@ class LinesController extends AppController {
 	//entry point for /m/lines/security/cancel/:airport
 	function security_mobile_cancel($airport)
 	{
+		$this->Mobile->ClearNoMobileCookie();
+		
 		$this->Enum =& ClassRegistry::init('Enum');
 		
 		$this->layout = 'mobile';
@@ -183,6 +193,8 @@ class LinesController extends AppController {
 	//entry point for /m/lines/security/out/:airport
 	function security_mobile_out($airport)
 	{
+		$this->Mobile->ClearNoMobileCookie();
+		
 		$this->Enum =& ClassRegistry::init('Enum');
 		$this->Counter =& ClassRegistry::init('Counter');
 		

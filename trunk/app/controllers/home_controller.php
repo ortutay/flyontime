@@ -7,7 +7,10 @@ class HomeController extends AppController {
 	function index() {
 		
 		//detect mobile phone
-		if($this->Mobile->IsMobileDevice())
+		if(
+			$this->Mobile->IsMobileDevice() &&
+			!$this->Mobile->IsNoMobileCookieSet()
+		)
 			$this->redirect('/m/lines/security/');
 			
 		//continue as normal
@@ -18,7 +21,7 @@ class HomeController extends AppController {
 		$this->Enum =& ClassRegistry::init('Enum');
 		$this->Ontime =& ClassRegistry::init('Ontime');
 
-		if (($top_routes = Cache::read('home_top_routes')) === false) {
+		if (($top_routes = Cache::read('home_top_routes', 'long')) === false) {
 		$top_routes = $this->Ontime->find('all',
 			array(
 				'fields' => array(
@@ -40,9 +43,12 @@ class HomeController extends AppController {
 				'limit' => 15
 			)
 		);
-		Cache::write('home_top_routes', $top_routes);
+		Cache::write('home_top_routes', $top_routes, 'long');
 		}
 		$this->set('TopRoutes', $top_routes);
+		
+		
+		if (($airlines = Cache::read('home_airlines', 'long')) === false) {
 		
 		$airlines_used = $this->Ontime->find('all',
 			array(
@@ -73,6 +79,9 @@ class HomeController extends AppController {
 				)
 			)
 		);
+		
+		Cache::write('home_airlines', $airlines, 'long');
+		}
 		
 		$this->set('Airlines', $airlines);
 	}

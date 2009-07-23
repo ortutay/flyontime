@@ -224,8 +224,27 @@
  *
  */
  
-   // The live data (FAA airport status, current weather) should be updated regularly,
-	// say, every 15 minutes. We cache them, so we limit the cache here.
-	Cache::config('default', array('engine' => 'File', 'duration' => "+15 minutes"));
+ 	//Cache settings
+ 	
+	Cache::config('default', 
+		array(
+			'engine' => 'File',
+			'duration' => "+15 minutes"
+		)
+	);
+	
+	Cache::config('short', 
+		array(
+			'engine' => 'File',
+			'duration' => "+1 hours"
+		)
+	);
+	
+	Cache::config('long', 
+		array(
+			'engine' => 'File',
+			'duration' => "+1 week"
+		)
+	);
 
 ?>

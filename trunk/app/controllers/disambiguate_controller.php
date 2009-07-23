@@ -49,7 +49,11 @@ class DisambiguateController extends AppController {
 		//get data
 		if($from != '')
 		{
-			$airports_used = $this->Disambiguate->GetAirportsUsed();
+			if (($airports_used = Cache::read('disambiguate_airports_used', 'long')) === false)
+			{
+				$airports_used = $this->Disambiguate->GetAirportsUsed();
+				Cache::write('disambiguate_airports_used', $airports_used, 'long');
+			}
 			
 			$airports_from = $this->Disambiguate->GetAirports($from, $airports_used);
 			
@@ -76,7 +80,7 @@ class DisambiguateController extends AppController {
 						$url = $basepath.$airports_from[0]['Enum']['code'].'/'.$airports_to[0]['Enum']['code'];
 				}
 				
-				if($day != '' || $time != '')
+				if($day != '' || $time != '' || $noflash != '')
 					$url .= '?';
 				
 				if($day != '')
