@@ -88,7 +88,12 @@
 				$seen_airports = array();
 				foreach($TopRoutes as $route)
 				{
-					if ($seen_airports[$route['Ontime']['origin']] || $seen_airports[$route['Ontime']['dest']]) { continue; }
+					if (
+						(isset($seen_airports[$route['Ontime']['origin']]) && $seen_airports[$route['Ontime']['origin']]) || 
+						(isset($seen_airports[$route['Ontime']['dest']]) && $seen_airports[$route['Ontime']['dest']])
+					) 
+					{ continue; }
+					
 					echo "<tr>";
 					echo "<td><a href='/routes/" . $route['Ontime']['origin'] . "/" . $route['Ontime']['dest'] . "' style='text-decoration: none'>" . $route['Ontime']['origin'] . " to " . $route['Ontime']['dest'] . "</a></td>";
 					//echo "<td>" . $route['Ontime']["count"] . " flights</td>";

@@ -50,5 +50,35 @@ class MobileComponent extends Object {
 		return false;
 	}
 	
+	public function SetNoMobileCookie()
+	{
+		setcookie(
+			'nomobile',
+			'1',
+			time() + 3600, //expire in 1 hour
+			'/',
+			'.flyontime.us'
+		);
+	}
+	
+	public function IsNoMobileCookieSet()
+	{
+		if(isset($_COOKIE['nomobile']) && $_COOKIE['nomobile'] == '1')
+			return true;
+		
+		return false;
+	}
+	
+	public function ClearNoMobileCookie()
+	{
+		setcookie(
+			'nomobile',
+			'',
+			time() - 3600, //a time in the past
+			'/',
+			'.flyontime.us'
+		);
+	}
+	
 }
 ?>
