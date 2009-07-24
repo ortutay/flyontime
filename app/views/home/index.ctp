@@ -127,8 +127,10 @@
 			<td style="padding: 1em 5em 0px 0px; width: 220px" colspan="2">
 				<h3>Site News</h3>
 				<div style="font-size: 95%">
-				<p style="width: 100%;">July 27, 2009. FlyOnTime is <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">mentioned in The Washington Post</a>.</p>
-				<p style="width: 100%;">July 1, 2009. FlyOnTime is <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">mentioned by Federal CIO Vivek Kundra</a>.</p>
+				<p style="width: 100%;">July 24, 2009. Mentioned by <a href="http://www.whitehouse.gov/omb/blog/09/07/24/DatagovSurpasses100000Datasets/">OMB Director Peter Orszag</a>.</p>
+				<p style="width: 100%;">July 21, 2009. Mentioned in <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">The Washington Post</a>.</p>
+				<p style="width: 100%;">July 1, 2009. Mentioned by <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">Federal CIO Vivek Kundra</a>.</p>
+				<p style="width: 100%;">June 24, 2009. Mentioned in <a href="http://www.politico.com/news/stories/0609/24118.html">The Politico</a>.</p>
 				</div>
 			</td>
 		</tr>
