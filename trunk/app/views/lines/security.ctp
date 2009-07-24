@@ -11,8 +11,8 @@
 				
 					<h1>Airport Security Lines</h1>
 					
-					<p style="margin: 2em 0em 2em 0em; font-style: italic">This part of FlyOnTime is in development as fliers send in their
-					security experiences.</p>
+					<p style="margin: 2em 0em 2em 0em; font-style: italic">This part of FlyOnTime is under development as travelers send in their
+					security line wait times.</p>
 					
 					<div class="header">Search</div>
 					
@@ -116,7 +116,7 @@
 					<br />
 
 					
-					<div class="header">Contribute</div>
+					<div class="header">Participate</div>
 					
 					<p>We gather all of our airport security line statistics from <b>YOU</b>, the users of this site.  We depend on our users to tell us when and where they are entering and leaving an airport security line.  You can contribute one of two ways:</p>
 					
@@ -161,7 +161,7 @@
 								The following example will work too:
 								<br /><br />
 								
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>I'm going to #airportsecurity ord in and I hope I make my flight.</b>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>I'm going to #airportsecurity in ord and I hope I make my flight.</b>
 								<br /><br />
 								
 								<br />

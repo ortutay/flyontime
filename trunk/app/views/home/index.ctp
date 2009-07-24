@@ -2,11 +2,13 @@
 <tr>
 	<td>
 		<div style="background-color: black; text-align: right; color: white; font-family: Verdana; font-weight: bold; padding: 5px 1em 5px 5px" class="menubar">
-			<a href="/about">About</a>
+			<a href="/about" style="color: white; font-weight: bold;">About</a>
 			&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="/statistics">Statistics</a>
+			<a href="/statistics" style="color: white; font-weight: bold;">Statistics</a>
 			&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="/developers">Source/Data/API</a>
+			<a href="/developers" style="color: white; font-weight: bold;">Source/Data/API</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="/lines/security" style="color: white; font-weight: bold;">Airport Security</a>
 		</div>
 		
 		<table border=0 cellpadding=0 cellspacing=0 width="800px" style="margin-top: 2em" align="center">
@@ -16,7 +18,7 @@
 					<div style="position: relative; left: 450px; top: 10px; width: 340px">
 						<div style="font-family: Trebuchet MS, Geneva, Helvetica, Tahoma, Arial; font-size: 32pt; font-weight: bold">Fly<span style="color: #DD0000">OnTime</span>.us</div>
 						
-						<div style="margin-top: 1em; font-size: 90%; color: #444">Find the most on-time flight between two airports or check how late your flight is on average or in bad weather before you leave.</div>
+						<div style="margin-top: 1em; font-size: 90%; color: #444">Find the most on-time flight between two airports or check how late your flight is on average, in good weather and bad, before you leave.</div>
 					</div>
 
 				</div>
@@ -29,15 +31,15 @@
 			<td style="padding-right: 5em; width: 220px">
 				<h3>Find A Route</h3>
 				<form method="GET" action="/disambiguate/airports">
-					<div>From: <div style="color: #666666; display: inline;">(city or airport)</div></div>
+					<div style="white-space: nowrap;">From: <div style="color: #666666; display: inline;">(city or airport)</div></div>
 					<div style="margin-top: .3em"><input name="from" type="text" class="big" style="width: 220px;" /></div>
-					<div style="margin-top: .85em">To: <div style="color: #666666; display: inline;">(city or airport; optional)</div></div>
+					<div style="margin-top: .85em; white-space: nowrap;">To: <div style="color: #666666; display: inline;">(city or airport; optional)</div></div>
 					<div style="margin-top: .3em"><input name="to" type="text" class="big" style="width: 220px;" /></div>
 					<div style="text-align: right; margin-top: .85em"><input type="submit" value="Search >>" /></div>
 				</form>
 			</td>
 			<td style="padding-right: 5em; width: 220px">
-				<h3>Find An Airline/Flight</h3>
+				<h3 style="white-space: nowrap;">Find An Airline/Flight</h3>
 				<form method="GET" action="/disambiguate/flights">
 					<div>Airline:</div>
 					<div style="margin-top: .3em"><select name="airline" class="big" style="width: 220px;">
@@ -51,7 +53,7 @@
 						}
 						?>
 					</select></div>
-					<div style="margin-top: .85em">Flight #: <div style="color: #666666; display: inline;">(optional)</div></div>
+					<div style="margin-top: .85em; white-space: nowrap;">Flight #: <div style="color: #666666; display: inline;">(optional)</div></div>
 					<div style="margin-top: .3em"><input name="flight_num" type="text" class="big" style="width: 220px;" /></div>
 					<div style="text-align: right; margin-top: .85em"><input type="submit" value="Search >>" /></div>
 				</form>
@@ -112,8 +114,8 @@
 		<tr valign="top">
 			<td style="padding: 1em 5em 0px 0px; width: 220px;">
 				<h3>Security Lines</h3>
-				<div style="font-size: 95%">
-				<p>Search wait time statistics for <a href="/lines/security">security lines</a>.</p>
+				<div style="font-size: 95%; width: 100%;">
+				<p style="width: 100%;">Search wait time statistics for <a href="/lines/security">security lines</a>.</p>
 				<div style="float: right; text-align: center; margin-top: -10px">
 					<div><img src="/img/twitter.gif"/></div>
 					<div><img src="/img/iphone.png"/></div>
@@ -125,15 +127,15 @@
 			<td style="padding: 1em 5em 0px 0px; width: 220px" colspan="2">
 				<h3>Site News</h3>
 				<div style="font-size: 95%">
-				<p>July 27, 2009. FlyOnTime is <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">mentioned in The Washington Post</a>.</p>
-				<p>July 1, 2009. FlyOnTime is <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">mentioned by Federal CIO Vivek Kundra</a>.</p>
+				<p style="width: 100%;">July 27, 2009. FlyOnTime is <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">mentioned in The Washington Post</a>.</p>
+				<p style="width: 100%;">July 1, 2009. FlyOnTime is <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">mentioned by Federal CIO Vivek Kundra</a>.</p>
 				</div>
 			</td>
 		</tr>
 		</table>
 		
 		<div style="margin-top: 4em; background-color: black; text-align: center; color: white; font-family: Verdana; font-weight: bold; padding: 3px; font-size: 80%" class="menubar">
-			<a href="/terms">Terms of Use</a>
+			<a href="/terms" style="color: white;">Terms of Use</a>
 		</div>
 		
 	</td>
