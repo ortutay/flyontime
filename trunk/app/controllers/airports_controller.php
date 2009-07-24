@@ -128,95 +128,155 @@ class AirportsController extends AppController {
 	
 	private function GetSummary($from, $to, $carrier, $flightnum, $condition)
 	{
-		return $this->Ontime->find('first',
-			array(
-				'fields' => array('firstdate', 'lastdate', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
-				'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => $condition, 'carrier' => $carrier, 'flightnum' => $flightnum, 'dayofweek' => '0', 'hour' => '', 'holiday' => ''),
-			)
-		);
+		$key = 'airports_GetSummary_'.$from.'_'.$to.'_'.$carrier.'_'.$flightnum.'_'.$condition;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('first',
+				array(
+					'fields' => array('firstdate', 'lastdate', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+					'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => $condition, 'carrier' => $carrier, 'flightnum' => $flightnum, 'dayofweek' => '0', 'hour' => '', 'holiday' => ''),
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 	
 	private function GetBestDestinations($from)
 	{
-		return $this->Ontime->find('all',
-			array(
-				'fields' => array('dest', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
-				
-				'conditions' => array('origin' => $from, 'dest != ""', 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', 'carrier' => '', flightnum => 0),
-				
-				'order' => array('count DESC'),
-				
-				'limit' => 10,
-			)
-		);
+		$key = 'airports_GetBestDestinations_'.$from;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('all',
+				array(
+					'fields' => array('dest', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+					
+					'conditions' => array('origin' => $from, 'dest != ""', 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', 'carrier' => '', flightnum => 0),
+					
+					'order' => array('count DESC'),
+					
+					'limit' => 10,
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 
 	private function GetBestFlights($from, $to)
 	{
-		return $this->Ontime->find('all',
-			array(
-				'fields' => array('carrier', 'flightnum', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
-				
-				'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', "carrier != ''"),
-				
-				'order' => array('delay_median ASC')
-			)
-		);
+		$key = 'airports_GetBestFlights_'.$from.'_'.$to;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('all',
+				array(
+					'fields' => array('carrier', 'flightnum', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+					
+					'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', "carrier != ''"),
+					
+					'order' => array('delay_median ASC')
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 	
 	private function GetBestAirlines($from, $to)
 	{
-		return $this->Ontime->find('all',
-			array(
-				'fields' => array('carrier', 'sum(count) as carrier_count', 'sum(count*pct_ontime) as carrier_ontime'),
-				
-				'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', "carrier != ''"),
-				
-				'group' => array('carrier'),
-				
-				'order' => array('sum(count*pct_ontime)/sum(count) DESC')
-			)
-		);
+		$key = 'airports_GetBestAirlines_'.$from.'_'.$to;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('all',
+				array(
+					'fields' => array('carrier', 'sum(count) as carrier_count', 'sum(count*pct_ontime) as carrier_ontime'),
+					
+					'conditions' => array('origin' => $from, 'dest' => $to, 'condition' => 'all', 'dayofweek' => '0', 'hour' => '', 'holiday' => '', "carrier != ''"),
+					
+					'group' => array('carrier'),
+					
+					'order' => array('sum(count*pct_ontime)/sum(count) DESC')
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 	
 	private function GetDays($from, $to)
 	{
-		return $this->Ontime->find('all',
-			array(
-				'fields' => array('dayofweek', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
-				
-				'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek != 0', 'hour' => '', 'holiday' => ''),
-				
-				'order' => array('dayofweek ASC')
-			)
-		);
-
+		$key = 'airports_GetDays_'.$from.'_'.$to;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('all',
+				array(
+					'fields' => array('dayofweek', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+					
+					'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek != 0', 'hour' => '', 'holiday' => ''),
+					
+					'order' => array('dayofweek ASC')
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 	
 	private function GetTimes($from, $to)
 	{
-		return $this->Ontime->find('all',
-			array(
-				'fields' => array('hour', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
-				
-				'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek' => 0, 'hour != ""', 'holiday' => ''),
-				
-				'order' => array('hour ASC')
-			)
-		);
-
+		$key = 'airports_GetTimes_'.$from.'_'.$to;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('all',
+				array(
+					'fields' => array('hour', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+					
+					'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek' => 0, 'hour != ""', 'holiday' => ''),
+					
+					'order' => array('hour ASC')
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 	
 	private function GetHolidays($from, $to)
 	{
-		return $this->Ontime->find('all',
-			array(
-				'fields' => array('holiday', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
-				
-				'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek' => 0, 'hour' => '', 'holiday != ""'),
-			)
-		);
-
+		$key = 'airports_GetHolidays_'.$from.'_'.$to;
+		
+		if (($result = Cache::read($key, 'long')) === false)
+		{
+			$result = $this->Ontime->find('all',
+				array(
+					'fields' => array('holiday', 'count', 'pct_cancel', 'pct_20mindelay', 'pct_ontime', 'delay_15thpctile', 'delay_median', 'delay_85thpctile'),
+					
+					'conditions' => array('origin' => $from, 'dest' => '', 'carrier' => '', 'flightnum' => 0, 'condition' => 'all', 'dayofweek' => 0, 'hour' => '', 'holiday != ""'),
+				)
+			);
+			
+			Cache::write($key, $result, 'long');
+		}
+		
+		return $result;
 	}
 
 	private function GetAirlineNames($airlines1, $airlines2)
