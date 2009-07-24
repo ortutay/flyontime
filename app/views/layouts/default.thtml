@@ -14,14 +14,16 @@
 			<table border=0 cellpadding=0 cellspacing=0 width="100%">
 			<tr>
 				<td>
-					<a href="/"><span style="font-family: Trebuchet MS, Geneva, Helvetica, Tahoma, Arial; font-weight: bold">Fly<span style="color: #FF3333">OnTime</span>.us</span></a>
+					<a href="/"><span style="font-family: Trebuchet MS, Geneva, Helvetica, Tahoma, Arial; font-weight: bold"><span style="color: white;">Fly</span><span style="color: #FF3333">OnTime</span><span style="color: white;">.us</span></span></a>
 				</td>
 				<td style="text-align: right; ">
-					<a href="/about">About</a>
+					<a href="/about" style="color: white; font-weight: bold;">About</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a href="/statistics">Statistics</a>
+					<a href="/statistics" style="color: white; font-weight: bold;">Statistics</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<a href="/developers">Source/Data/API</a>
+					<a href="/developers"i style="color: white; font-weight: bold;">Source/Data/API</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="/lines/security" style="color: white; font-weight: bold;">Airport Security</a>
 			</table>
 			</div>
 		
@@ -38,7 +40,7 @@
 			</table>
 			
 			<div style="margin-top: 2em; background-color: black; text-align: center; color: white; font-family: Verdana; font-weight: bold; padding: 3px; font-size: 80%" class="menubar">
-				<a href="/terms">Terms of Use</a>
+				<a href="/terms" style="color: white;">Terms of Use</a>
 			</div>
 			
 

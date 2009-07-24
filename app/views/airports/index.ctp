@@ -133,9 +133,9 @@ function NiceDate($date)
 	data_outcome.addColumn('number', '% of Flights');
 	data_outcome.addRows(4);
 	data_outcome.setValue(0, 0, 'On Time');
-	data_outcome.setValue(1, 0, '5-20 min. Delay');
-	data_outcome.setValue(2, 0, '>20 min. Delay');
-	data_outcome.setValue(3, 0, 'Cancelled/Diverted');
+	data_outcome.setValue(1, 0, '5-20 min.');
+	data_outcome.setValue(2, 0, '>20 min.');
+	data_outcome.setValue(3, 0, 'Can./Div.');
 	data_outcome.setValue(0, 1, <?php echo round($Summary['Ontime']['pct_ontime']*$Summary['Ontime']['count']); ?>);
 	data_outcome.setValue(1, 1, <?php echo round((1-$Summary['Ontime']['pct_ontime']-$Summary['Ontime']['pct_20mindelay']-$Summary['Ontime']['pct_cancel'])*$Summary['Ontime']['count']); ?>);
 	data_outcome.setValue(2, 1, <?php echo round($Summary['Ontime']['pct_20mindelay']*$Summary['Ontime']['count']); ?>);
@@ -150,7 +150,7 @@ function NiceDate($date)
     //AIRLINE FROM
 	var data_airline_from = new google.visualization.DataTable();
 	data_airline_from.addColumn('string', 'Airline');
-	data_airline_from.addColumn('number', 'Percent On-Time Arrival');
+	data_airline_from.addColumn('number', '% On-Time Arrival');
 	data_airline_from.addRows(<?php echo count($BestAirlines); ?>);
 	
 	<?php
@@ -159,7 +159,7 @@ function NiceDate($date)
 	{
 	?>
 	data_airline_from.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Ontime']['carrier']]; ?>');
-	data_airline_from.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0]['carrier_ontime']/$airline[0]['carrier_count']*100; ?>);
+	data_airline_from.setValue(<?php echo $i; ?>, 1, <?php echo round($airline[0]['carrier_ontime']/$airline[0]['carrier_count']*100, 1); ?>);
 
 	<?php
 	$i++;

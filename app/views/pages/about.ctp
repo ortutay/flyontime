@@ -21,7 +21,7 @@
 					while the security line times are submitted by visitors like you.
 					</p>
 					
-					<p>This website has three goals:</p>
+					<p>This website has four goals:</p>
 					
 					<ol>
 						<li>

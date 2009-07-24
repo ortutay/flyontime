@@ -4,7 +4,7 @@ class LinesController extends AppController {
 	var $components = array('Cookie', 'Mobile');
 	
 	var $cookie_expires = 2592000; // 30 days
-	var $cookie_encrypted = false;
+	var $cookie_encrypted = true;
 	
 	function beforeFilter()
 	{

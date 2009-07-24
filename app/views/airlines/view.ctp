@@ -31,11 +31,11 @@ function NiceDate($date)
 	data.addRows(4);
 	data.setValue(0, 0, 'On-Time');
 	data.setValue(0, 1, <?php echo round($Stats['pct_ontime']*$Stats["count"]); ?>);
-	data.setValue(1, 0, '5-20 Min. Delay');
+	data.setValue(1, 0, '5-20 Min.');
 	data.setValue(1, 1, <?php echo round((1.0 - $Stats['pct_ontime'] - $Stats['pct_cancel'] - $Stats['pct_20mindelay'])*$Stats["count"]); ?>);
-	data.setValue(2, 0, '>20 Min. Delay');
+	data.setValue(2, 0, '>20 Min.');
 	data.setValue(2, 1, <?php echo round($Stats['pct_20mindelay']*$Stats["count"]); ?>);
-	data.setValue(3, 0, 'Cancelled/Diverted');
+	data.setValue(3, 0, 'Can./Div.');
 	data.setValue(3, 1, <?php echo round($Stats['pct_cancel']*$Stats["count"]); ?>);
 
 	var chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
