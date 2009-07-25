@@ -5,11 +5,11 @@
 	<title><?php echo $title_for_layout; ?></title>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" type="text/css" href="/css/flyontime.generic.css" />
+	<meta name="description" content="<?php echo $MetaDescription; ?>"/>
 	<?php echo $scripts_for_layout; ?>
 </head>
 
 <body>
-
 		   <div style="background-color: black; color: white; font-family: Verdana; font-weight: bold; padding: 5px 1em 5px 5px" class="menubar">
 			<table border=0 cellpadding=0 cellspacing=0 width="100%">
 			<tr>

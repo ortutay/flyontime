@@ -17,10 +17,13 @@ $HolidayNames = array(
 
 if ($Carrier != '') {
 	$this->pageTitle = 'FlyOnTime.us: ' . $CarrierName . ' Flight ' . $FlightNum . ' (' . $From . ' to ' . $To . ')';
+	$this->set('MetaDescription', 'On-time statistics for ' . $CarrierName . ' Flight ' . $FlightNum . ' from ' . $From . ' to ' . $To . ', including percent on time, average delays, and best days to fly.');
 } else if ($To != '') {
 	$this->pageTitle = 'FlyOnTime.us: ' . $From . ' to ' . $To;
+	$this->set('MetaDescription', 'Flight on-time statistics for ' . $From . ' to ' . $To . ', including percent on time, average delays, best flights, and best days to fly.');
 } else {
 	$this->pageTitle = 'FlyOnTime.us: Flights From ' . $From;
+	$this->set('MetaDescription', 'Flight on-time statistics for flights from ' . $From . ', including percent on time, average delays, best days to fly, and holiday delays.');
 }
 
 function GetDayName($day)
