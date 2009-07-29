@@ -5,7 +5,7 @@
 	<title><?php echo $title_for_layout; ?></title>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" type="text/css" href="/css/flyontime.generic.css" />
-	<meta name="description" content="<?php echo $MetaDescription; ?>"/>
+	<meta name="description" content="<?php if(isset($MetaDescription)) echo $MetaDescription; ?>"/>
 	<?php echo $scripts_for_layout; ?>
 </head>
 

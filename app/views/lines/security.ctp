@@ -1,4 +1,4 @@
-<?php $this->pageTitle = 'FlyOnTime.us: Airport Security Lines' ?>
+<?php $this->pageTitle = 'FlyOnTime.us: Airport Security Lines'; ?>
 
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr>
@@ -171,7 +171,71 @@
 						</td>
 					</tr>
 					</table>
+					
+					<br />
+					
+					<div class="header">Status</div>
+					
+					<p>Users have contributed their security line wait times from all across the country.</p>
+					
+					<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+					<script type='text/javascript'>
+					google.load('visualization', '1', {'packages': ['geomap']});
+					google.setOnLoadCallback(drawMap);
+					
+					function drawMap() {
+					  var data = new google.visualization.DataTable();
+					  data.addRows(<?php echo count($SecurityCounts); ?>);
+					  
+					  data.addColumn('number', 'Latitude');
+					  data.addColumn('number', 'Longitude');
+					  data.addColumn('number', 'Submissions');
+					  data.addColumn('string', 'Airport');
+					  
+					  <?php
+					  $i = 0;
+					  foreach($SecurityCounts as $airport)
+					  {
+						$airport_code = $airport['Line']['airportcode'];
+						$airport_name = $AirportNames[$airport_code];
+						
+						$airport_name = preg_replace("/[^a-zA-Z0-9\s\.,:\-\_\/]/", "", $airport_name);
+						
+						if(strlen($airport_name) > 28)
+							$airport_name = substr($airport_name, 0, 25).'...';
+					  ?>
+					
+					  data.setValue(<?php echo $i; ?>, 0, <?php echo $Geocodes[$airport_code]['Lat']; ?>);
+					  data.setValue(<?php echo $i; ?>, 1, <?php echo $Geocodes[$airport_code]['Lng']; ?>);
+					  data.setValue(<?php echo $i; ?>, 2, <?php echo $airport[0]['NumLines']; ?>);
+					  data.setValue(<?php echo $i; ?>, 3, '<?php echo $airport_name; ?>');
+					  
+					  <?php
+					  $i++;
+					  }
+					  ?>
+					
+					  var options = {};
+					  options['region'] = 'US';
+					  options['colors'] = [0xFF8747, 0xFFB581, 0xc06000]; //orange colors
+					  options['dataMode'] = 'markers';
+					
+					  var container = document.getElementById('map_canvas');
+					  var geomap = new google.visualization.GeoMap(container);
+					  geomap.draw(data, options);
+					};
+					
+					</script>
+					
+					<table border=0 cellpadding=0 cellspacing=0 width="100%">
+					<tr>
+						<td align="center">
+							<div id='map_canvas'><blink>Loading...</blink></div>
+						</td>
+					</tr>
+					</table>
 
+					<br />
 				
 				</div>
 				
