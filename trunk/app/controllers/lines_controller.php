@@ -250,6 +250,16 @@ class LinesController extends AppController {
 			stripos($this->params['url']['url'], 'm/lines/security') === FALSE //is not already in /m/lines/security
 		)
 			$this->redirect('/m/lines/security/');
+		
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$airports = $this->GetSecurityAirportCounts();
+		$geocodes = $this->GetAirportGeocodes($airports);
+		$airport_names = $this->GetAirportNames($airports);
+		
+		$this->set('SecurityCounts', $airports);
+		$this->set('AirportNames', $airport_names);
+		$this->set('Geocodes', $geocodes);
 	}
 	
 	//entry point for /lines/security/:airport
@@ -673,5 +683,91 @@ class LinesController extends AppController {
 		
 		$this->Counter->save($counter);
 	}
+	
+	private function GetSecurityAirportCounts()
+	{
+		$airports = $this->Line->find('all',
+			array(
+				'fields' => array(
+					'Line.airportcode',
+					'COUNT(Line.airportcode) as NumLines'
+				),
+				'conditions' => array(
+					'Line.diff >' => 0
+				),
+				'group' => array(
+					'Line.airportcode'
+				),
+				'order' => array(
+					'NumLines DESC'
+				)
+			)
+		);
+		
+		return $airports;
+	}
+	
+	private function GetAirportGeocodes($airports)
+	{
+		$airport_codes = array();
+		
+		foreach($airports as $airport)
+		{
+			$airport_codes[] = $airport['Line']['airportcode'];
+		}
+		
+		$coords = $this->Enum->find('all',
+			array(
+				'conditions' => array(
+					'Enum.category' => 'AIRPORTS_GEOCODE',
+					'Enum.code' => $airport_codes
+				)
+			)
+		);
+		
+		$geocodes = array();
+		
+		foreach($coords as $coord)
+		{
+			$coord_arr = explode(',', $coord['Enum']['description']);
+			
+			$Lng = $coord_arr[0];
+			$Lat = $coord_arr[1];
+			$code = $coord['Enum']['code'];
+			
+			$geocodes[$code] = array('Lat' => $Lat, 'Lng' => $Lng);
+		}
+		
+		return $geocodes;
+	}
+	
+	private function GetAirportNames($airports)
+	{
+		$airport_codes = array();
+		
+		foreach($airports as $airport)
+		{
+			$airport_codes[] = $airport['Line']['airportcode'];
+		}
+		
+		$result = $this->Enum->find('all',
+			array(
+				'conditions' => array(
+					'Enum.category' => 'AIRPORTS',
+					'Enum.code' => $airport_codes
+				)
+			)
+		);
+		
+		$airport_names = array();
+		
+		foreach($result as $item)
+		{
+			$airport_names[$item['Enum']['code']] = $item['Enum']['description'];
+		}
+		
+		return $airport_names;
+	}
+	
 }
 ?>
