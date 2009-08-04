@@ -1,5 +1,37 @@
 <?php $this->pageTitle = 'FlyOnTime.us: Airport Security Lines'; ?>
 
+<table border=0 cellpadding=0 cellspacing=0 style="margin-top: 4px; margin-left: 4px;">
+<tr>
+	<td>
+		<a href="http://digg.com/submit?url=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity&title=Crowdsource%20Airport%20Security%20Wait%20Times&topic=tech_news"><img border=0 src="/img/Digg_16x16.png" /></a>
+	</td>
+	<td width="4px"></td>
+	<td>
+		<a href="http://del.icio.us/post?url=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity&title=Crowdsource%20Airport%20Security%20Wait%20Times"><img border=0 src="/img/delicious_16x16.png" /></a>
+	</td>
+	<td width="4px"></td>
+	<td>
+		<a href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity&t=Crowdsource%20Airport%20Security%20Wait%20Times"><img border=0 src="/img/FaceBook_16x16.png" /></a>
+	</td>
+	<td width="4px"></td>
+	<td>
+		<a href="http://reddit.com/submit?url=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity&title=Crowdsource%20Airport%20Security%20Wait%20Times"><img border=0 src="/img/Reddit_16x16.png" /></a>
+	</td>
+	<td width="4px"></td>
+	<td>
+		<a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity&title=Crowdsource%20Airport%20Security%20Wait%20Times"><img border=0 src="/img/Stumbleupon_16x16.png" /></a>
+	</td>
+	<td width="4px"></td>
+	<td>
+		<a href="http://technorati.com/faves?add=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity"><img border=0 src="/img/Technorati_16x16.png" /></a>
+	</td>
+	<td width="4px"></td>
+	<td>
+		<a href="http://twitthis.com/twit?url=http%3A%2F%2Fwww.flyontime.us%2Flines%2Fsecurity"><img border=0 src="/img/Twitter_16x16.png" /></a>
+	</td>
+</tr>
+</table>
+
 <table border=0 cellpadding=0 cellspacing=0 width="100%">
 <tr>
 	<td align="center">

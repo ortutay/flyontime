@@ -11,7 +11,40 @@
 			<a href="/lines/security" style="color: white; font-weight: bold;">Airport Security</a>
 		</div>
 		
-		<table border=0 cellpadding=0 cellspacing=0 width="800px" style="margin-top: 2em" align="center">
+		<table border=0 cellpadding=0 cellspacing=0 style="margin-top: 4px; margin-left: 4px;">
+		<tr>
+			<td>
+				<a href="http://digg.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us&topic=tech_news"><img border=0 src="/img/Digg_16x16.png" /></a>
+			</td>
+			<td width="4px"></td>
+			<td>
+				<a href="http://del.icio.us/post?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/delicious_16x16.png" /></a>
+			</td>
+			<td width="4px"></td>
+			<td>
+				<a href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.flyontime.us&t=FlyOnTime.us"><img border=0 src="/img/FaceBook_16x16.png" /></a>
+			</td>
+			<td width="4px"></td>
+			<td>
+				<a href="http://reddit.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/Reddit_16x16.png" /></a>
+			</td>
+			<td width="4px"></td>
+			<td>
+				<a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/Stumbleupon_16x16.png" /></a>
+			</td>
+			<td width="4px"></td>
+			<td>
+				<a href="http://technorati.com/faves?add=http%3A%2F%2Fwww.flyontime.us"><img border=0 src="/img/Technorati_16x16.png" /></a>
+			</td>
+			<td width="4px"></td>
+			<td>
+				<a href="http://twitthis.com/twit?url=http%3A%2F%2Fwww.flyontime.us"><img border=0 src="/img/Twitter_16x16.png" /></a>
+			</td>
+		</tr>
+		</table>
+		
+		
+		<table border=0 cellpadding=0 cellspacing=0 width="800px" align="center">
 		<tr valign="top">
 			<td style="padding-bottom: 2em">
 				<div style="background-image: url('/img/main.png'); width: 528px; height: 250px; text-align: left;">
