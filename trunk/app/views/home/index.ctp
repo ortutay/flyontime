@@ -75,19 +75,19 @@ $example_route = $example_routes[$i_rand];
 			Find the most on-time flight between two airports or check how late your flight is on average, in good weather and bad, before you leave.
 		</div>
 		
-		<br /><br /><br />
+		<br /><br /><br /><br /><br /><br />
 		
-		<div style="font-family: Arial; font-size: 12pt; width: 90%; text-align: left;">
+		<div style="font-family: Arial; font-size: 8pt; width: 90%; text-align: left;">
 			Data on this site is derived from:
 			
 			<br /><br />
-			<a href="http://www.bts.gov/">Bureau of Transportation Statistics</a>
+			The <a href="http://www.bts.gov/">Bureau of Transportation Statistics</a>
 			
 			<br /><br />
-			<a href="http://www.faa.gov/">Federal Aviation Administration</a>
+			The <a href="http://www.faa.gov/">Federal Aviation Administration</a>
 			
 			<br /><br />
-			<a href="http://www.noaa.gov/">National Oceanic and Atmospheric Administration</a>
+			The <a href="http://www.noaa.gov/">National Oceanic and Atmospheric Administration</a>
 			
 			<br /><br />
 			<a href="/lines/security">People Like You</a>
@@ -116,10 +116,10 @@ $example_route = $example_routes[$i_rand];
 				<table border=0 cellpadding=5 cellspacing=0 style="margin-top: 5px;">
 				<tr>
 					<td>
-						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">From: <span style="color: #666666;">(city or airport)</span></div>
+						<div style="font-family: Arial; font-size: 10pt; font-weight: bold">From: <span style="color: #666666;">(city or airport)</span></div>
 					</td>
 					<td>
-						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">To: <span style="color: #666666;">(city or airport; optional)</span></div>
+						<div style="font-family: Arial; font-size: 10pt; font-weight: bold">To: <span style="color: #666666;">(city or airport; optional)</span></div>
 					</td>
 					<td></td>
 				</tr>
@@ -153,10 +153,10 @@ $example_route = $example_routes[$i_rand];
 				<table border=0 cellpadding=5 cellspacing=0 style="margin-top: 5px;">
 				<tr>
 					<td>
-						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">Airline:</div>
+						<div style="font-family: Arial; font-size: 10pt; font-weight: bold">Airline:</div>
 					</td>
 					<td>
-						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">Flight #: <span style="color: #666666;">(optional)</span></div>
+						<div style="font-family: Arial; font-size: 10pt; font-weight: bold">Flight #: <span style="color: #666666;">(optional)</span></div>
 					</td>
 					<td></td>
 				</tr>
