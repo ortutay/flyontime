@@ -20,7 +20,7 @@
 			<br /><br /><br /><br /><br />
 			<div><?php echo $message?></div>
 			<br /><br />
-			<div style="font-size: 24pt;">Fly<div style="color: #FF0000; display: inline; font-size: 24pt;">OnTime</div>.us</div>
+			<div style="font-family: Arial; font-size: 24pt; font-weight: bold; font-style: italic;">Fly<span style="color: #B3CEE4">OnTime</span>.us</div>
 			<br /><br />
 			<img src="/img/loading.gif" />
 		

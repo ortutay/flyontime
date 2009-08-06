@@ -1,6 +1,59 @@
-<table border=0 cellpadding=0 cellspacing=0 width="100%">
+<?php
+function DelayText($delay)
+{
+	$delay_style = '';
+	$delay_str = '';
+	$delay_unit = 'min.';
+	
+	if (abs($delay) >= 120) {
+		$delay = round($delay / 60, 1);
+		$delay_unit = 'hrs.';
+	}
+	
+	if ($delay < 0) {
+		$delay_str = abs($delay).' '.$delay_unit.' early';
+		//$delay_style = 'color: green;';
+	} else if ($delay > 0) {
+		$delay_str = abs($delay).' '.$delay_unit.' late';
+		//$delay_style = 'color: red;';
+	} else {
+		$delay_str = abs($delay).' '.$delay_unit.' late';
+		//$delay_style = 'color: black;';
+	}
+	return '<span style="' . $delay_style . '">' . $delay_str . '</span>';
+}
+
+$seen_airports = array();
+$example_routes = array();
+foreach($TopRoutes as $route)
+{
+	if (
+		(isset($seen_airports[$route['Ontime']['origin']]) && $seen_airports[$route['Ontime']['origin']]) || 
+		(isset($seen_airports[$route['Ontime']['dest']]) && $seen_airports[$route['Ontime']['dest']])
+	) 
+	{ continue; }
+	
+	$example_routes[] = array(
+		'origin' => $route['Ontime']['origin'],
+		'dest' => $route['Ontime']['dest'],
+		'pct_ontime' => round($route['Ontime']["pct_ontime"]*100),
+		'delay_median' => DelayText($route['Ontime']["delay_median"])
+	);
+	
+	$seen_airports[$route['Ontime']['origin']] = 1;
+	$seen_airports[$route['Ontime']['dest']] = 1;
+}
+
+$i_rand = rand(0, count($example_routes) - 1);
+
+$example_route = $example_routes[$i_rand];
+?>
+
+
+<table border=0 cellpadding=0 cellspacing=0 style="height: 100%; width: 100%;">
+
 <tr>
-	<td>
+	<td colspan=3>
 		<div style="background-color: black; text-align: right; color: white; font-family: Verdana; font-weight: bold; padding: 5px 1em 5px 5px" class="menubar">
 			<a href="/about" style="color: white; font-weight: bold;">About</a>
 			&nbsp;&nbsp;&nbsp;&nbsp;
@@ -10,170 +63,221 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<a href="/lines/security" style="color: white; font-weight: bold;">Airport Security</a>
 		</div>
-		
-		<table border=0 cellpadding=0 cellspacing=0 style="margin-top: 4px; margin-left: 4px;">
-		<tr>
-			<td>
-				<a href="http://digg.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us&topic=tech_news"><img border=0 src="/img/Digg_16x16.png" /></a>
-			</td>
-			<td width="4px"></td>
-			<td>
-				<a href="http://del.icio.us/post?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/delicious_16x16.png" /></a>
-			</td>
-			<td width="4px"></td>
-			<td>
-				<a href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.flyontime.us&t=FlyOnTime.us"><img border=0 src="/img/FaceBook_16x16.png" /></a>
-			</td>
-			<td width="4px"></td>
-			<td>
-				<a href="http://reddit.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/Reddit_16x16.png" /></a>
-			</td>
-			<td width="4px"></td>
-			<td>
-				<a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/Stumbleupon_16x16.png" /></a>
-			</td>
-			<td width="4px"></td>
-			<td>
-				<a href="http://technorati.com/faves?add=http%3A%2F%2Fwww.flyontime.us"><img border=0 src="/img/Technorati_16x16.png" /></a>
-			</td>
-			<td width="4px"></td>
-			<td>
-				<a href="http://twitthis.com/twit?url=http%3A%2F%2Fwww.flyontime.us"><img border=0 src="/img/Twitter_16x16.png" /></a>
-			</td>
-		</tr>
-		</table>
-		
-		
-		<table border=0 cellpadding=0 cellspacing=0 width="800px" align="center">
-		<tr valign="top">
-			<td style="padding-bottom: 2em">
-				<div style="background-image: url('/img/main.png'); width: 528px; height: 250px; text-align: left;">
-					<div style="position: relative; left: 450px; top: 10px; width: 340px">
-						<div style="font-family: Trebuchet MS, Geneva, Helvetica, Tahoma, Arial; font-size: 32pt; font-weight: bold">Fly<span style="color: #DD0000">OnTime</span>.us</div>
-						
-						<div style="margin-top: 1em; font-size: 90%; color: #444">Find the most on-time flight between two airports or check how late your flight is on average, in good weather and bad, before you leave.</div>
-					</div>
-
-				</div>
-			</td>
-		</tr>
-		</table>
-		
-		<table border=0 cellpadding=0 cellspacing=0 align="center">
-		<tr>
-			<td style="padding-right: 5em; width: 220px">
-				<h3>Find A Route</h3>
-				<form method="GET" action="/disambiguate/airports">
-					<div style="white-space: nowrap;">From: <div style="color: #666666; display: inline;">(city or airport)</div></div>
-					<div style="margin-top: .3em"><input name="from" type="text" class="big" style="width: 220px;" /></div>
-					<div style="margin-top: .85em; white-space: nowrap;">To: <div style="color: #666666; display: inline;">(city or airport; optional)</div></div>
-					<div style="margin-top: .3em"><input name="to" type="text" class="big" style="width: 220px;" /></div>
-					<div style="text-align: right; margin-top: .85em"><input type="submit" value="Search >>" /></div>
-				</form>
-			</td>
-			<td style="padding-right: 5em; width: 220px">
-				<h3 style="white-space: nowrap;">Find An Airline/Flight</h3>
-				<form method="GET" action="/disambiguate/flights">
-					<div>Airline:</div>
-					<div style="margin-top: .3em"><select name="airline" class="big" style="width: 220px;">
-						<option value="">Select Airline</option>
-						<?php
-						foreach($Airlines as $airline)
-						{
-						?>
-						<option value="<?php echo $airline['Enum']['code']; ?>"><?php echo $airline['Enum']['description']; ?></option>
-						<?php
-						}
-						?>
-					</select></div>
-					<div style="margin-top: .85em; white-space: nowrap;">Flight #: <div style="color: #666666; display: inline;">(optional)</div></div>
-					<div style="margin-top: .3em"><input name="flight_num" type="text" class="big" style="width: 220px;" /></div>
-					<div style="text-align: right; margin-top: .85em"><input type="submit" value="Search >>" /></div>
-				</form>
-			</td>
-			<td>
-				<div style="margin-top: 3em; font-size: 85%">
-				<p>Check out these popular flights:</p>
-				<table border=0 cellpadding=0 cellspacing=0 style="font-size: 95%">
-				<?php
-				function DelayText($delay)
-				{
-					$delay_style = '';
-					$delay_str = '';
-					$delay_unit = 'min.';
-					
-					if (abs($delay) >= 120) {
-						$delay = round($delay / 60, 1);
-						$delay_unit = 'hrs.';
-					}
-					
-					if ($delay < 0) {
-						$delay_str = abs($delay).' '.$delay_unit.' early';
-						//$delay_style = 'color: green;';
-					} else if ($delay > 0) {
-						$delay_str = abs($delay).' '.$delay_unit.' late';
-						//$delay_style = 'color: red;';
-					} else {
-						$delay_str = 'on time';
-						//$delay_style = 'color: black;';
-					}
-					return '<span style="' . $delay_style . '">' . $delay_str . '</span>';
-				}
-
-				$seen_airports = array();
-				foreach($TopRoutes as $route)
-				{
-					if (
-						(isset($seen_airports[$route['Ontime']['origin']]) && $seen_airports[$route['Ontime']['origin']]) || 
-						(isset($seen_airports[$route['Ontime']['dest']]) && $seen_airports[$route['Ontime']['dest']])
-					) 
-					{ continue; }
-					
-					echo "<tr>";
-					echo "<td><a href='/routes/" . $route['Ontime']['origin'] . "/" . $route['Ontime']['dest'] . "' style='text-decoration: none'>" . $route['Ontime']['origin'] . " to " . $route['Ontime']['dest'] . "</a></td>";
-					//echo "<td>" . $route['Ontime']["count"] . " flights</td>";
-					echo "<td style='padding-left: 2em'>" . round($route['Ontime']["pct_ontime"]*100) . "% on time</td>";
-					echo "</tr>";
-					echo "<tr><td colspan=2 style='text-align: right; padding-bottom: .75em'>" . DelayText($route['Ontime']["delay_median"]) . ' on average';
-					echo "</td></tr>";
-					$seen_airports[$route['Ontime']['origin']] = 1;
-					$seen_airports[$route['Ontime']['dest']] = 1;
-				}
-				?>
-				</table>
-				</div>
-			</td>
-		</tr>
-		<tr valign="top">
-			<td style="padding: 1em 5em 0px 0px; width: 220px;">
-				<h3>Security Lines</h3>
-				<div style="font-size: 95%; width: 100%;">
-				<p style="width: 100%;">Search wait time statistics for <a href="/lines/security">security lines</a>.</p>
-				<div style="float: right; text-align: center; margin-top: -10px">
-					<div><img src="/img/twitter.gif"/></div>
-					<div><img src="/img/iphone.png"/></div>
-				</div>
-				<p>You can also contribute by notifying us when you get on line and then past security
-				via Twitter or <a href="/m/lines/security">from your mobile phone</a>.</p>
-				</div>
-			</td>
-			<td style="padding: 1em 5em 0px 0px; width: 220px" colspan="2">
-				<h3>Site News</h3>
-				<div style="font-size: 95%">
-				<p style="width: 100%;">July 24, 2009. Mentioned by <a href="http://www.whitehouse.gov/omb/blog/09/07/24/DatagovSurpasses100000Datasets/">OMB Director Peter Orszag</a>.</p>
-				<p style="width: 100%;">July 21, 2009. Mentioned in <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">The Washington Post</a>.</p>
-				<p style="width: 100%;">July 1, 2009. Mentioned by <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">Federal CIO Vivek Kundra</a>.</p>
-				<p style="width: 100%;">June 24, 2009. Mentioned in <a href="http://www.politico.com/news/stories/0609/24118.html">The Politico</a>.</p>
-				</div>
-			</td>
-		</tr>
-		</table>
-		
-		<div style="margin-top: 4em; background-color: black; text-align: center; color: white; font-family: Verdana; font-weight: bold; padding: 3px; font-size: 80%" class="menubar">
-			<a href="/terms" style="color: white;">Terms of Use</a>
-		</div>
-		
 	</td>
 </tr>
+
+<tr valign="top">
+	<td width="334px" style="background-color: #B3CEE4;" align="center">
+		<div style="background-image: url('/img/airplane_left.gif'); width: 334px; height: 233px;"></div>
+		<br />
+		
+		<div style="font-family: Arial; font-size: 12pt; font-weight: bold; font-style: italic; width: 90%;">
+			Find the most on-time flight between two airports or check how late your flight is on average, in good weather and bad, before you leave.
+		</div>
+		
+		<br /><br /><br />
+		
+		<div style="font-family: Arial; font-size: 12pt; width: 90%; text-align: left;">
+			Data on this site is derived from:
+			
+			<br /><br />
+			<a href="http://www.bts.gov/">Bureau of Transportation Statistics</a>
+			
+			<br /><br />
+			<a href="http://www.faa.gov/">Federal Aviation Administration</a>
+			
+			<br /><br />
+			<a href="http://www.noaa.gov/">National Oceanic and Atmospheric Administration</a>
+			
+			<br /><br />
+			<a href="/lines/security">People Like You</a>
+		</div>
+
+		<br />
+	</td>
+	<td width="35px">
+		<div style="background-image: url('/img/airplane_right.gif'); width: 35px; height: 233px;"></div>
+	</td>
+	<td width="100%">
+	
+		<table border=0 cellpadding=0 cellspacing=0 style="width: 100%; padding: 10px 10px 5px 5px;">
+		<tr>
+			<td align="right">
+				<div style="font-family: Arial; font-size: 32pt; font-weight: bold; font-style: italic;">Fly<span style="color: #B3CEE4">OnTime</span>.us</div>
+			</td>
+		</tr>
+		<tr>
+			<td align="left">
+				<br />
+				<div style="font-family: Arial; font-size: 16pt; font-weight: bold; font-style: italic; color: #0A1D64;">Find a Route</div>
+				
+				<form method="GET" action="/disambiguate/airports">
+				
+				<table border=0 cellpadding=5 cellspacing=0 style="margin-top: 5px;">
+				<tr>
+					<td>
+						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">From: <span style="color: #666666;">(city or airport)</span></div>
+					</td>
+					<td>
+						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">To: <span style="color: #666666;">(city or airport; optional)</span></div>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>
+						<input name="from" type="text" class="big" style="width: 220px;" />
+					</td>
+					<td>
+						<input name="to" type="text" class="big" style="width: 220px;" />
+					</td>
+					<td>
+						<input type="submit" value="Search >>" />
+					</td>
+				</tr>
+				</table>
+				
+				</form>
+				
+				<div style="font-family: Arial; font-size: 8pt; margin-top: 5px;">
+					Example route: <a href="/routes/<?php echo $example_route['origin'].'/'.$example_route['dest']; ?>"><?php echo $example_route['origin'].' to '.$example_route['dest']; ?></a> is <?php echo '<b>'.$example_route['pct_ontime'].'% on-time</b> and <b>'.$example_route['delay_median'].'</b>'; ?> on average
+				</div>
+				
+				<div style="margin-top: 10px; border-bottom: 1px solid #aaa; width: 100%;"></div>
+				
+				
+				<br />
+				<div style="font-family: Arial; font-size: 16pt; font-weight: bold; font-style: italic; color: #0A1D64;">Find An Airline/Flight</div>
+				
+				<form method="GET" action="/disambiguate/flights">
+				
+				<table border=0 cellpadding=5 cellspacing=0 style="margin-top: 5px;">
+				<tr>
+					<td>
+						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">Airline:</div>
+					</td>
+					<td>
+						<div style="font-family: Arial; font-size: 12pt; font-weight: bold">Flight #: <span style="color: #666666;">(optional)</span></div>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>
+						<select name="airline" class="big" style="width: 220px;">
+							<option value="">Select Airline</option>
+							<?php
+							foreach($Airlines as $airline)
+							{
+							?>
+							<option value="<?php echo $airline['Enum']['code']; ?>"><?php echo $airline['Enum']['description']; ?></option>
+							<?php
+							}
+							?>
+						</select>
+					</td>
+					<td>
+						<input name="flight_num" type="text" class="big" style="width: 220px;" />
+					</td>
+					<td>
+						<input type="submit" value="Search >>" />
+					</td>
+				</tr>
+				</table>
+				
+				</form>
+				
+				
+				<div style="margin-top: 10px; border-bottom: 1px solid #aaa; width: 100%;"></div>
+				
+				<br /><br />
+				
+				<table border=0 cellpadding=0 cellspacing=0 width="100%">
+				<tr valign="top">
+					<td width="50%">
+						<div style="font-family: Arial; font-size: 16pt; font-weight: bold; font-style: italic; color: #0A1D64;">Security Lines</div>
+					</td>
+					<td width="50%">
+						<div style="font-family: Arial; font-size: 16pt; font-weight: bold; font-style: italic; color: #0A1D64;">Site News</div>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="50%">
+						<div style="font-size: 95%; width: 250px;">
+							<p style="width: 100%;">Search wait time statistics for <a href="/lines/security">security lines</a>.</p>
+							<table border=0 cellpadding=0 cellspacing=0>
+							<tr>
+								<td>
+									<p>You can also contribute by notifying us when you get on line and then past security
+									via Twitter or <a href="/m/lines/security">from your mobile phone</a>.</p>
+								</td>
+								<td align="center">
+									<div><img src="/img/twitter.gif" /></div>
+									<div><img src="/img/iphone.png" /></div>
+								</td>
+							</tr>
+							</table>
+						</div>
+					</td>
+					<td width="50%">
+						<div style="font-size: 95%;">
+							<p style="width: 100%;">July 24, 2009. Mentioned by <a href="http://www.whitehouse.gov/omb/blog/09/07/24/DatagovSurpasses100000Datasets/">OMB Director Peter Orszag</a>.</p>
+							<p style="width: 100%;">July 21, 2009. Mentioned in <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">The Washington Post</a>.</p>
+							<p style="width: 100%;">July 1, 2009. Mentioned by <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">Federal CIO Vivek Kundra</a>.</p>
+							<p style="width: 100%;">June 24, 2009. Mentioned in <a href="http://www.politico.com/news/stories/0609/24118.html">The Politico</a>.</p>
+						</div>
+						
+						<table border=0 cellpadding=0 cellspacing=0 style="margin-top: 4px; margin-left: 4px;">
+						<tr>
+							<td>
+								<a href="http://digg.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us&topic=tech_news"><img border=0 src="/img/Digg_16x16.png" /></a>
+							</td>
+							<td width="4px"></td>
+							<td>
+								<a href="http://del.icio.us/post?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/delicious_16x16.png" /></a>
+							</td>
+							<td width="4px"></td>
+							<td>
+								<a href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.flyontime.us&t=FlyOnTime.us"><img border=0 src="/img/FaceBook_16x16.png" /></a>
+							</td>
+							<td width="4px"></td>
+							<td>
+								<a href="http://reddit.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/Reddit_16x16.png" /></a>
+							</td>
+							<td width="4px"></td>
+							<td>
+								<a href="http://www.stumbleupon.com/submit?url=http%3A%2F%2Fwww.flyontime.us&title=FlyOnTime.us"><img border=0 src="/img/Stumbleupon_16x16.png" /></a>
+							</td>
+							<td width="4px"></td>
+							<td>
+								<a href="http://technorati.com/faves?add=http%3A%2F%2Fwww.flyontime.us"><img border=0 src="/img/Technorati_16x16.png" /></a>
+							</td>
+							<td width="4px"></td>
+							<td>
+								<a href="http://twitthis.com/twit?url=http%3A%2F%2Fwww.flyontime.us"><img border=0 src="/img/Twitter_16x16.png" /></a>
+							</td>
+						</tr>
+						</table>
+		
+					</td>
+				</tr>
+				</table>
+				
+				<br />
+				
+			</td>
+		</tr>
+		</table>
+	
+	</td>
+</tr>
+
+<tr>
+	<td colspan=3>
+		<div style="background-color: black; text-align: center; color: white; font-family: Verdana; font-weight: bold; padding: 3px; font-size: 80%" class="menubar">
+			<a href="/terms" style="color: white;">Terms of Use</a>
+		</div>
+	</td>
+</tr>
+
 </table>
+
 
