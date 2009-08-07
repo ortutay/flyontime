@@ -24,6 +24,8 @@ class StatisticsController extends AppController {
 			case 'percentcancelleddepartures':
 			case 'averagedeparturedelay':
 			case 'unluckydeparturedelay':
+			
+				$multiplyby = 1;
 
 				switch($query)
 				{
@@ -35,11 +37,13 @@ class StatisticsController extends AppController {
 						break;
 					case 'percentontimedepartures':
 						$field = 'pct_ontime';
+						$multiplyby = 100;
 						$this->set('Name', 'On-Time Flights By Origin');
 						$this->set('DataTitle', 'Percent On-Time');
 						break;
 					case 'percentcancelleddepartures':
 						$field = 'pct_cancel';
+						$multiplyby = 100;
 						$this->set('Name', 'Cancelled/Diverted Flights By Origin');
 						$this->set('DataTitle', 'Percent Cancelled or Diverted');
 						break;
@@ -78,6 +82,7 @@ class StatisticsController extends AppController {
 				);
 				
 				$this->set('DataValue', $field);
+				$this->set('MultiplyBy', $multiplyby);
 				$AirportValue = 'origin';
 				
 				break;
@@ -87,6 +92,8 @@ class StatisticsController extends AppController {
 			case 'percentcancelledarrivals':
 			case 'averagearrivaldelay':
 			case 'unluckyarrivaldelay':
+			
+				$multiplyby = 1;
 
 				switch($query)
 				{
@@ -98,11 +105,13 @@ class StatisticsController extends AppController {
 						break;
 					case 'percentontimearrivals':
 						$field = 'pct_ontime';
+						$multiplyby = 100;
 						$this->set('Name', 'On-Time Flights By Destination');
 						$this->set('DataTitle', 'Percent On-Time');
 						break;
 					case 'percentcancelledarrivals':
 						$field = 'pct_cancel';
+						$multiplyby = 100;
 						$this->set('Name', 'Cancelled/Diverted Flights By Destination');
 						$this->set('DataTitle', 'Percent Cancelled or Diverted');
 						break;
@@ -141,6 +150,7 @@ class StatisticsController extends AppController {
 				);
 				
 				$this->set('DataValue', $field);
+				$this->set('MultiplyBy', $multiplyby);
 				$AirportValue = 'dest';
 				
 				break;
@@ -175,35 +185,40 @@ class StatisticsController extends AppController {
 			case 'percentcancelled':
 			case 'averagearrivaldelay':
 			case 'unluckyarrivaldelay':
-				
-				$orderby = 'x';
+			
+				$multiplyby = 1;
 				
 				switch($query)
 				{
 					case 'scheduledflights':
-						$field = '(count*1)';
+						$field = 'count';
+						$orderby = $field;
 						$this->set('Name', 'Number of Flights');
-						$this->set('DataTitle', 'Flights');
+						$this->set('DataTitle', 'Number of Flights');
 						break;
 					case 'percentontime':
-						$field = '(100*pct_ontime)';
+						$field = 'pct_ontime';
+						$orderby = $field;
+						$multiplyby = 100;
 						$this->set('Name', 'Percent of Flights Arriving On Time (w/in 5 Minutes)');
 						$this->set('DataTitle', '% On-Time');
 						break;
 					case 'percentcancelled':
-						$field = '(100*pct_cancel)';
+						$field = 'pct_cancel';
+						$orderby = $field;
+						$multiplyby = 100;
 						$this->set('Name', 'Percent of Flights Cancelled/Diverted');
 						$this->set('DataTitle', '% Cancelled/Diverted');
 						break;
 					case 'averagearrivaldelay':
-						$orderby = 'count';
-						$field = '(delay_median*1)';
+						$field = 'delay_median';
+						$orderby = $field;
 						$this->set('Name', 'Median Arrival Delay');
 						$this->set('DataTitle', 'Delay (minutes)');
 						break;
 					case 'unluckyarrivaldelay':
-						$orderby = 'count';
-						$field = '(delay_85thpctile*1)';
+						$field = 'delay_85thpctile';
+						$orderby = $field;
 						$this->set('Name', '85th Percentile Arrival Delay');
 						$this->set('DataTitle', 'Delay (minutes)');
 						break;
@@ -213,7 +228,7 @@ class StatisticsController extends AppController {
 					array(
 						'fields' => array(
 							'carrier',
-							$field . ' as x',
+							$field,
 						),
 						'conditions' => array(
 							'origin' => '',
@@ -230,8 +245,9 @@ class StatisticsController extends AppController {
 						'limit' => 20
 					)
 				);
-
-				$this->set('DataValue', 'x');
+				
+				$this->set('DataValue', $field);
+				$this->set('MultiplyBy', $multiplyby);
 				
 				break;
 				
@@ -244,6 +260,115 @@ class StatisticsController extends AppController {
 		
 		$this->set('Airlines', $airlines);
 		$this->set('AirlineNames', $airline_names);
+	}
+	
+	function routes($query)
+	{
+		$this->Ontime =& ClassRegistry::init('Ontime');
+		$this->Enum =& ClassRegistry::init('Enum');
+		
+		$routes = null;
+		
+		switch($query)
+		{
+			case 'scheduledflights':
+			case 'percentontime':
+			case 'percentcancelled':
+			
+				$multiplyby = 1;
+				
+				switch($query)
+				{
+					case 'scheduledflights':
+						$field = 'count';
+						$orderby = $field;
+						$this->set('Name', 'Number of Flights');
+						$this->set('DataTitle', 'Number of Flights');
+						break;
+					case 'percentontime':
+						$field = 'pct_ontime';
+						$orderby = $field;
+						$multiplyby = 100;
+						$this->set('Name', 'Percent of Flights Arriving On Time (w/in 5 Minutes)');
+						$this->set('DataTitle', '% On-Time');
+						break;
+					case 'percentcancelled':
+						$field = 'pct_cancel';
+						$orderby = $field;
+						$multiplyby = 100;
+						$this->set('Name', 'Percent of Flights Cancelled/Diverted');
+						$this->set('DataTitle', '% Cancelled/Diverted');
+						break;
+				}
+				
+				$routes = $this->Ontime->find('all',
+					array(
+						'fields' => array(
+							'origin',
+							'dest',
+							$field,
+						),
+						'conditions' => array(
+							'origin !=' => '',
+							'dest !=' => '',
+							'flightnum' => 0,
+							'dayofweek' => 0,
+							'hour' => '',
+							'holiday' => '',
+							'carrier' => '',
+							'condition' => 'all',
+							'count >=' => 1000
+						),
+						'order' => array(
+							$orderby . ' DESC'
+						),
+						'limit' => 100
+					)
+				);
+				
+				$this->set('DataValue', $field);
+				$this->set('MultiplyBy', $multiplyby);
+				
+				break;
+				
+			default:
+			
+				$this->redirect('/statistics');
+		}
+		
+		//Get Airport Names
+		$airport_names = array();
+		
+		$airport_names_origin = $this->GetAirportNames($routes, 'origin');
+		foreach($airport_names_origin as $code => $name)
+		{
+			$airport_names[$code] = $name;
+		}
+		
+		$airport_names_dest = $this->GetAirportNames($routes, 'dest');
+		foreach($airport_names_dest as $code => $name)
+		{
+			$airport_names[$code] = $name;
+		}
+		
+		//Get Airport Geocodes
+		$geocodes = array();
+		
+		$geocodes_origin = $this->GetAirportGeocodes($routes, 'origin');
+		foreach($geocodes_origin as $code => $arr)
+		{
+			$geocodes[$code] = $arr;
+		}
+		
+		$geocodes_dest = $this->GetAirportGeocodes($routes, 'dest');
+		foreach($geocodes_dest as $code => $arr)
+		{
+			$geocodes[$code] = $arr;
+		}
+		
+		$this->set('Routes', $routes);
+		$this->set('AirportNames', $airport_names);
+		$this->set('Geocodes', $geocodes);
 	}
 	
 	private function GetAirlineNames($airlines)

@@ -8,8 +8,12 @@
 		<tr>
 			<td align="left">
 
+				<br />
+				<h1>
+					Airport Statistics
+				</h1>
 				<div class="header">
-					Statistics - <?php echo $Name; ?>
+					<?php echo $Name; ?>
 				</div>
 				<br />
 
@@ -47,7 +51,7 @@
 		
 		  data.setValue(<?php echo $i; ?>, 0, <?php echo $Geocodes[$airport_code]['Lat']; ?>);
 		  data.setValue(<?php echo $i; ?>, 1, <?php echo $Geocodes[$airport_code]['Lng']; ?>);
-		  data.setValue(<?php echo $i; ?>, 2, <?php echo $airport['Ontime'][$DataValue]; ?>);
+		  data.setValue(<?php echo $i; ?>, 2, <?php echo $airport['Ontime'][$DataValue]*$MultiplyBy; ?>);
 		  data.setValue(<?php echo $i; ?>, 3, '<?php echo $airport_name; ?>');
 		  
 		  <?php

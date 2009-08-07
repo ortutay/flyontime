@@ -7,9 +7,13 @@
 		<table border=0 cellpadding=0 cellspacing=0 width="800px">
 		<tr>
 			<td align="left">
-
+				
+				<br />
+				<h1>
+					Airline Statistics
+				</h1>
 				<div class="header">
-					Statistics - <?php echo $Name; ?>
+					<?php echo $Name; ?>
 				</div>
 				<br />
 
@@ -34,7 +38,7 @@
 			?>
 			
 			data.setValue(<?php echo $i; ?>, 0, '<?php echo $AirlineNames[$airline['Ontime']['carrier']]; ?>');
-			data.setValue(<?php echo $i; ?>, 1, <?php echo $airline[0][$DataValue]; ?>);
+			data.setValue(<?php echo $i; ?>, 1, <?php echo $airline['Ontime'][$DataValue]*$MultiplyBy; ?>);
 			
 			<?php
 			$i++;
