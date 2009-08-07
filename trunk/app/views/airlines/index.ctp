@@ -7,10 +7,12 @@
 		<table border=0 cellpadding=0 cellspacing=0 width="800px">
 		<tr>
 			<td align="left">
-
-				<div class="header">
+				
+				<br />
+				
+				<h1>
 					Airlines
-				</div>
+				</h1>
 				
 				<br />
 

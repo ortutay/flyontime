@@ -7,26 +7,12 @@
 		<table border=0 cellpadding=0 cellspacing=0 width="800px">
 		<tr>
 			<td align="left">
-
-				<div class="header">
+				<br />
+				<h1>
 					Statistics
-				</div>
+				</h1>
 				
-				<br />
-				
-				<table border=0 cellpadding=5 cellspacing=0 style="background-color: yellow;">
-				<tr>
-					<td>
-						<div>
-							This section is under development.  Some links may not work.
-						</div>
-					</td>
-				</tr>
-				</table>
-				
-				<br />
-				
-				<div class="subheader">
+				<div class="header">
 					Airports
 				</div>
 				
@@ -45,12 +31,6 @@
 				
 						<a href="/statistics/airports/percentcancelleddepartures">Percent Cancelled/Diverted by Origin</a>
 						<br /><br />
-				
-						<a href="/statistics/airports/averagedeparturedelay">Median Delay by Origin</a>
-						<br /><br />
-				
-						<a href="/statistics/airports/unluckydeparturedelay">Worst Delay by Origin</a>
-						<br /><br />
 					</td>
 					<td width="75px"></td>
 					<td>
@@ -62,19 +42,13 @@
 						
 						<a href="/statistics/airports/percentcancelledarrivals">Percent Cancelled/Diverted by Destination</a>
 						<br /><br />
-						
-						<a href="/statistics/airports/averagearrivaldelay">Median Delay by Destination</a>
-						<br /><br />
-
-						<a href="/statistics/airports/unluckyarrivaldelay">Worst Delay by Destination</a>
-						<br /><br />
 					</td>
 				</tr>
 				</table>
 				
 				
 				
-				<div class="subheader">
+				<div class="header">
 					Airlines
 				</div>
 				
@@ -93,12 +67,6 @@
 						<a href="/statistics/airlines/percentcancelled">Percent Cancelled/Diverted</a>
 						<br /><br />
 						
-						<a href="/statistics/airlines/averagearrivaldelay">Median Delay</a>
-						<br /><br />
-						
-						<a href="/statistics/airlines/unluckyarrivaldelay">Worst Delay</a>
-						<br /><br />
-						
 						<a href="/airlines">Details</a>
 						<br /><br />
 					</td>
@@ -106,7 +74,7 @@
 				</table>
 				
 				
-				<div class="subheader">
+				<div class="header">
 					Routes
 				</div>
 				
@@ -119,36 +87,10 @@
 						<a href="/statistics/routes/scheduledflights">Number of Scheduled Flights</a>
 						<br /><br />
 						
-						<a href="/statistics/routes/totalarrivaldelay">Total Arrival Delay</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/numberontime">Number of On-Time Arrivals</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/numbernotontime">Number of Not-On-Time Arrivals</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/numbercancelled">Number of Cancelled Flights</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/numberdiverted">Number of Diverted Flights</a>
-						<br /><br />
-						
-						<br />
-						
 						<a href="/statistics/routes/percentontime">Percent On-Time</a>
 						<br /><br />
 						
-						<a href="/statistics/routes/percentnotontime">Percent Not On-Time</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/percentcancelled">Percent Cancelled</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/percentdiverted">Percent Diverted</a>
-						<br /><br />
-						
-						<a href="/statistics/routes/averagearrivaldelay">Average Minutes Arriving Late</a>
+						<a href="/statistics/routes/percentcancelled">Percent Cancelled/Diverted</a>
 						<br /><br />
 					</td>
 				</tr>

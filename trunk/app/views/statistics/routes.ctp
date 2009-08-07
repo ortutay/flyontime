@@ -8,23 +8,10 @@
 		<tr>
 			<td align="left">
 
-				<div class="header">
-					Statistics - <?php echo $Name; ?>
-				</div>
-				<div style="color: #777777;">
-					Data from 
-					<?php
-					$i = 0;
-					$num = count($Months);
-					foreach($Months as $month => $foo)
-					{
-						echo $month;
-						
-						if($i < ($num - 1))
-							echo ', ';
-					}
-					?>
-				</div>
+				<br />
+				<h1>
+					Route Statistics - <?php echo $Name; ?>
+				</h1>
 				<br />
 				
 				<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAhD9h1r6o4CX5R6aR5Sm7chSk0bEoTe4xv8Xwjuk4IV3JR0xuqxSCWSPF07wu9P2WbpcpovPoKtafwQ"></script>
@@ -45,12 +32,12 @@
 					$i = 0;
 					foreach($Routes as $route)
 					{
-					if(abs($route[0][$DataValue]) > $max_abs_data_value)
-						$max_abs_data_value = abs($route[0][$DataValue]);
+					if(abs($route['Ontime'][$DataValue]) > $max_abs_data_value)
+						$max_abs_data_value = abs($route['Ontime'][$DataValue]);
 					?>
 					
-					data.setValue(<?php echo $i; ?>, 0, '<?php echo $route['Log']['OriginCityName'].' ('.$route['Log']['Origin'].') - '.$route['Log']['DestCityName'].' ('.$route['Log']['Dest'].')'; ?>');
-					data.setValue(<?php echo $i; ?>, 1, <?php echo $route[0][$DataValue]; ?>);
+					data.setValue(<?php echo $i; ?>, 0, '<?php echo $route['Ontime']['origin'].' - '.$route['Ontime']['dest']; ?>');
+					data.setValue(<?php echo $i; ?>, 1, <?php echo $route['Ontime'][$DataValue]; ?>);
 					
 					<?php
 					$i++;
@@ -75,14 +62,18 @@
 					
 					foreach($Routes as $route)
 					{
-					$line_thickness = round((abs($route[0][$DataValue])/$max_abs_data_value)*$max_line_thickness);
+					$line_thickness = round((abs($route['Ontime'][$DataValue])/$max_abs_data_value)*$max_line_thickness);
 					if($line_thickness < 1)
 						$line_thickness = 1;
+					
+					if(isset($Geocodes[$route['Ontime']['origin']]) && isset($Geocodes[$route['Ontime']['dest']]))
+					{
 					?>
 					
-					map.addOverlay( new google.maps.Polyline([new google.maps.LatLng(<?php echo $Geocodes[$route['Log']['Origin']]['Lat']; ?>, <?php echo $Geocodes[$route['Log']['Origin']]['Lng']; ?>), new google.maps.LatLng(<?php echo $Geocodes[$route['Log']['Dest']]['Lat']; ?>, <?php echo $Geocodes[$route['Log']['Dest']]['Lng']; ?>)], "#ff0000", <?php echo $line_thickness; ?>) );
+					map.addOverlay( new google.maps.Polyline([new google.maps.LatLng(<?php echo $Geocodes[$route['Ontime']['origin']]['Lat']; ?>, <?php echo $Geocodes[$route['Ontime']['origin']]['Lng']; ?>), new google.maps.LatLng(<?php echo $Geocodes[$route['Ontime']['dest']]['Lat']; ?>, <?php echo $Geocodes[$route['Ontime']['dest']]['Lng']; ?>)], "#ff0000", <?php echo $line_thickness; ?>) );
 					
 					<?php
+					}
 					}
 					?>
 				  }
