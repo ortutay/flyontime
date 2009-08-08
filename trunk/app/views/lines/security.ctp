@@ -232,6 +232,7 @@
 						$airport_name = $AirportNames[$airport_code];
 						
 						$airport_name = preg_replace("/[^a-zA-Z0-9\s\.,:\-\_\/]/", "", $airport_name);
+						$airport_name = '['.$airport_code.'] '.$airport_name;
 						
 						if(strlen($airport_name) > 28)
 							$airport_name = substr($airport_name, 0, 25).'...';
