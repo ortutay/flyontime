@@ -17,13 +17,8 @@
 					<div class="header">Purpose</div>
 				
 					<p>
-					FlyOnTime.us is a free resource for air travelers and anyone else interested in the on-time performance of the commercial air system in the United States.  
-					FlyOnTime.us is an independent project created by private citizens.  It is not affiliated with the United States or any other government, agency, or organization.
-					The flight and weather information presented on this website is derived from data provided by the United States federal government,
-					while the security line times are submitted by visitors like you.
+					FlyOnTime.us is a free resource for air travelers and anyone else interested in the on-time performance of the commercial air system in the United States. The flight and weather information presented on this website is derived from data provided by the United States federal government, while the security line times are submitted by visitors like you. This website has four goals:
 					</p>
-					
-					<p>This website has four goals:</p>
 					
 					<ol>
 						<li>
@@ -74,6 +69,12 @@
 						<li><a href="http://www.youtube.com/watch?v=9HZ-BESVVck" target="_blank">White House YouTube Channel</a> (at time 22:08) - 7/1/2009</li>
 						<li><a href="http://www.politico.com/news/stories/0609/24118.html" target="_blank">Politico.com</a> - 6/24/2009</li>
 					</ul>
+					
+					<div class="header">Affiliation</div>
+					
+					<p>
+					FlyOnTime.us is an independent project created by private citizens.  It is not affiliated with the United States or any other government, agency, or organization.
+					</p>
 					
 					<div class="header">Contact</div>
 				
