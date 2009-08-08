@@ -81,7 +81,7 @@ $example_route = $example_routes[$i_rand];
 			Data on this site is derived from:
 			
 			<br /><br />
-			The <a href="http://www.bts.gov/">Bureau of Transportation Statistics</a>
+			The <a href="http://www.bts.gov/">Bureau of Transportation Statistics</a> via <a href="http://www.data.gov/">data.gov</a>
 			
 			<br /><br />
 			The <a href="http://www.faa.gov/">Federal Aviation Administration</a>

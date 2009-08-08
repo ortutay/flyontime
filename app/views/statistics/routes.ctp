@@ -37,7 +37,7 @@
 					?>
 					
 					data.setValue(<?php echo $i; ?>, 0, '<?php echo $route['Ontime']['origin'].' - '.$route['Ontime']['dest']; ?>');
-					data.setValue(<?php echo $i; ?>, 1, <?php echo $route['Ontime'][$DataValue]; ?>);
+					data.setValue(<?php echo $i; ?>, 1, <?php echo $route['Ontime'][$DataValue]*$MultiplyBy; ?>);
 					
 					<?php
 					$i++;
