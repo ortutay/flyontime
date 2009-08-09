@@ -75,10 +75,13 @@ $example_route = $example_routes[$i_rand];
 			Find the most on-time flight between two airports or check how late your flight is on average, in good weather and bad, before you leave.
 		</div>
 		
-		<br /><br /><br /><br /><br /><br />
+		<br /><br /><br /><br /><br />
 		
 		<div style="font-family: Arial; font-size: 8pt; width: 90%; text-align: left;">
-			Data on this site is derived from:
+			See how FlyOnTime.us can <a href="/about">save your tax dollars!</a>
+			
+			<br /><br />
+			<u>Data on this site is derived from:</u>
 			
 			<br /><br />
 			The <a href="http://www.bts.gov/">Bureau of Transportation Statistics</a> via <a href="http://www.data.gov/">data.gov</a>
