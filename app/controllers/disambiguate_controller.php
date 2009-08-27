@@ -2,7 +2,7 @@
 class DisambiguateController extends AppController {
 	var $name = 'Disambiguate';
 	var $uses = array();
-	var $components = array('Disambiguate');
+	var $components = array('Disambiguate', 'RequestHandler');
 	
 	function index()
 	{
@@ -89,24 +89,29 @@ class DisambiguateController extends AppController {
 				if($time != '')
 					$url .= 'time='.$time;
 				
-				if($noflash == '1')
-					$this->redirect($url);
-				else
-					$this->flash('Loading...', $url, 0);
+				if($this->params['url']['ext'] == 'html')
+				{
+					if($noflash == '1')
+						$this->redirect($url);
+					else
+						$this->flash('Loading...', $url, 0);
+				}
 			}
-			else
-			{
-				$this->set('AirportsFrom', $airports_from);
-				$this->set('AirportsTo', $airports_to);
-				$this->set('From', $from);
-				$this->set('To', $to);
-				$this->set('Time', $time);
-				$this->set('Basepath', $basepath);
-			}
+
+			$this->set('AirportsFrom', $airports_from);
+			$this->set('AirportsTo', $airports_to);
+			$this->set('From', $from);
+			$this->set('To', $to);
+			$this->set('Time', $time);
+			$this->set('Basepath', $basepath);
+
 		}
 		else
 		{
-			$this->redirect('/');
+			if($this->params['url']['ext'] == 'html')
+			{
+				$this->redirect('/');
+			}
 		}
 	}
 	
@@ -152,25 +157,33 @@ class DisambiguateController extends AppController {
 				
 				if(count($flights) == 1)
 				{
-					$url = '/flights/'.$airline.'/'.$flight_num;
-					$this->flash('Loading...', $url, 0);
+					if($this->params['url']['ext'] == 'html')
+					{
+						$url = '/flights/'.$airline.'/'.$flight_num;
+						$this->flash('Loading...', $url, 0);
+					}
 				}
-				else
-				{
-					$this->set('Flights', $flights);
-					$this->set('Airline', $airline);
-					$this->set('FlightNum', $flight_num);
-				}
+
+				$this->set('Flights', $flights);
+				$this->set('Airline', $airline);
+				$this->set('FlightNum', $flight_num);
+
 			}
 		}
 		elseif($airline != '')
 		{
-			$url = '/airlines/'.$airline;
-			$this->flash('Loading...', $url, 0);
+			if($this->params['url']['ext'] == 'html')
+			{
+				$url = '/airlines/'.$airline;
+				$this->flash('Loading...', $url, 0);
+			}
 		}
 		else
 		{
-			$this->redirect('/');
+			if($this->params['url']['ext'] == 'html')
+			{
+				$this->redirect('/');
+			}
 		}
 	}
 	

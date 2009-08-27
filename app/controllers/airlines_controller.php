@@ -2,6 +2,7 @@
 class AirlinesController extends AppController {
 	var $name = 'Airlines';
 	var $uses = array();
+	var $components = array('RequestHandler');
 	
 	function index()
 	{
