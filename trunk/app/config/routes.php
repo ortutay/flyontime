@@ -75,24 +75,29 @@
 	
 	//AIRPORTS
 	Router::connect(
-		'/airports/:from',
+		'/airports',
 		array('controller' => 'airports', 'action' => 'index')
+	);
+	
+	Router::connect(
+		'/airports/:from',
+		array('controller' => 'airports', 'action' => 'view')
 	);
 	
 	//ROUTES
 	Router::connect(
 		'/routes/:from/:to',
-		array('controller' => 'airports', 'action' => 'index')
+		array('controller' => 'airports', 'action' => 'view')
 	);
 	
 	//FLIGHTS
 	Router::connect(
 		'/flights/:carrier/:flightnum',
-		array('controller' => 'airports', 'action' => 'index')
+		array('controller' => 'airports', 'action' => 'view')
 	);
 	Router::connect(
 		'/flights/:carrier/:flightnum/:from/:to',
-		array('controller' => 'airports', 'action' => 'index')
+		array('controller' => 'airports', 'action' => 'view')
 	);
 
 	//AIRLINES
