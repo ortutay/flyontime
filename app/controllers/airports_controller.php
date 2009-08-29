@@ -7,6 +7,72 @@ class AirportsController extends AppController {
 	
 	function index()
 	{
+		$this->Enum =& ClassRegistry::init('Enum');
+		$this->Ontime =& ClassRegistry::init('Ontime');
+		
+		$airports_used = $this->Ontime->find('all',
+			array(
+				'fields' => array(
+					'origin'
+				),
+				'group' => array(
+					'origin'
+				)
+			)
+		);
+		
+		$airports_used_arr = array();
+		$airports = array();
+		
+		foreach($airports_used as $airport)
+		{
+			if($airport['Ontime']['origin'] != '')
+			{
+				$airports_used_arr[] = $airport['Ontime']['origin'];
+				$airports[$airport['Ontime']['origin']] = array(
+					'name' => '',
+					'geocode' => '',
+					'timezone' => ''
+				);
+			}
+		}
+		
+		$results = $this->Enum->find('all',
+			array(
+				'conditions' => array(
+					'Enum.category' => array('AIRPORTS', 'AIRPORTS_GEOCODE', 'AIRPORTS_TIMEZONE'),
+					'Enum.code' => $airports_used_arr
+				),
+				'order' => array(
+					'Enum.description'
+				)
+			)
+		);
+		
+		foreach($results as $result)
+		{
+			if($result['Enum']['code'] != '')
+			{
+				switch($result['Enum']['category'])
+				{
+					case 'AIRPORTS':
+						$airports[$result['Enum']['code']]['name'] = $result['Enum']['description'];
+						break;
+					case 'AIRPORTS_GEOCODE':
+						$airports[$result['Enum']['code']]['geocode'] = $result['Enum']['description'];
+						break;
+					case 'AIRPORTS_TIMEZONE':
+						$airports[$result['Enum']['code']]['timezone'] = $result['Enum']['description'];
+						break;
+				}
+			}
+		}
+		
+		$this->set('Airports', $airports);
+	}
+	
+	function view()
+	{
 		$this->Ontime =& ClassRegistry::init('Ontime');
 		$this->Enum =& ClassRegistry::init('Enum');
 		$this->Weather =& ClassRegistry::init('Weather');

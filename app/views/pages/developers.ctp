@@ -54,7 +54,26 @@
 					<a href="/flights/UA/996/ORD/LAX.json">/flights/UA/996/ORD/LAX.json</a>
 					<br /><br />
 					
-					Please note that right now only the /airports, /routes, and /flights pages have XML and JSON data available.
+					<a href="/airports">/airports</a>
+					<br />
+					<a href="/airports.xml">/airports.xml</a>
+					<br /><br />
+					
+					<a href="/airlines">/airlines</a>
+					<br />
+					<a href="/airlines.xml">/airlines.xml</a>
+					<br /><br />
+					
+					<a href="/disambiguate/airports?from=chicago&to=washington">/disambiguate/airports?from=chicago&to=washington</a>
+					<br />
+					<a href="/disambiguate/airports.xml?from=chicago&to=washington">/disambiguate/airports.xml?from=chicago&to=washington</a>
+					<br />
+					<a href="/disambiguate/flights?airline=UA&flight_num=910">/disambiguate/flights?airline=UA&flight_num=910</a>
+					<br />
+					<a href="/disambiguate/flights.xml?airline=UA&flight_num=910">/disambiguate/flights.xml?airline=UA&flight_num=910</a>
+					<br /><br />
+					
+					Please note that right now only the /airports, /routes, and /flights pages have both XML and JSON data available.  Other pages may have only XML or no API available at all.
 				</div>
 				
 				<br /><br /><br />
