@@ -222,9 +222,9 @@ $example_route = $example_routes[$i_rand];
 					</td>
 					<td width="50%">
 						<div style="font-size: 95%;">
+							<p style="width: 100%;">March 14, 2010. Mentioned on <a href="http://www.npr.org/templates/story/story.php?storyId=124667562">National Public Radio</a>.</p>
 							<p style="width: 100%;">July 24, 2009. Mentioned by <a href="http://www.whitehouse.gov/omb/blog/09/07/24/DatagovSurpasses100000Datasets/">OMB Director Peter Orszag</a>.</p>
 							<p style="width: 100%;">July 21, 2009. Mentioned in <a href="http://voices.washingtonpost.com/federal-eye/2009/07/chopra.html?wprss=federal-eye">The Washington Post</a>.</p>
-							<p style="width: 100%;">July 1, 2009. Mentioned by <a href="http://www.youtube.com/watch?v=9HZ-BESVVck">Federal CIO Vivek Kundra</a>.</p>
 							<p style="width: 100%;">June 24, 2009. Mentioned in <a href="http://www.politico.com/news/stories/0609/24118.html">The Politico</a>.</p>
 						</div>
 						
