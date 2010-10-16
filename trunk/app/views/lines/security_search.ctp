@@ -113,7 +113,7 @@ function FormatTimeBlk($blk)
 	?>
 
 	var chart_time = new google.visualization.BarChart(document.getElementById('chart_div_time'));
-	chart_time.draw(data_time, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Wait Time (min.)', title: 'Time of Day (24-hour format)', min: 0});
+	chart_time.draw(data_time, {width: 380, height: 500, is3D: true, legend: 'bottom', axisFontSize: 14, legendFontSize: 16, titleFontSize: 16, isStacked: true, titleX: 'Wait Time (min.)', title: 'Time of Day', min: 0});
 
   }
 </script>
