@@ -45,6 +45,7 @@
 	include "utilities/Scheduled_Tasks/FetchTwitterResultsTaskHandler.php";
 	include "utilities/Scheduled_Tasks/ParseTwitterResultsTaskHandler.php";
 	include "utilities/Scheduled_Tasks/MatchTweetsTaskHandler.php";
+	include "utilities/Scheduled_Tasks/FetchTwitterMyTSAResultsTaskHandler.php";
 	include "utilities/util_xml.php";
 	include "utilities/util_twitter.php";
 

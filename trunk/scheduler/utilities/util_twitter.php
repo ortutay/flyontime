@@ -38,7 +38,7 @@
 			if(isset($params["page"]))
 				$page = $params["page"];
 				
-			//ge since_id
+			//get since_id
 			$since_id = "";
 			if(isset($params["since_id"]))
 				$since_id = $params["since_id"];
@@ -53,6 +53,35 @@
 			
 			if($since_id != "")
 				$url .= "&since_id=".$since_id;
+			
+			return self::nonAuthJSONQuery($url);
+		}
+		
+		public static function userTimeline($params)
+		{
+			if(!isset($params["screen_name"]))
+				return false;
+			
+			//get screen_name
+			$screen_name = $params["screen_name"];
+			
+			//get since_id
+			$since_id = "";
+			if(isset($params["since_id"]))
+				$since_id = $params["since_id"];
+			
+			//get count
+			$count = "";
+			if(isset($params["count"]))
+				$count = $params["count"];
+			
+			$url = $GLOBALS["twitter_rest_api_root"]."statuses/user_timeline.json?screen_name={$screen_name}&trim_user=1";
+			
+			if($since_id != "")
+				$url .= "&since_id=".$since_id;
+			
+			if($count != "")
+				$url .= "&count=".$count;
 			
 			return self::nonAuthJSONQuery($url);
 		}

@@ -17,6 +17,10 @@
 				case ScheduledTask::$eMATCHTWEETS:
 					return new MatchTweetsTaskHandler();
 					break;
+				
+				case ScheduledTask::$eFETCHTWITTERMYTSARESULTS:
+					return new FetchTwitterMyTSAResultsTaskHandler();
+					break;
 			}
 		}
 	
