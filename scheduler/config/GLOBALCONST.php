@@ -23,4 +23,5 @@
 	/*Twitter Constants
 	/********************************************************************/
 	$twitter_search_api_root = "http://search.twitter.com/search";
+	$twitter_rest_api_root = "http://api.twitter.com/1/";
 ?>

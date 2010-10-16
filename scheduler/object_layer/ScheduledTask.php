@@ -5,6 +5,7 @@
 		public static $eFETCHTWITTERRESULTS = 1;
 		public static $ePARSETWITTERRESULTS = 2;
 		public static $eMATCHTWEETS = 3;
+		public static $eFETCHTWITTERMYTSARESULTS = 4;
 		
 		function __construct()
 		{
