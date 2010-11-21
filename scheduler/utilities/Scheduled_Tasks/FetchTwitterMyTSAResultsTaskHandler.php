@@ -20,7 +20,7 @@
 
 			
 			if(count($response["body"]) > 0)
-				$params["since_id"] = $response["body"][0]["id"];
+				$params["since_id"] = $response["body"][0]["id_str"];
 			
 			
 			
