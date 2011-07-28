@@ -196,7 +196,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetSummary_'.$from.'_'.$to.'_'.$carrier.'_'.$flightnum.'_'.$condition;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('first',
 				array(
@@ -205,7 +205,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
@@ -215,7 +215,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetBestDestinations_'.$from;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('all',
 				array(
@@ -229,7 +229,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
@@ -239,7 +239,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetBestFlights_'.$from.'_'.$to;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('all',
 				array(
@@ -251,7 +251,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
@@ -261,7 +261,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetBestAirlines_'.$from.'_'.$to;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('all',
 				array(
@@ -275,7 +275,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
@@ -285,7 +285,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetDays_'.$from.'_'.$to;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('all',
 				array(
@@ -297,7 +297,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
@@ -307,7 +307,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetTimes_'.$from.'_'.$to;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('all',
 				array(
@@ -319,7 +319,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
@@ -329,7 +329,7 @@ class AirportsController extends AppController {
 	{
 		$key = 'airports_GetHolidays_'.$from.'_'.$to;
 		
-		if (($result = Cache::read($key, 'long')) === false)
+		//if (($result = Cache::read($key, 'long')) === false)
 		{
 			$result = $this->Ontime->find('all',
 				array(
@@ -339,7 +339,7 @@ class AirportsController extends AppController {
 				)
 			);
 			
-			Cache::write($key, $result, 'long');
+			//Cache::write($key, $result, 'long');
 		}
 		
 		return $result;
