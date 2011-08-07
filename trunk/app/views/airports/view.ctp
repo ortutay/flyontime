@@ -348,7 +348,7 @@ function NiceDate($date)
 					}
 				}
 				if ($faa_warnings != "") {
-					echo "<p class=\"currentdelay\">" . $faa_warnings . " (Source: <a href='http://www.fly.faa.gov/flyfaa/usmap.jsp'>FAA</a>)</p>";
+					echo "<p class=\"currentdelay\">" . $faa_warnings . " (Source: <a href='http://fly.faa.gov/flyfaa/usmap.jsp'>FAA</a>)</p>";
 				}
 				?>
 	
