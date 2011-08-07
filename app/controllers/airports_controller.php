@@ -186,7 +186,7 @@ class AirportsController extends AppController {
 		$WeatherInfo = $this->Weather->find('first', array('conditions' => array('airport' => $from)));
 		$this->set('WeatherInfo', $WeatherInfo);
 		
-		$this->set('curaptdelays', $this->LoadAndCacheXml('faa_airport_status', 'http://www.fly.faa.gov/flyfaa/xmlAirportStatus.jsp'));
+		$this->set('curaptdelays', $this->LoadAndCacheXml('faa_airport_status', 'http://fly.faa.gov/flyfaa/xmlAirportStatus.jsp'));
 		if ($WeatherInfo['Weather']['station'] != '') {
 			$this->set('curobs', $this->LoadAndCacheXml('nws_current_obs_' . $WeatherInfo['Weather']['station'], 'http://www.weather.gov/xml/current_obs/' . $WeatherInfo['Weather']['station']  . '.xml'));
 		}
