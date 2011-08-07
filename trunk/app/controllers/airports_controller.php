@@ -396,7 +396,10 @@ class AirportsController extends AppController {
 	private function LoadAndCacheXml($key, $url) {
 		if (($xml = Cache::read($key)) === false) {
 			$xml = simplexml_load_file($url);
-			Cache::write($key, $xml->asXML());
+			if($xml == null)
+				$xml = new SimpleXMLElement("<AIRPORT_STATUS_INFORMATION></AIRPORT_STATUS_INFORMATION>");
+			else
+				Cache::write($key, $xml->asXML());
 		} else {
 			$xml = simplexml_load_string($xml); 
 		}
